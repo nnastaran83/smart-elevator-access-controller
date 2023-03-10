@@ -1,0 +1,24 @@
+.video-container {
+    position: relative;
+    align-items: center;
+    justify-content: center;
+    
+
+}
+
+.video-container video {
+    width: 500px;
+    height: 500px;
+    border-radius: 50%;
+    object-fit: cover;
+    transform: scaleX(-1);
+}
+
+.video-container canvas {
+    position: absolute;
+    top: 0;
+    left: 0;
+    transform: scaleX(-1);
+
+
+}

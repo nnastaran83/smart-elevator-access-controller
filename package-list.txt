@@ -1,0 +1,6 @@
+semantic-ui-react
+semantic-ui-css
+face-api.js
+react-circular-progressbar
+
+
