@@ -1,12 +1,12 @@
 import React from "react";
-import FaceDetection from "./FaceDetection";
+import FaceDetection from "../components/FaceDetection";
 import '../styles/App.css';
 
 const App = () => {
   return (
 
     <div className="App">
-        <FaceDetection />
+      <FaceDetection />
     </div>
 
   );

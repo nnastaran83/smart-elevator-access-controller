@@ -8,9 +8,9 @@ import {
     buildStyles
 } from "react-circular-progressbar";
 import "react-circular-progressbar/dist/styles.css";
+
 // Radial separators
 import RadialSeparators from './RadialSeperators';
-
 
 
 
@@ -157,7 +157,7 @@ const FaceDetection = () => {
 
 
     return (
-       
+
 
             <div className="video-container">
                 <video

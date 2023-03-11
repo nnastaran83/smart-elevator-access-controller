@@ -1,4 +1,5 @@
 @reduxjs/toolkit
+react-redux
 semantic-ui-react
 semantic-ui-css
 @tensorflow/tfjs@latest
