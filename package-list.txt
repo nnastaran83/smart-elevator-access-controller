@@ -1,8 +1,6 @@
 @reduxjs/toolkit
-redux
+@mui/joy @emotion/react @emotion/styled
 semantic-ui-react
 semantic-ui-css
-@mui/material @emotion/react @emotion/styled
 face-api.js
 react-circular-progressbar
-

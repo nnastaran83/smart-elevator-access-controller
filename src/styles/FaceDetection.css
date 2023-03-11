@@ -2,7 +2,9 @@
     position: relative;
     width:550px;
     height: 550px;
-
+    display: flex;
+    align-items: center;
+    justify-content: center;
 
 }
 
@@ -27,9 +29,6 @@
 
 .video-container .circular-progressbar-container {
     position: absolute;
-    top: 0;
-    left: 0;
     width: 600px;
-    height: 600px;
-   
+    height: 600px; 
 }
