@@ -20,7 +20,4 @@ Enter the root folder of this project and run the next command:
 npm create vite@latest .
 ```
     
-#Smart
-
-A face recognition system for elevator
 

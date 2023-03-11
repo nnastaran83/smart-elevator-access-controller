@@ -1,6 +1,6 @@
 .video-container {
     position: relative;
-    width:550px;
+    width: 550px;
     height: 550px;
     display: flex;
     align-items: center;
@@ -15,8 +15,8 @@
     object-fit: cover;
     transform: scaleX(-1);
     margin: 50px;
-   
-    
+
+
 }
 
 .video-container canvas {
@@ -30,5 +30,5 @@
 .video-container .circular-progressbar-container {
     position: absolute;
     width: 600px;
-    height: 600px; 
+    height: 600px;
 }
