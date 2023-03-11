@@ -12,8 +12,6 @@ npm install $(cat package-list.txt)
 ```
     
 
-
-
 ## Installation
 Enter the root folder of this project and run the next command: 
 ```bash
