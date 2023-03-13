@@ -1,30 +1,16 @@
-import React, { useEffect, useRef, useState } from 'react';
+import React, { useEffect, useReducer, useRef, useState } from 'react';
 import * as faceapi from 'face-api.js';
 import '../styles/FaceDetection.css';
-import { Container, Header, Divider } from 'semantic-ui-react';
-import {
-    CircularProgressbar,
-    CircularProgressbarWithChildren,
-    buildStyles
-} from "react-circular-progressbar";
-import "react-circular-progressbar/dist/styles.css";
-
-// Radial separators
-import RadialSeparators from './RadialSeperators';
-
-
+import ProgressBar from "./ProgressBar.jsx";
+import axios from 'axios';
 
 const FaceDetection = () => {
-
     const MODEL_URL = "/models";
-
     const videoRef = useRef(null);
     const canvasRef = useRef(null);
-
-    const [expressions, setExpressions] = useState([]);
     const [labeledDescriptors, setLabeledDescriptors] = useState([]);
-    const [loading, setLoading] = useState(false);
-    const [progress, setProgress] = useState(0);
+    const [detected, setDetected] = useState(false);
+    const speech = new SpeechSynthesisUtterance();
 
     const log = (...args) => {
         console.log(...args);
@@ -33,13 +19,19 @@ const FaceDetection = () => {
     useEffect(() => {
         const run = async () => {
             log("run started");
-            await Promise.all([
-                faceapi.nets.tinyFaceDetector.loadFromUri(MODEL_URL),
-                faceapi.nets.faceLandmark68Net.loadFromUri(MODEL_URL),
-                faceapi.nets.ssdMobilenetv1.loadFromUri(MODEL_URL),
-                faceapi.nets.faceRecognitionNet.loadFromUri(MODEL_URL),
-                faceapi.nets.faceExpressionNet.loadFromUri(MODEL_URL),
-            ]).then(startVideo);
+         
+
+            //   axios.get('http://127.0.0.1:5000/get_all_face_encodings')
+            //   .then(response => {
+            //     console.log(response.data);
+            //   });
+
+            await faceapi.nets.tinyFaceDetector.loadFromUri(MODEL_URL);
+            await faceapi.nets.faceLandmark68Net.loadFromUri(MODEL_URL);
+            await faceapi.nets.ssdMobilenetv1.loadFromUri(MODEL_URL);
+            await faceapi.nets.faceRecognitionNet.loadFromUri(MODEL_URL);
+            await faceapi.nets.faceExpressionNet.loadFromUri(MODEL_URL);
+
 
             const options = new faceapi.TinyFaceDetectorOptions({
                 inputSize: 128,
@@ -47,7 +39,7 @@ const FaceDetection = () => {
             });
 
             const referenceImage = await faceapi.fetchImage('/people_images/6.jpg');
-            const nastaran = await faceapi.computeFaceDescriptor(referenceImage, options);
+            const nastaran = await faceapi.computeFaceDescriptor(referenceImage);
             const labeledDescriptors = [
                 new faceapi.LabeledFaceDescriptors(
                     'Nastaran',
@@ -56,21 +48,17 @@ const FaceDetection = () => {
             ];
             setLabeledDescriptors(labeledDescriptors);
             console.log(labeledDescriptors);
-
         };
 
-        run();
+        run().then(startVideo);
+
     }, []);
 
-    useEffect(() => {
-        const timer = setInterval(() => {
-            setProgress((prevProgress) => (prevProgress >= 100 ? 0 : prevProgress + 10));
-        }, 800);
 
-        return () => {
-            clearInterval(timer);
-        };
-    }, []);
+    const talkToUser = () => {
+        speech.text = "hello";
+        window.speechSynthesis.speak(speech);
+    };
 
 
     const startVideo = async () => {
@@ -108,20 +96,43 @@ const FaceDetection = () => {
                 maxResults: 1
             });
 
-        const detectedFace = await faceapi.detectSingleFace(video, options).withFaceLandmarks().withFaceDescriptor();
 
+        const detectedFace = await faceapi.detectSingleFace(video, options).withFaceLandmarks().withFaceDescriptor();
         if (!detectedFace) {
+            setDetected(false);
             setTimeout(() => detectFace());
             return;
-        } else {
-            const resizedDetection = faceapi.resizeResults(detectedFace, displaySize);
+        }
 
-            drawDetection(resizedDetection, canvas);
-            const faceMatcher = new faceapi.FaceMatcher(labeledDescriptors, 0.8);
-            const bestMatch = faceMatcher.findBestMatch(detectedFace.descriptor);
 
-            console.log(bestMatch);
-        };
+        setDetected(true);
+
+        const resizedDetection = faceapi.resizeResults(detectedFace, displaySize);
+
+        drawDetection(resizedDetection, canvas);
+
+        const faceMatcher = new faceapi.FaceMatcher(labeledDescriptors, 0.8);
+        const bestMatch = faceMatcher.findBestMatch(detectedFace.descriptor);
+        const data = { face_data: detectedFace.descriptor };
+        await fetch('http://localhost:5000/my-endpoint', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(data)
+        })
+            .then(response => response.json())
+            .then(data => {
+                console.log('Success:', data);
+            })
+            .catch((error) => {
+                console.error('Error:', error);
+            });
+
+
+        console.log(bestMatch);
+
+        //talkToUser();
 
 
         /* create FaceMatcher with automatically assigned labels
@@ -130,22 +141,13 @@ const FaceDetection = () => {
             .detectSingleFace(videoRef.current, options)
             .withFaceExpressions();
 
-        if (result) {
-            const expressions = [];
-            for (const [key, value] of Object.entries(result.expressions)) {
-                expressions.push([key, value]);
-            }
-
-            setExpressions(expressions);
-        }
-
         setTimeout(() => detectFace(), 1000);
     };
 
     const drawDetection = (resizedDetection, canvas) => {
-        /** 
+        /**
          * Draw a rectangle around the detected face
-        */
+         */
         const { top, left, width, height } = resizedDetection.detection.box;
         const drawOptions = {
             lineWidth: 1
@@ -157,46 +159,20 @@ const FaceDetection = () => {
 
 
     return (
-
-
-            <div className="video-container">
-                <video
-                    ref={ videoRef }
-                    autoPlay
-                    muted
-                    onPlay={ detectFace }
-                />
-                <canvas ref={ canvasRef } />
-                <div className="circular-progressbar-container" >
-                    <CircularProgressbarWithChildren
-                        value={ 100 }
-                        strokeWidth={ 1 }
-                        styles={ buildStyles({
-
-                            textColor: "white",
-                            pathColor: "#F70CAB",
-                            trailColor: "white"
-                        }) }
-                    >
-                        <RadialSeparators
-                            count={ 110 }
-                            style={ {
-                                background: "#fff",
-                                width: "10px",
-                                // This needs to be equal to props.strokeWidth
-                                height: `${1}%`
-
-                            } }
-                        />
-                    </CircularProgressbarWithChildren>
-                </div>
-
-            </div>
-
+        <div className="video-container">
+            <video
+                ref={ videoRef }
+                autoPlay
+                muted
+                onPlay={ detectFace }
+            />
+            <canvas ref={ canvasRef } />
+            <ProgressBar load={ detected } />
+        </div>
 
     );
 
 };
 
 
-export default FaceDetection; 
+export default FaceDetection;

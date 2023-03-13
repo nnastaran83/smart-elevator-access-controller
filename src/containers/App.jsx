@@ -3,6 +3,7 @@ import FaceDetection from "../components/FaceDetection";
 import '../styles/App.css';
 
 const App = () => {
+  
   return (
 
     <div className="App">
