@@ -1,8 +1,9 @@
-import React, { useEffect, useReducer, useRef, useState } from 'react';
+import React, {useEffect, useReducer, useRef, useState} from 'react';
 import * as faceapi from 'face-api.js';
 import '../styles/FaceDetection.css';
 import ProgressBar from "./ProgressBar.jsx";
 import axios from 'axios';
+
 
 const FaceDetection = () => {
     const MODEL_URL = "/models";
@@ -19,7 +20,7 @@ const FaceDetection = () => {
     useEffect(() => {
         const run = async () => {
             log("run started");
-         
+
 
             //   axios.get('http://127.0.0.1:5000/get_all_face_encodings')
             //   .then(response => {
@@ -62,7 +63,7 @@ const FaceDetection = () => {
 
 
     const startVideo = async () => {
-        navigator.mediaDevices.getUserMedia({ video: true })
+        navigator.mediaDevices.getUserMedia({video: true})
             .then((stream) => {
                 videoRef.current.srcObject = stream;
             })
@@ -83,7 +84,7 @@ const FaceDetection = () => {
 
         const video = videoRef.current;
         const canvas = canvasRef.current;
-        const displaySize = { width: video.videoWidth, height: video.videoHeight };
+        const displaySize = {width: video.videoWidth, height: video.videoHeight};
 
         canvas.width = video.videoWidth;
         canvas.height = video.videoHeight;
@@ -113,21 +114,21 @@ const FaceDetection = () => {
 
         const faceMatcher = new faceapi.FaceMatcher(labeledDescriptors, 0.8);
         const bestMatch = faceMatcher.findBestMatch(detectedFace.descriptor);
-        const data = { face_data: detectedFace.descriptor };
-        await fetch('http://localhost:5000/my-endpoint', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json'
-            },
-            body: JSON.stringify(data)
-        })
-            .then(response => response.json())
-            .then(data => {
-                console.log('Success:', data);
-            })
-            .catch((error) => {
-                console.error('Error:', error);
-            });
+        // const data = { face_data: detectedFace.descriptor };
+        // await fetch('http://localhost:5000/my-endpoint', {
+        //     method: 'POST',
+        //     headers: {
+        //         'Content-Type': 'application/json'
+        //     },
+        //     body: JSON.stringify(data)
+        // })
+        //     .then(response => response.json())
+        //     .then(data => {
+        //         console.log('Success:', data);
+        //     })
+        //     .catch((error) => {
+        //         console.error('Error:', error);
+        //     });
 
 
         console.log(bestMatch);
@@ -148,11 +149,11 @@ const FaceDetection = () => {
         /**
          * Draw a rectangle around the detected face
          */
-        const { top, left, width, height } = resizedDetection.detection.box;
+        const {top, left, width, height} = resizedDetection.detection.box;
         const drawOptions = {
             lineWidth: 1
         };
-        const box = new faceapi.draw.DrawBox({ x: left + 80, y: top, width, height }, drawOptions);
+        const box = new faceapi.draw.DrawBox({x: left + 80, y: top, width, height}, drawOptions);
 
         box.draw(canvas);
     };
@@ -161,13 +162,13 @@ const FaceDetection = () => {
     return (
         <div className="video-container">
             <video
-                ref={ videoRef }
+                ref={videoRef}
                 autoPlay
                 muted
-                onPlay={ detectFace }
+                onPlay={detectFace}
             />
-            <canvas ref={ canvasRef } />
-            <ProgressBar load={ detected } />
+            <canvas ref={canvasRef}/>
+            <ProgressBar load={detected}/>
         </div>
 
     );

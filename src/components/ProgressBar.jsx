@@ -17,7 +17,7 @@ const ProgressBar = ({load}) => {
                             styles={buildStyles({
 
                                 textColor: "white",
-                                pathColor: "#F70CAB",
+                                pathColor: "#FF1493",
                                 trailColor: "white",
                                 pathTransition:
                                     percentage === 0 ? "none" : "stroke-dashoffset 0.5s ease 0s"
