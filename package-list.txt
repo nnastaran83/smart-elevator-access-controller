@@ -3,7 +3,6 @@ eslint-plugin-react-hooks
 react-redux
 semantic-ui-react
 semantic-ui-css
-
 @tensorflow/tfjs@latest
 face-api.js
 react-circular-progressbar
