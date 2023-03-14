@@ -5,7 +5,7 @@ import ProgressBar from "./ProgressBar.jsx";
 import axios from 'axios';
 
 
-const FaceDetection = () => {
+const FaceDetector = () => {
     const MODEL_URL = "/models";
     const videoRef = useRef(null);
     const canvasRef = useRef(null);
@@ -160,15 +160,17 @@ const FaceDetection = () => {
 
 
     return (
-        <div className="video-container">
-            <video
-                ref={videoRef}
-                autoPlay
-                muted
-                onPlay={detectFace}
-            />
-            <canvas ref={canvasRef}/>
-            <ProgressBar load={detected}/>
+        <div className="ui basic segment">
+            <div className="video-container">
+                <video
+                    ref={videoRef}
+                    autoPlay
+                    muted
+                    onPlay={detectFace}
+                />
+                <canvas ref={canvasRef}/>
+                <ProgressBar load={detected}/>
+            </div>
         </div>
 
     );
@@ -176,4 +178,4 @@ const FaceDetection = () => {
 };
 
 
-export default FaceDetection;
+export default FaceDetector;
