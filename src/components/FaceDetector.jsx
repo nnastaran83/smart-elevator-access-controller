@@ -160,18 +160,18 @@ const FaceDetector = () => {
 
 
     return (
-        <div className="ui basic segment">
-            <div className="video-container">
-                <video
-                    ref={videoRef}
-                    autoPlay
-                    muted
-                    onPlay={detectFace}
-                />
-                <canvas ref={canvasRef}/>
-                <ProgressBar load={detected}/>
-            </div>
+
+        <div className="video-container">
+            <video
+                ref={videoRef}
+                autoPlay
+                muted
+                onPlay={detectFace}
+            />
+            <canvas ref={canvasRef}/>
+            <ProgressBar load={detected}/>
         </div>
+
 
     );
 
