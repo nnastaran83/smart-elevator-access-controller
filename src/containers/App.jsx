@@ -1,4 +1,4 @@
-import React, {useState} from "react";
+import React, { useState } from "react";
 import FaceDetector from "../components/FaceDetector.jsx";
 import ButtonOutlinedTextAndIcon from "../components/ButtonOutlinedTextAndIcon.jsx";
 import '../styles/App.css';
@@ -6,40 +6,57 @@ import ContactList from "../components/ContactList.jsx";
 
 const App = () => {
     const [page, setPage] = useState(0);
-    const pages = [<FaceDetector/>, null];
+    const pages = [<FaceDetector />, null];
 
 
     const handleVideoCallButtonClick = (e) => {
-        if (page === 0) {
-            setPage(1);
-        } else {
-            setPage(0);
-        }
+        setPage(1);
+        console.log(page);
+        e.preventDefault();
+    };
 
+    const handleBackButtonClick = (e) => {
+        setPage(0);
         console.log(page);
         e.preventDefault();
     };
 
 
+
+
     return (
-        <div className="App">
-            
+        <div className="App ui basic segment">
+
             <div className="ui basic segment">
                 {
                     page === 0 &&
                     <div>
-                        <div className="ui basic segment button-panel">
-                            {pages[page]}
+                        <div className="segment basic ui ">
+                            { pages[page] }
                         </div>
+
+
                         <div className="segment ui button-panel">
-                            <ButtonOutlinedTextAndIcon color="violet"
-                                                       handleClick={handleVideoCallButtonClick}/>
+                            <ButtonOutlinedTextAndIcon
+                                color="violet"
+                                text="Video Call"
+                                handleClick={ handleVideoCallButtonClick } />
                         </div>
                     </div>
 
                 }
                 {
-                    page === 1 && <ContactList/>
+                    page === 1 &&
+                    <div>
+                        <ContactList />
+                        <div className="segment ui button-panel">
+                            <ButtonOutlinedTextAndIcon
+                                color="violet"
+                                text="Back"
+                                handleClick={ handleBackButtonClick } />
+                        </div>
+                    </div>
+
                 }
             </div>
 
