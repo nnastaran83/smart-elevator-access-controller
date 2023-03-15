@@ -1,16 +1,16 @@
-import React, { useState } from "react";
-import FaceDetector from "../components/FaceDetector.jsx";
-import ButtonOutlinedTextAndIcon from "../components/ButtonOutlinedTextAndIcon.jsx";
-import '../styles/App.css';
-import ContactList from "../components/ContactList.jsx";
-import { Button } from "semantic-ui-react";
-import { Link, Outlet } from "react-router-dom";
+import React, {useState} from "react";
+import FaceDetector from "./components/FaceDetector.jsx";
+import ButtonOutlinedTextAndIcon from "./components/ButtonOutlinedTextAndIcon.jsx";
+import './App.css';
+import ContactList from "./components/ContactList.jsx";
+import {Button} from "semantic-ui-react";
+import {Link, Outlet} from "react-router-dom";
 
 
 const App = () => {
-  
+
     const [page, setPage] = useState(0);
-    const pages = [<FaceDetector />, null];
+    const pages = [<FaceDetector/>, null];
 
 
     const handleVideoCallButtonClick = (e) => {
@@ -27,14 +27,14 @@ const App = () => {
 
 
     return (
-        <div className="App ui basic segment">
+        <div className="App ui center aligned container">
 
-            <div className="ui basic segment">
+            <div className="ui basic center aligned segment">
                 {
                     page === 0 &&
-                    <div>
-                        <div className="segment basic ui ">
-                            { pages[page] }
+                    <div className="ui basic center aligned segment" style={{height: "100%"}}>
+                        <div className="segment basic center aligned aligned ui">
+                            {pages[page]}
                         </div>
 
 
@@ -42,7 +42,7 @@ const App = () => {
                             <ButtonOutlinedTextAndIcon
                                 color="violet"
                                 text="Video Call"
-                                handleClick={ handleVideoCallButtonClick } />
+                                handleClick={handleVideoCallButtonClick}/>
 
                         </div>
                     </div>
@@ -50,13 +50,16 @@ const App = () => {
                 }
                 {
                     page === 1 &&
-                    <div>
-                        <ContactList />
+                    <div className="ui basic center aligned segment">
+                        <div className="basic segment ui">
+                            <ContactList/>
+                        </div>
+
                         <div className="segment ui button-panel">
                             <ButtonOutlinedTextAndIcon
                                 color="violet"
                                 text="Back"
-                                handleClick={ handleBackButtonClick } />
+                                handleClick={handleBackButtonClick}/>
                         </div>
                     </div>
 

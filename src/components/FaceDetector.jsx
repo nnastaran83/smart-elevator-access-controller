@@ -161,7 +161,7 @@ const FaceDetector = () => {
 
     return (
 
-        <div className="video-container">
+        <div className="ui basic center aligned segment video-container" style={{margin: "auto", width: "fit-content"}}>
             <video
                 ref={videoRef}
                 autoPlay

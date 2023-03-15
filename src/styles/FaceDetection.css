@@ -1,10 +1,10 @@
 .video-container {
-    position: relative;
+    position: inherit;
     width: 550px;
     height: 550px;
     display: flex;
     align-items: end;
-    justify-content: center;
+    margin: auto;
 
 
 }
