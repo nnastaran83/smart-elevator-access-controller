@@ -3,8 +3,12 @@ import FaceDetector from "../components/FaceDetector.jsx";
 import ButtonOutlinedTextAndIcon from "../components/ButtonOutlinedTextAndIcon.jsx";
 import '../styles/App.css';
 import ContactList from "../components/ContactList.jsx";
+import { Button } from "semantic-ui-react";
+import { Link, Outlet } from "react-router-dom";
+
 
 const App = () => {
+  
     const [page, setPage] = useState(0);
     const pages = [<FaceDetector />, null];
 
@@ -20,8 +24,6 @@ const App = () => {
         console.log(page);
         e.preventDefault();
     };
-
-
 
 
     return (
@@ -41,6 +43,7 @@ const App = () => {
                                 color="violet"
                                 text="Video Call"
                                 handleClick={ handleVideoCallButtonClick } />
+
                         </div>
                     </div>
 

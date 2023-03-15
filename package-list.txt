@@ -8,4 +8,7 @@ face-api.js
 react-circular-progressbar
 lodash
 axios
+twilio
 twilio-video
+react-router-dom
+

@@ -9,7 +9,7 @@
 
 }
 
-.video-container video {
+video {
     width: 500px;
     height: 500px;
     border-radius: 50%;
@@ -20,7 +20,7 @@
 
 }
 
-.video-container canvas {
+canvas {
     position: absolute;
     top: 0;
     left: 0;
@@ -28,7 +28,7 @@
 
 }
 
-.video-container .circular-progressbar-container {
+.circular-progressbar-container {
     position: absolute;
     width: 600px;
     height: 600px;
