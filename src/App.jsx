@@ -3,9 +3,9 @@ import FaceDetector from "./components/FaceDetector.jsx";
 import ButtonOutlinedTextAndIcon from "./components/ButtonOutlinedTextAndIcon.jsx";
 import './App.css';
 import ContactList from "./components/ContactList.jsx";
+import {BrowserRouter, Routes, Route} from "react-router-dom";
+import {Outlet, Link} from "react-router-dom";
 import {Button} from "semantic-ui-react";
-import {Link, Outlet} from "react-router-dom";
-
 
 const App = () => {
 
@@ -27,45 +27,45 @@ const App = () => {
 
 
     return (
-        <div className="App ui center aligned container">
-
-            <div className="ui basic center aligned segment">
-                {
-                    page === 0 &&
-                    <div className="ui basic center aligned segment" style={{height: "100%"}}>
-                        <div className="segment basic center aligned aligned ui">
-                            {pages[page]}
-                        </div>
+        <div className="App">
 
 
-                        <div className="segment ui button-panel">
-                            <ButtonOutlinedTextAndIcon
-                                color="violet"
-                                text="Video Call"
-                                handleClick={handleVideoCallButtonClick}/>
+            <div className="ui center aligned container">
 
-                        </div>
-                    </div>
+                <div className="ui basic center aligned segment">
 
-                }
-                {
-                    page === 1 &&
                     <div className="ui basic center aligned segment">
-                        <div className="basic segment ui">
-                            <ContactList/>
-                        </div>
+                        {
+                            page === 0 &&
+                            <div className="segment basic center aligned ui">
+                                {pages[page]}
+                            </div>
+                        }
+                        {
+                            page === 1 &&
 
-                        <div className="segment ui button-panel">
-                            <ButtonOutlinedTextAndIcon
-                                color="violet"
-                                text="Back"
-                                handleClick={handleBackButtonClick}/>
-                        </div>
+                            <ContactList/>
+
+
+                        }
+
                     </div>
 
-                }
-            </div>
 
+                </div>
+
+
+            </div>
+            <div className="ui bottom attached grey two item menu" style={{position: "sticky", bottom: "40px"}}>
+                <a className="item" onClick={handleBackButtonClick}>
+                    <i className="home icon"></i>
+
+                </a>
+                <a className="item" onClick={handleVideoCallButtonClick}>
+                    <i className="phone icon"></i>
+                    Video Call
+                </a>
+            </div>
 
         </div>
 

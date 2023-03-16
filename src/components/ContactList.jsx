@@ -3,10 +3,10 @@ import ButtonOutlinedTextAndIcon from "./ButtonOutlinedTextAndIcon";
 
 
 const ContactList = () => {
-    const array = Array.from({length: 10}, (_, index) => index + 1);
+    const array = Array.from({length: 20}, (_, index) => index + 1);
     return (
-
-        <div className="ui selection divided list" style={{textAlign: "start"}}>
+        <div className="ui selection divided list scrolling"
+             style={{textAlign: "start", overflowY: "auto", maxHeight: "600px"}}>
             {
                 array.map((value, index) => {
                     return (
