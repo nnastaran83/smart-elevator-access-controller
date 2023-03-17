@@ -10,7 +10,10 @@ const ContactList = () => {
             {
                 array.map((value, index) => {
                     return (
-                        <div className="item" key={index}>
+                        <div
+                            className="item"
+                            key={index}
+                            style={{minWidth: "620px"}}>
                             <img className="ui avatar image" src="/icons/number-1.png" alt={"1"}/>
                             <div className="content">
                                 <div className="header">Apartment number {value}</div>

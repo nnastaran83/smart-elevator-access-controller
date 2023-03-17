@@ -56,7 +56,8 @@ const App = () => {
 
 
             </div>
-            <div className="ui bottom attached grey two item menu" style={{position: "sticky", bottom: "40px"}}>
+            <div className="ui bottom attached grey two item menu"
+                 style={{position: "sticky", bottom: "40px"}}>
                 <a className="item" onClick={handleBackButtonClick}>
                     <i className="home icon"></i>
 
