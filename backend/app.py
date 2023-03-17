@@ -15,20 +15,21 @@ ACCOUNT_SID = 'AC350eb2d9f2e9e8b5fe38ba40e17769de'
 API_KEY_SID = 'SKfe14235b391076dec94eba7ad0c059ee'
 API_KEY_SECRET = 'A76PNXVgaUH18qYQ3Y0xiTYUYXKkbS28'
 AUTH_TOKEN = '395ac4c1449d8abb69a9f31ab73958c8'
-TWILIO_PHONE_NUMBER = '+972507400717'
+TWILIO_PHONE_NUMBER = "+15075011237"
+phone_number = "+972507400717"
 verify_sid = "VAc12e01d172fbd6e6454331c4251926ec"
 twilio_client = Client(ACCOUNT_SID, AUTH_TOKEN)
 
 
-@app.route('/token', methods=['GET'])
-def token():
-    identity = request.args.get('identity')
-
-    token = AccessToken(ACCOUNT_SID, API_KEY_SID, API_KEY_SECRET, identity=identity)
-    video_grant = VideoGrant()
-    token.add_grant(video_grant)
-
-    return jsonify({'token': token.to_jwt()})
+# @app.route('/token', methods=['GET'])
+# def token():
+#     identity = request.args.get('identity')
+#
+#     token = AccessToken(ACCOUNT_SID, API_KEY_SID, API_KEY_SECRET, identity=identity)
+#     video_grant = VideoGrant()
+#     token.add_grant(video_grant)
+#
+#     return jsonify({'token': token.to_jwt()})
 
 
 @app.route('/send_sms', methods=['POST'])
@@ -36,16 +37,16 @@ def send_sms():
     # Set environment variables for your credentials
     # Read more at http://twil.io/secure
 
-    client = Client(ACCOUNT_SID, AUTH_TOKEN)
+    # client = Client(ACCOUNT_SID, AUTH_TOKEN)
 
-    verification = client.verify.v2.services(verify_sid).verifications.create(to=TWILIO_PHONE_NUMBER, channel="sms")
-    print(verification.status)
-
-    otp_code = input("Please enter the OTP:")
-
-    verification_check = client.verify.v2.services(verify_sid).verification_checks.create(to=TWILIO_PHONE_NUMBER,
-                                                                                          code=otp_code)
-    print(verification_check.status)
+    #  verification = client.verify.v2.services(verify_sid).verifications.create(to=TWILIO_PHONE_NUMBER, channel="sms")
+    #  print(verification.status)
+    #
+    #  otp_code = input("Please enter the OTP:")
+    #
+    #  verification_check = client.verify.v2.services(verify_sid).verification_checks.create(to=TWILIO_PHONE_NUMBER,
+    #                                                                                        code=otp_code)
+    #  print(verification_check.status)
     phone_number = request.form.get('phone_number')
     room_name = request.form.get('room_name')
 

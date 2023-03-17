@@ -11,6 +11,7 @@ const VideoCall = ({roomName}) => {
     const fetchToken = async () => {
         const response = await fetch(`http://localhost:5000/token?identity=${roomName}`);
         const data = await response.json();
+        console.log(data.token)
         setToken(data.token);
     };
 

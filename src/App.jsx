@@ -35,9 +35,10 @@ const App = () => {
 
 
     return (
-        <div className="App">
 
-            <div className="ui center aligned container">
+        <div className="App">
+            {/*
+         <div className="ui center aligned container">
 
                 <div className="ui basic center aligned segment">
 
@@ -59,6 +60,8 @@ const App = () => {
             </div>
             <BottomMenu handleHomeButtonClick={handleHomeButtonClick}
                         handleVideoCallButtonClick={handleVideoCallButtonClick}/>
+        */}
+
 
             {/*
                 return (
@@ -69,6 +72,9 @@ const App = () => {
             </div>
             );
             */}
+            <InviteForm roomName={roomName}/>
+            <VideoCall roomName={roomName}/>
+
 
         </div>
 
