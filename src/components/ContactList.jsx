@@ -1,16 +1,32 @@
-import React from "react";
-import ButtonOutlinedTextAndIcon from "./ButtonOutlinedTextAndIcon";
+import React, {useEffect, useState} from "react";
 
 
 const ContactList = () => {
+    const [facetimeAddress, setFacetimeAddress] = useState("");
     const array = Array.from({length: 20}, (_, index) => index + 1);
+
+    useEffect(() => {
+        console.log(facetimeAddress)
+
+    })
+    const initiateFacetimeCall = (e) => {
+
+        window.location.href = `${e.target.dataset.facetimelink}`;
+
+    };
+
     return (
         <div className="ui selection divided list scrolling"
              style={{textAlign: "start", overflowY: "auto", maxHeight: "600px"}}>
             {
                 array.map((value, index) => {
                     return (
-                        <div className="item" key={index}>
+                        <div
+                            onClick={initiateFacetimeCall}
+                            data-facetimelink="https://facetime.apple.com/join#v=1&p=eirO5sQQEe2uZZoVRAPR/A&k=FBPfijzErLjI-5nhKOnPf5XxCXD4ItPWAPR24IoKze8"
+                            className="item"
+                            key={index}
+                            style={{minWidth: "600px"}}>
                             <img className="ui avatar image" src="/icons/number-1.png" alt={"1"}/>
                             <div className="content">
                                 <div className="header">Apartment number {value}</div>

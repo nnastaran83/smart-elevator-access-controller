@@ -2,10 +2,11 @@ from waitress import serve
 from app import *
 
 
-# in commandline : waitress-serve --call 'app:smart_backend'
+# cd backend
+# in commandline : waitress-serve --call 'server:smart_backend'
 
-def server(environ, start_response):
+def smart_backend(environ, start_response):
     return app(environ, start_response)
 
 
-serve(server, listen='127.0.0.1:5000')
+serve(smart_backend, listen='127.0.0.1:5000')

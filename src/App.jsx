@@ -1,16 +1,24 @@
-import React, {useState} from "react";
+import React, {useEffect, useState} from "react";
 import FaceDetector from "./components/FaceDetector.jsx";
-import ButtonOutlinedTextAndIcon from "./components/ButtonOutlinedTextAndIcon.jsx";
 import './App.css';
 import ContactList from "./components/ContactList.jsx";
-import {BrowserRouter, Routes, Route} from "react-router-dom";
-import {Outlet, Link} from "react-router-dom";
-import {Button} from "semantic-ui-react";
+import BottomMenu from "./components/BottomMenu.jsx";
+import VideoCall from "./components/VideoCall.jsx";
+import InviteForm from "./components/InviteForm.jsx";
 
 const App = () => {
-
+    const [roomName, setRoomName] = useState('');
     const [page, setPage] = useState(0);
     const pages = [<FaceDetector/>, null];
+
+    const [count, setCount] = useState(() => {
+        const savedCount = localStorage.getItem("count");
+        return savedCount ? parseInt(savedCount, 10) : 0;
+    });
+
+    useEffect(() => {
+        localStorage.setItem("count", count);
+    }, [count]);
 
 
     const handleVideoCallButtonClick = (e) => {
@@ -19,7 +27,7 @@ const App = () => {
         e.preventDefault();
     };
 
-    const handleBackButtonClick = (e) => {
+    const handleHomeButtonClick = (e) => {
         setPage(0);
         console.log(page);
         e.preventDefault();
@@ -28,8 +36,7 @@ const App = () => {
 
     return (
         <div className="App">
-
-
+            {/*
             <div className="ui center aligned container">
 
                 <div className="ui basic center aligned segment">
@@ -43,30 +50,23 @@ const App = () => {
                         }
                         {
                             page === 1 &&
-
                             <ContactList/>
-
-
                         }
-
                     </div>
-
 
                 </div>
 
-
             </div>
-            <div className="ui bottom attached grey two item menu" style={{position: "sticky", bottom: "40px"}}>
-                <a className="item" onClick={handleBackButtonClick}>
-                    <i className="home icon"></i>
-
-                </a>
-                <a className="item" onClick={handleVideoCallButtonClick}>
-                    <i className="phone icon"></i>
-                    Video Call
-                </a>
+            <BottomMenu handleHomeButtonClick={handleHomeButtonClick}
+                        handleVideoCallButtonClick={handleVideoCallButtonClick}/>
+*/}
+            return (
+            <div className="App">
+                <h1>Counter</h1>
+                <p>Count: {count}</p>
+                <button onClick={() => setCount(count + 1)}>Increment</button>
             </div>
-
+            );
         </div>
 
 
