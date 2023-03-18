@@ -4,6 +4,9 @@
     margin: 0 auto;
     padding: 2rem;
     text-align: center;
+    background: hsla(233, 100%, 90%, 1);
+
+    background: linear-gradient(90deg, hsla(233, 100%, 90%, 1) 0%, hsla(0, 0%, 89%, 1) 100%);
 
 
 }
