@@ -11,4 +11,4 @@ axios
 twilio
 twilio-video
 react-router-dom
-
+socket.io-client

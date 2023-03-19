@@ -1,8 +1,8 @@
 import React from "react";
 import {CircularProgressbarWithChildren, buildStyles} from "react-circular-progressbar";
 import "react-circular-progressbar/dist/styles.css";
-import RadialSeparators from './RadialSeperators';
-import ChangingProgressProvider from './ChangingProgressProvider';
+import RadialSeparators from './RadialSeperators.jsx';
+import ChangingProgressProvider from './ChangingProgressProvider.jsx';
 
 
 const ProgressBar = ({load}) => {

@@ -8,6 +8,8 @@ from pymongo.errors import DuplicateKeyError
 from twilio.jwt.access_token import AccessToken
 from twilio.jwt.access_token.grants import VideoGrant, VoiceGrant
 from twilio.rest import Client
+from flask_socketio import SocketIO, emit, join_room
+from threading import Thread
 
 app = Flask(__name__)
 CORS(app, resources={r"/*": {"origins": ["http://localhost:5173"]}})
@@ -19,6 +21,31 @@ TWILIO_PHONE_NUMBER = "+15075011237"
 phone_number = "+972507400717"
 verify_sid = "VAc12e01d172fbd6e6454331c4251926ec"
 twilio_client = Client(ACCOUNT_SID, AUTH_TOKEN)
+
+
+# @app.route('/video_call', methods=['GET', 'POST'])
+# def video_call():
+#     # create a separate SocketIO instance for this route
+#     socketio = SocketIO(app, async_mode='threading',
+#                         cors_allowed_origins="http://localhost:5173")
+#     print('server is listening for video connections')
+#
+#     # define event handlers for this SocketIO instance
+#     @socketio.on('connection')
+#     def handle_connect():
+#         print('connnnnnn')
+#         return 'new user is connected'
+#
+#     @socketio.on('disconnect')
+#     def handle_disconnect():
+#         return 'user disconnected'
+#
+#     # emit a message to the client using this SocketIO instance
+#     socketio.emit('my-message', {'data': 'Hello, world!'})
+#     # start the listening process on this SocketIO instance
+#     socketio_thread = Thread(target=socketio.run, args=(app,))
+#     socketio_thread.start()
+#     return 'Video call in progress'
 
 
 # @app.route('/token', methods=['GET'])

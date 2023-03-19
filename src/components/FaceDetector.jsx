@@ -1,7 +1,7 @@
 import React, {useEffect, useReducer, useRef, useState} from 'react';
 import * as faceapi from 'face-api.js';
 import '../styles/FaceDetection.css';
-import ProgressBar from "./ProgressBar.jsx";
+import ProgressBar from "./circular_progressbar/ProgressBar.jsx";
 import axios from 'axios';
 
 

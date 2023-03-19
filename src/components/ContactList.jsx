@@ -17,7 +17,7 @@ const ContactList = () => {
 
     return (
         <div className="ui selection divided list scrolling"
-             style={{textAlign: "start", overflowY: "auto", maxHeight: "600px"}}>
+             style={{textAlign: "start", overflowY: "auto", maxHeight: "550px"}}>
             {
                 array.map((value, index) => {
                     return (

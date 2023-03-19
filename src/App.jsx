@@ -3,22 +3,24 @@ import FaceDetector from "./components/FaceDetector.jsx";
 import './App.css';
 import ContactList from "./components/ContactList.jsx";
 import BottomMenu from "./components/BottomMenu.jsx";
-import VideoCall from "./components/VideoCall.jsx";
-import InviteForm from "./components/InviteForm.jsx";
+import {BrowserRouter as Router, Route, Routes, Link} from 'react-router-dom';
+import NavigationMenu from "./components/NavigationMenu.jsx";
+
 
 const App = () => {
     const [roomName, setRoomName] = useState('');
     const [page, setPage] = useState(0);
     const pages = [<FaceDetector/>, null];
 
+
     const [count, setCount] = useState(() => {
         const savedCount = localStorage.getItem("count");
         return savedCount ? parseInt(savedCount, 10) : 0;
     });
 
-    useEffect(() => {
-        localStorage.setItem("count", count);
-    }, [count]);
+    // useEffect(() => {
+    //     localStorage.setItem("count", count);
+    // }, [count]);
 
 
     const handleVideoCallButtonClick = (e) => {
@@ -33,36 +35,31 @@ const App = () => {
         e.preventDefault();
     };
 
-
     return (
+        <Router>
 
-        <div className="App">
 
-            <div className="ui center aligned container">
-
-                <div className="ui basic center aligned segment">
+            <div className="App">
+                <div className="ui center aligned container">
 
                     <div className="ui basic center aligned segment">
-                        {
-                            page === 0 &&
-                            <div className="segment basic center aligned ui">
-                                {pages[page]}
-                            </div>
-                        }
-                        {
-                            page === 1 &&
-                            <ContactList/>
-                        }
+
+                        <div className="ui basic center aligned segment">
+
+                            <Routes>
+                                <Route path='/' element={<FaceDetector/>}/>
+                                <Route path='/contactlist' element={<ContactList/>}/>
+                            </Routes>
+
+                        </div>
+                        <NavigationMenu/>
+
                     </div>
 
                 </div>
 
-            </div>
-            <BottomMenu handleHomeButtonClick={handleHomeButtonClick}
-                        handleVideoCallButtonClick={handleVideoCallButtonClick}/>
 
-
-            {/*
+                {/*
                 return (
                 <div className="App">
                 <h1>Counter</h1>
@@ -78,7 +75,9 @@ const App = () => {
             */}
 
 
-        </div>
+            </div>
+
+        </Router>
 
 
     );

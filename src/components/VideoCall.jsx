@@ -1,68 +1,30 @@
 // VideoCall.js
 import React, {useEffect, useRef, useState} from 'react';
-import Video from 'twilio-video';
+import socketClient from 'socket.io-client';
 
-const VideoCall = ({roomName}) => {
-    const [token, setToken] = useState(null);
-    const localVideoRef = useRef();
-    const remoteVideoRef = useRef();
+const VIDEO_CALL_SERVER = 'http://127.0.0.1:3000';
 
-    // Fetch an access token from the backend server
-    const fetchToken = async () => {
-        const response = await fetch(`http://localhost:5000/token?identity=${roomName}`);
-        const data = await response.json();
-        console.log(data.token)
-        setToken(data.token);
-    };
+let socket;
+
+const VideoCall = () => {
 
     useEffect(() => {
-        fetchToken();
+        const connectWithWebSocket = () => {
+            socket = socketClient(VIDEO_CALL_SERVER);
+            socket.on('connection', () => {
+                console.log('successfully connected with server');
+                console.log(socket.id);
+            })
+        };
+
+        connectWithWebSocket();
+
     }, []);
 
-    // Connect to the Twilio room
-    const connectToRoom = async (token) => {
-        const room = await Video.connect(token, {video: true, audio: true, name: roomName});
-        room.localParticipant.tracks.forEach((publication) => {
-            if (publication.track.kind === 'video') {
-                publication.track.attach(localVideoRef.current);
-            }
-        });
+    return (<div>
+        Video Call Component
+    </div>);
 
-        room.on('participantConnected', (participant) => {
-            console.log(`Participant connected: ${participant.identity}`);
-            participant.tracks.forEach((publication) => {
-                if (publication.track.kind === 'video') {
 
-                    publication.track.attach(remoteVideoRef.current);
-                }
-            });
-        });
-
-        room.on('participantDisconnected', (participant) => {
-            console.log(`Participant disconnected: ${participant.identity}`);
-            participant.tracks.forEach((publication) => {
-                if (publication.track.kind === 'video') {
-                    publication.track.detach(remoteVideoRef.current);
-                }
-            });
-        });
-
-        window.addEventListener('beforeunload', () => {
-            room.disconnect();
-        });
-    };
-
-    useEffect(() => {
-        if (token) {
-            connectToRoom(token);
-        }
-    }, [token]);
-
-    return (
-        <div>
-            <video ref={localVideoRef} autoPlay={true} muted={true}/>
-            <video ref={remoteVideoRef} autoPlay={true}/>
-        </div>
-    );
 };
 export default VideoCall;
