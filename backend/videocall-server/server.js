@@ -1,4 +1,4 @@
-//cd video-call-server
+//cd videocall-server
 //npm start
 
 const express = require('express');

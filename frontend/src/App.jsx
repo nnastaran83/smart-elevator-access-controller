@@ -1,11 +1,9 @@
 import React, {useEffect, useState} from "react";
 import FaceDetector from "./components/FaceDetector.jsx";
-import './App.css';
+import './styles/App.scss';
 import ContactList from "./components/ContactList.jsx";
-import BottomMenu from "./components/BottomMenu.jsx";
 import {BrowserRouter as Router, Route, Routes, Link} from 'react-router-dom';
 import NavigationMenu from "./components/NavigationMenu.jsx";
-
 
 const App = () => {
     const [roomName, setRoomName] = useState('');
@@ -37,8 +35,6 @@ const App = () => {
 
     return (
         <Router>
-
-
             <div className="App">
                 <div className="ui center aligned container">
 

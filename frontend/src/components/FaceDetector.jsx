@@ -162,6 +162,11 @@ const FaceDetector = () => {
     return (
 
         <div className="ui basic center aligned segment video-container" style={{margin: "auto", width: "fit-content"}}>
+
+            <div className="circle">
+      <span className="circle__btn">
+
+
             <video
                 ref={videoRef}
                 autoPlay
@@ -169,7 +174,12 @@ const FaceDetector = () => {
                 onPlay={detectFace}
             />
             <canvas ref={canvasRef}/>
-            <ProgressBar load={detected}/>
+      </span>
+                <span className="circle__back-1"></span>
+                <span className="circle__back-2"></span>
+            </div>
+
+
         </div>
 
 

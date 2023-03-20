@@ -6,7 +6,9 @@ const VIDEO_CALL_SERVER = 'http://127.0.0.1:3000';
 
 let socket;
 
+
 const VideoCall = () => {
+
 
     useEffect(() => {
         const connectWithWebSocket = () => {
