@@ -101,8 +101,9 @@ def hello():  # put application's code here
 @app.route('/db')
 def db():
     """
-    Configuration method to return db instance
+    :return: database instance
     """
+
     config = configparser.ConfigParser()
     config.read("configuration_file.ini")
 
