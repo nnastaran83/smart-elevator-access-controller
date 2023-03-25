@@ -5,7 +5,9 @@ import ContactList from "./components/ContactList.jsx";
 import {BrowserRouter as Router, Route, Routes, Link} from 'react-router-dom';
 import NavigationMenu from "./components/NavigationMenu.jsx";
 
+
 const App = () => {
+
     const [roomName, setRoomName] = useState('');
     const [page, setPage] = useState(0);
     const pages = [<FaceDetector/>, null];

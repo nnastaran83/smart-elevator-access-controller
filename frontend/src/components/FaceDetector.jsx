@@ -2,6 +2,7 @@ import React, {useEffect, useReducer, useRef, useState} from 'react';
 import * as faceapi from 'face-api.js';
 import '../styles/FaceDetection.css';
 import axios from 'axios';
+import Eye from "./Eye";
 
 
 const FaceDetector = () => {
@@ -56,6 +57,7 @@ const FaceDetector = () => {
 
 
     const talkToUser = () => {
+
         speech.text = "hello";
         window.speechSynthesis.speak(speech);
     };
@@ -149,10 +151,15 @@ const FaceDetector = () => {
          * Draw a rectangle around the detected face
          */
         const {top, left, width, height} = resizedDetection.detection.box;
+        console.log({left, top, width, height})
         const drawOptions = {
             lineWidth: 1
         };
-        const box = new faceapi.draw.DrawBox({x: left + 80, y: top, width, height}, drawOptions);
+        const context = canvas.getContext('2d');
+        context.clearRect(0, 0, canvas.width, canvas.height);
+
+        //Pay attention: The video is mirrored, so the left means right!
+        const box = new faceapi.draw.DrawBox({x: left, y: top, width, height}, drawOptions);
 
         box.draw(canvas);
     };
@@ -160,30 +167,35 @@ const FaceDetector = () => {
 
     return (
 
-        <div className="ui basic center aligned segment video-container" style={{margin: "auto", width: "fit-content"}}>
+        <div className="ui basic center aligned segment video-container"
+             style={{margin: "auto", width: "fit-content", maxWidth: "600px"}}>
+
 
             <div className="circle">
-      <span className="circle__btn">
 
 
-            <video
-                ref={videoRef}
-                autoPlay
-                muted
-                onPlay={detectFace}
-            />
-            <canvas ref={canvasRef}/>
-      </span>
+                <span className="circle__btn">
+
+                    <video
+                        ref={videoRef}
+                        autoPlay
+                        onPlay={detectFace}
+                        style={{display: "none"}}
+
+                    />
+                    <canvas ref={canvasRef}/>
+                     <Eye/>
+
+                </span>
+
                 <span className="circle__back-1"></span>
                 <span className="circle__back-2"></span>
+
             </div>
 
 
         </div>
-
-
     );
-
 };
 
 
