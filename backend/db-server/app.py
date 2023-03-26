@@ -13,13 +13,13 @@ from threading import Thread
 
 app = Flask(__name__)
 CORS(app, resources={r"/*": {"origins": ["http://localhost:5173"]}})
-ACCOUNT_SID = 'AC350eb2d9f2e9e8b5fe38ba40e17769de'
-API_KEY_SID = 'SKfe14235b391076dec94eba7ad0c059ee'
-API_KEY_SECRET = 'A76PNXVgaUH18qYQ3Y0xiTYUYXKkbS28'
-AUTH_TOKEN = '395ac4c1449d8abb69a9f31ab73958c8'
-TWILIO_PHONE_NUMBER = "+15075011237"
-phone_number = "+972507400717"
-verify_sid = "VAc12e01d172fbd6e6454331c4251926ec"
+ACCOUNT_SID = 'replace'
+API_KEY_SID = 'replace'
+API_KEY_SECRET = 'replace'
+AUTH_TOKEN = 'replace'
+TWILIO_PHONE_NUMBER = "replace"
+phone_number = "replace"
+verify_sid = "replace"
 twilio_client = Client(ACCOUNT_SID, AUTH_TOKEN)
 
 
