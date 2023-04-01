@@ -8,7 +8,7 @@ Open the terminal in the project's directory:
 
 ```bash
 cd frontend
-npm create vite@latest .
+npm install
 ```
 
 ## Docker
