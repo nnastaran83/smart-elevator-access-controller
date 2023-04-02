@@ -34,11 +34,6 @@ const FaceDetector = () => {
             await faceapi.nets.faceExpressionNet.loadFromUri(MODEL_URL);
 
 
-            const options = new faceapi.TinyFaceDetectorOptions({
-                inputSize: 128,
-                scoreThreshold: 0.5
-            });
-
             const referenceImage = await faceapi.fetchImage('/people_images/6.jpg');
             const nastaran = await faceapi.computeFaceDescriptor(referenceImage);
             const labeledDescriptors = [
@@ -169,13 +164,8 @@ const FaceDetector = () => {
 
         <div className="ui basic center aligned segment video-container"
              style={{margin: "auto", width: "fit-content", maxWidth: "600px"}}>
-
-
             <div className="circle">
-
-
                 <span className="circle__btn">
-
                     <video
                         ref={videoRef}
                         autoPlay
@@ -185,14 +175,12 @@ const FaceDetector = () => {
                     />
                     <canvas ref={canvasRef}/>
                      <Eye/>
-
                 </span>
 
                 <span className="circle__back-1"></span>
                 <span className="circle__back-2"></span>
 
             </div>
-
 
         </div>
     );
