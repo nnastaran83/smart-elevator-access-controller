@@ -1,17 +1,14 @@
-import React, {useEffect, useReducer, useRef, useState} from 'react';
-import * as faceapi from 'face-api.js';
-import '../styles/FaceDetection.css';
+import React, {useEffect, useRef, useState} from 'react';
 import axios from 'axios';
 import Eye from "./Eye";
-
+import '../styles/FaceDetection.css';
 
 const FaceDetector = () => {
-    const MODEL_URL = "/models";
     const videoRef = useRef(null);
     const canvasRef = useRef(null);
-    const [labeledDescriptors, setLabeledDescriptors] = useState([]);
     const [detected, setDetected] = useState(false);
     const speech = new SpeechSynthesisUtterance();
+
 
     const log = (...args) => {
         console.log(...args);
@@ -20,30 +17,10 @@ const FaceDetector = () => {
     useEffect(() => {
         const run = async () => {
             log("run started");
+            speech.voice = speechSynthesis.getVoices()[5];
+            speech.lang = "en-US";
 
 
-            //   axios.get('http://127.0.0.1:5000/get_all_face_encodings')
-            //   .then(response => {
-            //     console.log(response.data);
-            //   });
-
-            await faceapi.nets.tinyFaceDetector.loadFromUri(MODEL_URL);
-            await faceapi.nets.faceLandmark68Net.loadFromUri(MODEL_URL);
-            await faceapi.nets.ssdMobilenetv1.loadFromUri(MODEL_URL);
-            await faceapi.nets.faceRecognitionNet.loadFromUri(MODEL_URL);
-            await faceapi.nets.faceExpressionNet.loadFromUri(MODEL_URL);
-
-
-            const referenceImage = await faceapi.fetchImage('/people_images/6.jpg');
-            const nastaran = await faceapi.computeFaceDescriptor(referenceImage);
-            const labeledDescriptors = [
-                new faceapi.LabeledFaceDescriptors(
-                    'Nastaran',
-                    [nastaran]
-                )
-            ];
-            setLabeledDescriptors(labeledDescriptors);
-            console.log(labeledDescriptors);
         };
 
         run().then(startVideo);
@@ -52,11 +29,9 @@ const FaceDetector = () => {
 
 
     const talkToUser = () => {
-
         speech.text = "hello";
-        window.speechSynthesis.speak(speech);
+        speechSynthesis.speak(speech);
     };
-
 
     const startVideo = async () => {
         navigator.mediaDevices.getUserMedia({video: true})
@@ -68,97 +43,41 @@ const FaceDetector = () => {
             });
     };
 
+    /**
+     * Detects faces in the video stream and sends the video frame data to the Flask backend
+     * @returns {Promise<void>}
+     */
     const detectFace = async () => {
-        if (
-            videoRef.current.paused ||
-            videoRef.current.ended ||
-            !faceapi.nets.tinyFaceDetector.params
-        ) {
+
+        if (videoRef.current.paused || videoRef.current.ended) {
             setTimeout(() => detectFace());
             return;
         }
 
         const video = videoRef.current;
-        const canvas = canvasRef.current;
-        const displaySize = {width: video.videoWidth, height: video.videoHeight};
-
+        const canvas = document.createElement('canvas');
         canvas.width = video.videoWidth;
         canvas.height = video.videoHeight;
+        const ctx = canvas.getContext('2d');
+        ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
 
-        faceapi.matchDimensions(canvas, displaySize);
+        // Convert the canvas to base64-encoded data
+        const frameData = canvas.toDataURL('image/jpeg', 0.8);
 
-        const options = new faceapi.SsdMobilenetv1Options(
-            {
-                minConfidence: 0.8,
-                maxResults: 1
-            });
+        // Send the video frame data to the Flask backend
+        const response = await fetch('http://localhost:5000/recognize_face', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({frame_data: frameData}),
+        });
 
-
-        const detectedFace = await faceapi.detectSingleFace(video, options).withFaceLandmarks().withFaceDescriptor();
-        if (!detectedFace) {
-            setDetected(false);
-            setTimeout(() => detectFace());
-            return;
-        }
-
-
-        setDetected(true);
-
-        const resizedDetection = faceapi.resizeResults(detectedFace, displaySize);
-
-        drawDetection(resizedDetection, canvas);
-
-        const faceMatcher = new faceapi.FaceMatcher(labeledDescriptors, 0.8);
-        const bestMatch = faceMatcher.findBestMatch(detectedFace.descriptor);
-        // const data = { face_data: detectedFace.descriptor };
-        // await fetch('http://localhost:5000/my-endpoint', {
-        //     method: 'POST',
-        //     headers: {
-        //         'Content-Type': 'application/json'
-        //     },
-        //     body: JSON.stringify(data)
-        // })
-        //     .then(response => response.json())
-        //     .then(data => {
-        //         console.log('Success:', data);
-        //     })
-        //     .catch((error) => {
-        //         console.error('Error:', error);
-        //     });
-
-
-        console.log(bestMatch);
-
-        //talkToUser();
-
-
-        /* create FaceMatcher with automatically assigned labels
-     from the detection results for the reference image*/
-        const result = await faceapi
-            .detectSingleFace(videoRef.current, options)
-            .withFaceExpressions();
+        const data = await response.json();
+        console.log(data.name);
 
         setTimeout(() => detectFace(), 1000);
     };
-
-    const drawDetection = (resizedDetection, canvas) => {
-        /**
-         * Draw a rectangle around the detected face
-         */
-        const {top, left, width, height} = resizedDetection.detection.box;
-        console.log({left, top, width, height})
-        const drawOptions = {
-            lineWidth: 1
-        };
-        const context = canvas.getContext('2d');
-        context.clearRect(0, 0, canvas.width, canvas.height);
-
-        //Pay attention: The video is mirrored, so the left means right!
-        const box = new faceapi.draw.DrawBox({x: left, y: top, width, height}, drawOptions);
-
-        box.draw(canvas);
-    };
-
 
     return (
 
@@ -170,11 +89,11 @@ const FaceDetector = () => {
                         ref={videoRef}
                         autoPlay
                         onPlay={detectFace}
-                        style={{display: "none"}}
+                        style={{display: "block"}}
 
                     />
                     <canvas ref={canvasRef}/>
-                     <Eye/>
+                    {/*<Eye/>*/}
                 </span>
 
                 <span className="circle__back-1"></span>
