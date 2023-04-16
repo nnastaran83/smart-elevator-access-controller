@@ -11,8 +11,6 @@ import NavigationMenu from "./components/NavigationMenu.jsx";
  * @constructor
  */
 const App = () => {
-
-
     return (
         <Router>
             <div className="App">
