@@ -4,7 +4,7 @@ import './styles/App.scss';
 import FaceDetector from "./components/FaceDetector.jsx";
 import ContactList from "./components/ContactList.jsx";
 import NavigationMenu from "./components/NavigationMenu.jsx";
-import ZoomCall from "./components/ZoomCall.jsx";
+
 
 /**
  * @returns {JSX.Element}

@@ -1,109 +1,34 @@
-import React, {useEffect, useState} from 'react';
-import axios from "axios";
+import React, {useEffect} from 'react';
+import {ZoomMtg} from '@zoomus/websdk';
 
-
-const ZoomCall = () => {
-    const [meetingCreated, setMeetingCreated] = useState(false);
-    const [meetingData, setMeetingData] = useState(null);
-
-
-    const createZoomMeeting = async () => {
-        const token = "eyJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJ1YTMzOS1KVFNBRzEzeWdRN0tmTUNBIn0.Mgj-yVRSzet2aZU9Q38mm9zB9dk8haWM4fKLzx3roA8";
-        const config = {
-            headers: {
-                "Authorization": `Bearer ${token}`,
-                "Content-Type": "application/json"
-            }
-        };
-        const data = {
-            topic: "Your Meeting Topic",
-            type: 1, // Instant meeting
-            settings: {
-                host_video: true,
-                participant_video: true
-            }
-        };
-        const userId = "me"; // Use "me" as the user ID to create a meeting for the current user
-        const response = await axios.post(`https://api.zoom.us/v2/users/${userId}/meetings`, data, config);
-        return response.data;
-    };
-
-    const joinZoomMeeting = async (meetingData) => {
-        const loadZoomSDK = () => {
-            return new Promise((resolve) => {
-                const zoomScript = document.createElement("script");
-                zoomScript.src = "https://source.zoom.us/1.9.9/lib/vendor/react.min.js";
-                zoomScript.async = true;
-                document.body.appendChild(zoomScript);
-                zoomScript.onload = () => {
-                    const sdkScript = document.createElement("script");
-                    sdkScript.src = "https://source.zoom.us/zoom-meeting-1.9.9.min.js";
-                    sdkScript.async = true;
-                    document.body.appendChild(sdkScript);
-                    sdkScript.onload = () => {
-                        resolve();
-                    };
-                };
-            });
-        };
-
-        await loadZoomSDK();
+const ZoomCall = ({meetingNumber, userName, passWord, role = 0}) => {
+    useEffect(() => {
+        ZoomMtg.setZoomJSLib('https://source.zoom.us/2.11.0/lib', '/av');
+        ZoomMtg.preLoadWasm();
+        ZoomMtg.prepareJssdk();
 
 
         ZoomMtg.init({
-            leaveUrl: "https://smart-zoom-video-call.com", // Replace with your desired leave URL
+            leaveUrl: 'http://localhost:5173', // Change this to the URL users should be redirected to after leaving the meeting
+            isSupportAV: true,
             success: () => {
                 ZoomMtg.join({
-                    signature,
-                    meetingNumber: meetingData.id,
-                    userName: "Your Name",
-                    apiKey: "Yb6pgEdkARTeyStJFBkiRfg",
-                    userEmail: "",
-                    passWord: meetingData.password,
-                    success: () => {
-                        console.log("Successfully joined meeting");
-                    },
-                    error: (error) => {
-                        console.log("Failed to join meeting:", error);
-                    },
+                    meetingNumber,
+                    userName,
+                    passWord,
+                    apiKey: 'DQZ2gBJuTwKoieaJIQvXqw',
+                    apiSecret: 'MfdJYaE3RK5XhSasbApT5a9GqRPeJpnL',
+                    userEmail: 'nnastaran83@gmail.com', // Optional, if you want to associate the user with an email address
+                    role,
+                    success: () => console.log('Joined the meeting'),
+                    error: (error) => console.log(error),
                 });
             },
-            error: (error) => {
-                console.log("Failed to initialize Zoom SDK:", error);
-            },
+            error: (error) => console.log(error),
         });
-        const {ZoomMtg} = window.ZoomMtg;
-    };
+    }, []);
 
-
-    const handleCreateMeeting = async () => {
-        try {
-            const meetingData = await createZoomMeeting();
-            setMeetingData(meetingData);
-            setMeetingCreated(true);
-        } catch (error) {
-            console.error("Error creating meeting:", error);
-        }
-    };
-
-    const handleJoinMeeting = async () => {
-        try {
-            await joinZoomMeeting(meetingData);
-        } catch (error) {
-            console.error("Error joining meeting:", error);
-        }
-    };
-
-    return (
-        <div>
-            {!meetingCreated ? (
-                <button onClick={handleCreateMeeting}>Create Meeting</button>
-            ) : (
-                <button onClick={handleJoinMeeting}>Join Meeting</button>
-            )}
-        </div>
-    );
+    return <div id="zmmtg-root"></div>;
 };
-
 
 export default ZoomCall;
