@@ -10,8 +10,14 @@ from twilio.jwt.access_token.grants import VideoGrant, VoiceGrant
 from twilio.rest import Client
 from flask_socketio import SocketIO, emit, join_room
 from threading import Thread
+import face_recognition
+import numpy as np
+import base64
+from PIL import Image
+from io import BytesIO
 
 app = Flask(__name__)
+
 CORS(app, resources={r"/*": {"origins": ["http://localhost:5173"]}})
 ACCOUNT_SID = 'replace'
 API_KEY_SID = 'replace'
@@ -21,6 +27,47 @@ TWILIO_PHONE_NUMBER = "replace"
 phone_number = "replace"
 verify_sid = "replace"
 twilio_client = Client(ACCOUNT_SID, AUTH_TOKEN)
+
+# Load reference images and compute face encodings
+joe_image = face_recognition.load_image_file("people_images/1.jpg")
+nastaran_image = face_recognition.load_image_file("people_images/6.jpg")
+
+joe_encoding = face_recognition.face_encodings(joe_image)[0]
+nastaran_encoding = face_recognition.face_encodings(nastaran_image)[0]
+
+known_face_encodings = [joe_encoding, nastaran_encoding]
+known_face_names = ["Joe", "Nastaran"]
+
+
+@app.route('/recognize_face', methods=['POST'])
+def recognize_face():
+    data = request.get_json()
+    frame_data = data['frame_data']
+
+    # Decode the base64-encoded image
+    img_data = base64.b64decode(frame_data.split(',')[1])
+    img = Image.open(BytesIO(img_data))
+    img_array = np.array(img)
+
+    # Perform face detection and recognition
+    face_locations = face_recognition.face_locations(img_array)
+    if len(face_locations) == 0:
+        return jsonify({"name": "No face detected"})
+
+    face_encodings = face_recognition.face_encodings(img_array, face_locations)
+    face_encoding = face_encodings[0]
+
+    # Find the best match
+    matches = face_recognition.compare_faces(known_face_encodings, face_encoding)
+    face_distances = face_recognition.face_distance(known_face_encodings, face_encoding)
+    best_match_index = np.argmin(face_distances)
+
+    if matches[best_match_index]:
+        name = known_face_names[best_match_index]
+    else:
+        name = "Unknown"
+
+    return jsonify({"name": name})
 
 
 # @app.route('/video_call', methods=['GET', 'POST'])

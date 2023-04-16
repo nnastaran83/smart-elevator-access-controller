@@ -2,7 +2,7 @@ from waitress import serve
 from app import *
 
 
-# cd backend
+# cd backend/db-server
 # in commandline : waitress-serve --call 'server:smart_backend'
 def smart_backend(environ, start_response):
     """
