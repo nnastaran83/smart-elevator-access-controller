@@ -7,6 +7,8 @@ inset -.2rem -.2rem .5rem var(--white);
 #root {
   max-width: 1280px;
   max-height: 100vh;
+  height: 100vh;
+  width: 100vw;
   margin: 0 auto;
   padding: 2rem;
   text-align: center;
