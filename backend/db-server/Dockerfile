@@ -1,24 +1,26 @@
-# Use the official Miniconda3 image as the base image
+# Use the official Miniconda3 base image
 FROM continuumio/miniconda3
 
-# Set the working directory to /app
+# Set the working directory
 WORKDIR /app
 
-# Copy the environment.yml file into the working directory
-COPY environment.yml .
+# Copy the environment.yml file to the container
+COPY environment.yml ./
 
 # Create the Conda environment
 RUN conda env create -f environment.yml
 
 # Activate the Conda environment
-RUN echo "conda activate smart-backend" >> ~/.bashrc
-ENV PATH /opt/conda/envs/smart-backend/bin:$PATH
+RUN echo "source activate smart_env" > ~/.bashrc
 
-# Copy the current directory contents into the container at /app
-COPY . /app
+# Make sure the environment is activated when running the container
+ENV PATH /opt/conda/envs/smart_env/bin:$PATH
 
-# Expose the port your app will run on (if applicable)
+# Copy your project files (if necessary)
+COPY . .
+
+# Expose any ports your app needs (optional)
 EXPOSE 5000
 
-# Start the application using the waitress-serve command
-CMD ["waitress-serve", "--call", "server:smart_backend"]
+# Define the command to run your app (optional)
+CMD ["waitress-serve","--call", "server:smart_backend"]

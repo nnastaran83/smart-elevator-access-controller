@@ -16,7 +16,7 @@ npm install
 Build the docker file:
 
 ```bash
-docker build -t smart-frontend .\frontend
+docker build -t smart-frontend .
 ```
 
 To check Docker Image, execute:
