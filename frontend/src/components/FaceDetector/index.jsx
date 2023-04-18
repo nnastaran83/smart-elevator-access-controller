@@ -1,7 +1,7 @@
 import React, {useEffect, useRef, useState} from 'react';
 import axios from 'axios';
 import Eye from "./Eye";
-import '../styles/FaceDetection.css';
+import '../../styles/FaceDetector.css';
 
 const FaceDetector = () => {
     const videoRef = useRef(null);

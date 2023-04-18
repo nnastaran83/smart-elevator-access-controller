@@ -1,9 +1,8 @@
 import React, {useEffect, useState} from 'react';
-import {BrowserRouter as Router, Route, Routes, Link} from 'react-router-dom';
+import {BrowserRouter as Router, Route, Routes, Link, useNavigate} from 'react-router-dom';
 import './styles/App.scss';
-import FaceDetector from "./components/FaceDetector.jsx";
+import FaceDetector from "./components/FaceDetector";
 import ContactList from "./components/ContactList.jsx";
-import NavigationMenu from "./components/NavigationMenu.jsx";
 import VideoCallPopup from "./components/VideoCallPopup.jsx";
 
 
@@ -13,8 +12,18 @@ import VideoCallPopup from "./components/VideoCallPopup.jsx";
  */
 const App = () => {
     const [visibleVideoCall, setVisibleVideoCall] = useState(false);
-    const handleVideoVisibility = () => {
-        setVisibleVideoCall(!visibleVideoCall);
+    const [videoCallLink, setVideoCallLink] = useState(null);
+    const handleVideoVisibility = (e) => {
+        e.preventDefault();
+        new Promise((resolve, reject) => {
+            resolve(setVisibleVideoCall(!visibleVideoCall));
+        }).then(() => {
+            if (visibleVideoCall) {
+                setVideoCallLink(<VideoCallPopup visibility={visibleVideoCall}/>);
+            } else {
+                setVideoCallLink(null);
+            }
+        });
     };
     return (
         <Router>
@@ -25,17 +34,13 @@ const App = () => {
                             <Routes>
                                 <Route path='/' element={<FaceDetector/>}/>
                                 <Route path='/contactlist' element={<ContactList/>}/>
-
-
                             </Routes>
                         </div>
-                        <NavigationMenu/>
+
 
                     </div>
                 </div>
-                {
-                    visibleVideoCall ? <VideoCallPopup visibility={visibleVideoCall}/> : null
-                }
+                {videoCallLink}
 
             </div>
         </Router>
