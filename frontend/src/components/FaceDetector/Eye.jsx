@@ -1,5 +1,5 @@
 import React from 'react';
-import '../styles/Eye.postcss';
+import '../../styles/Eye.postcss';
 
 
 const Eye = () => {

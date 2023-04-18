@@ -12,7 +12,7 @@ const VideoCallPopup = () => {
             <div className="overlay">
                 <div className="inner-popup">
                     <iframe style={{width: "100%", height: "100%", overflowY: "hidden"}}
-                            src="http://localhost:5173/contactlist"/>
+                            src={window.location.protocol + '//' + window.location.host + '/contactlist'}/>
                 </div>
             </div>
         </div>
