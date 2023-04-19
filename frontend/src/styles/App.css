@@ -9,7 +9,7 @@
   font-family: "Poppins", sans-serif;
 }
 
-video {
+#face-recognition-video-cam {
   box-shadow: 0.3rem 0.3rem 0.6rem var(--greyLight-2), -0.2rem -0.2rem 0.5rem var(--white);
 }
 

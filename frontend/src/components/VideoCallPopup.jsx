@@ -1,5 +1,6 @@
 import React, {useEffect, useState} from 'react';
 import '../styles/PopupFrameOverlay.css';
+import VideoCall from "./VideoCall";
 
 /**
  * VideoCallPopup component is used to display a frame for video call.

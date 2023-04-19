@@ -86,6 +86,7 @@ const FaceDetector = () => {
             <div className="circle">
                 <span className="circle__btn">
                     <video
+                        id={"face-recognition-video-cam"}
                         ref={videoRef}
                         autoPlay
                         onPlay={detectFace}
