@@ -18,9 +18,12 @@ const App = () => {
     const [videoCallLink, setVideoCallLink] = useState(null);
 
     const handleVideoVisibility = () => {
+        if (location.href.includes('videocall')) {
+            return;
+        }
         setVideoCallLink(videoCallLink ? null : <VideoCallPopup/>);
     };
- 
+
     return (
         <Router>
             <div className="App" onClick={handleVideoVisibility}>
