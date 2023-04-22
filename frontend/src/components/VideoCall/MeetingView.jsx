@@ -7,7 +7,7 @@ import ParticipantView from "./ParticipantView.jsx";
  * MeetingView component is used to render all the participants in the meeting
  * @param props
  * @returns {JSX.Element}
- * @constructor
+ * @component
  */
 function MeetingView(props) {
     const [joined, setJoined] = useState(null);

@@ -1,6 +1,10 @@
 import React, {useEffect, useState} from "react";
 
-
+/**
+ * ContactList component is used to display a list of contacts.
+ * @returns {JSX.Element}
+ * @component
+ */
 const ContactList = () => {
 
     const [facetimeAddress, setFacetimeAddress] = useState("");

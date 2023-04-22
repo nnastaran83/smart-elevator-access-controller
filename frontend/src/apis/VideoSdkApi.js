@@ -1,8 +1,6 @@
-/**
- * Auth token we will use to generate a meeting and connect to it
- * @type {string}
- */
 export const authToken = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJhcGlrZXkiOiIzN2U0ZThhMC1hYjk2LTQyNTUtOGQ2Zi1kNzc1MTU5NzI0MzYiLCJwZXJtaXNzaW9ucyI6WyJhbGxvd19qb2luIl0sImlhdCI6MTY4MTg1NTExNywiZXhwIjoxODM5NjQzMTE3fQ.B28RA4aVuEnYcoDuzqj1JmTCULG6eaMV1IswmIDnE14";
+
+
 /**
  * API call to create meeting
  * @param token

@@ -4,10 +4,9 @@ A face recognition system for elevator
 
 ## Installation
 
-Open the terminal in the project's directory:
+Open the terminal in the frontend directory:
 
 ```bash
-cd frontend
 npm install
 ```
 

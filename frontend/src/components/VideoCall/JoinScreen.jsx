@@ -4,7 +4,7 @@ import React, {useState} from "react";
  * JoinScreen component is used to display a screen for joining a meeting.
  * @param getMeetingAndToken
  * @returns {JSX.Element}
- * @constructor
+ * @component
  */
 function JoinScreen({getMeetingAndToken}) {
     const [meetingId, setMeetingId] = useState(null);

@@ -6,7 +6,7 @@ import ReactPlayer from "react-player";
  * ParticipantView component is used to render the participant's video and audio
  * @param participantId
  * @returns {JSX.Element}
- * @constructor
+ * @component
  */
 function ParticipantView({participantId}) {
     const micRef = useRef(null);

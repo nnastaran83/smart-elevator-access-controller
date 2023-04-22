@@ -1,0 +1,29 @@
+.video-container {
+    height: fit-content;
+    display: flex;
+    align-items: end;
+    margin: auto;
+
+
+}
+
+#face-recognition-video-cam {
+    width: 450px;
+    height: 450px;
+    border-radius: 50%;
+    object-fit: cover;
+    transform: scaleX(-1);
+    margin: 50px;
+
+
+}
+
+canvas {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 450px;
+    height: 450px;
+    transform: scaleX(-1);
+
+}
