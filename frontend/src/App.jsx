@@ -11,7 +11,7 @@ import videoCall from "./components/VideoCall";
  * App component is the main component of the application
  * and is used to render the application into the root.
  * @returns {JSX.Element}
- * @constructor
+ * @component
  *
  */
 const App = () => {

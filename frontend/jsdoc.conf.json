@@ -1,0 +1,25 @@
+{
+  "source": {
+    "include": [
+      "./src"
+    ],
+    "includePattern": ".+\\.js(doc|x)?$",
+    "excludePattern": "(^|\\/|\\\\)_"
+  },
+  "plugins": [],
+  "opts": {
+    "recurse": true,
+    "destination": "./docs/",
+    "readme": "README.md"
+  },
+  "templates": {
+    "default": {
+      "staticFiles": {
+        "include": [
+          "./index.html",
+          "./src/styles"
+        ]
+      }
+    }
+  }
+}

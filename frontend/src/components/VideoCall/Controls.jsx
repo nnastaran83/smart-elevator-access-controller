@@ -4,7 +4,7 @@ import React from "react";
 /**
  * Controls component is used to control the video call room, like leave, toggleMic, toggleWebcam
  * @returns {JSX.Element}
- * @constructor
+ * @component
  */
 function Controls() {
     const {leave, toggleMic, toggleWebcam} = useMeeting();

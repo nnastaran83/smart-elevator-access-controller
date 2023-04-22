@@ -1,7 +1,11 @@
 import React from 'react';
 import '../../styles/Eye.postcss';
 
-
+/**
+ * Eye component is used to render the eye of the face detector.
+ * @returns {JSX.Element}
+ * @component
+ */
 const Eye = () => {
 
     return (

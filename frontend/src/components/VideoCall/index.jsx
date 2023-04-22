@@ -12,7 +12,7 @@ import MeetingView from "./MeetingView.jsx";
 /**
  * VideoCall component is the main component of the video call
  * @returns {JSX.Element}
- * @constructor
+ * @component
  */
 function VideoCall() {
     const [meetingId, setMeetingId] = useState(null);
