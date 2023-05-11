@@ -78,10 +78,7 @@ function VideoCallPage() {
 
         // initalizing the remote server to the mediastream
         remoteStream = new MediaStream();
-        // pc.addEventListener("track", async (event) => {
-        //   const [remoteStream] = event.streams;
-        //   remoteVideo.current.srcObject = remoteStream;
-        // });
+
         remoteVideo.current.srcObject = remoteStream;
 
         pc.ontrack = (event) => {
@@ -99,15 +96,17 @@ function VideoCallPage() {
     };
 
     /**
-     * Handles the click event of the answer button
+     * Handles the click event of the call button
+     * @param calleeId - uid of the user to call - the uid is the UserUID of the user who signed up in the app in firebase
      * @returns {Promise<void>}
      */
-    const handleCallButtonClick = async () => {
+    const startCallWithUser = async (calleeId) => {
         console.log("Call Button Clicked");
 
         // referencing model_firebase collections
         //const callDoc = db.collection("calls").doc();
-        const callDoc = doc(collection(db, "calls")); // Main collection in firestore
+        //TODO: change the uid to the uid of the user to call
+        const callDoc = doc(collection(db, "calls"), "LS0w3t6T5ZbMVG2IlXghC6HdGti2"); // Main collection in firestore
         const offerCandidates = collection(callDoc, "offerCandidates"); //Sub collection of callDoc
         const answerCandidiates = collection(callDoc, "answerCandidates"); //Sub collection of callDoc
 
@@ -219,7 +218,7 @@ function VideoCallPage() {
                 <Grid item xs={12} sx={{textAlign: "center"}}>
                     <button
                         id="callButton"
-                        onClick={handleCallButtonClick}
+                        onClick={startCallWithUser}
                         ref={callButton}
                         disabled={!callButtonIsEnabled}
                     >
