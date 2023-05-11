@@ -1,6 +1,6 @@
 import React, {useEffect, useState} from 'react';
-import '../styles/PopupFrameOverlay.css';
-import VideoCall from "./VideoCall";
+import '../../styles/PopupFrameOverlay.css';
+import VideoCallPage from "./VideoCallPage.jsx";
 
 /**
  * VideoCallPopup component is used to display a frame for video call.
@@ -13,10 +13,8 @@ const VideoCallPopup = () => {
             <div className="overlay">
                 <div className="inner-popup">
                     {/*<iframe style={{width: "100%", height: "100%", overflowY: "hidden"}}
-                            src={window.location.protocol + '//' + window.location.host + '/videocall'}/>
-                            */}
-                    <iframe style={{width: "100%", height: "100%", overflowY: "hidden"}}
-                            src={'https://smart-video-call.web.app/'} allow={"camera; microphone"}/>
+                            src={'https://smart-video-call.web.app/'} allow={"camera; microphone"}/>*/}
+                    <VideoCallPage/>
                 </div>
             </div>
         </div>
