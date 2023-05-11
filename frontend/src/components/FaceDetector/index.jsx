@@ -80,7 +80,6 @@ const FaceDetector = () => {
 
         const data = await response.json();
         console.log(data.name);
-
         setTimeout(() => detectFace(), 1000);
     };
 
