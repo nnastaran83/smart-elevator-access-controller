@@ -196,8 +196,8 @@ function VideoCallPage() {
     return (
         <Box className={"webrtc-video-calling-app"} sx={{height: "100%", width: "100%"}}
              onClick={(event) => event.stopPropagation()}>
-            <Grid container>
-                <Grid item xs={12} sm={6} md={6} lg={6} sx={{textAlign: "center"}}>
+            <Grid container style={{height: "100%", margin: 0}}>
+                <Grid item xs={12} sm={6} md={6} lg={6} sx={{textAlign: "center", maxHeight: "50%"}}>
                     <video
                         id="webcamVideo"
                         autoPlay
@@ -212,48 +212,31 @@ function VideoCallPage() {
                         playsInline
                         ref={remoteVideo}
                     ></video>
-
-
                 </Grid>
-                <Grid item xs={12} sx={{textAlign: "center"}}>
-                    <button
-                        id="callButton"
-                        onClick={startCallWithUser}
-                        ref={callButton}
-                        disabled={!callButtonIsEnabled}
-                    >
-                        Create Call (offer)
-                    </button>
-                </Grid>
-                <Grid item xs={12} sx={{textAlign: "center"}}>
-                    <div>
-                        <p>Answer the call from a different browser window or device</p>
-
-                        <input
-                            id="callInput"
-                            ref={callInput}
-                            defaultValue={callInputValue}
-                        />
+                <Grid container style={{position: "fixed", bottom: 0, marginBottom: "1rem"}}>
+                    <Grid item xs={6} sx={{textAlign: "center"}}>
                         <button
-                            id="answerButton"
-                            onClick={handleAnswerButtonClick}
-                            disabled={!answerButtonIsEnabled}
-                            ref={answerButton}
+                            id="callButton"
+                            onClick={startCallWithUser}
+                            ref={callButton}
+                            disabled={!callButtonIsEnabled}
                         >
-                            Answer
+                            Create Call (offer)
                         </button>
-
-                        <h2>4. Hangup</h2>
-
-                        <button
-                            id="hangupButton"
-                            disabled={!hangupButtonIsEnabled}
-                            ref={hangupButton}
-                        >
-                            Hangup
-                        </button>
-                    </div>
+                    </Grid>
+                    <Grid item xs={6} sx={{textAlign: "center"}}>
+                        <div>
+                            <button
+                                id="hangupButton"
+                                disabled={!hangupButtonIsEnabled}
+                                ref={hangupButton}
+                            >
+                                Hangup
+                            </button>
+                        </div>
+                    </Grid>
                 </Grid>
+
             </Grid>
         </Box>
     );
