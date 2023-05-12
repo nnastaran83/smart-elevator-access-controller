@@ -2,6 +2,7 @@ import React, {useEffect, useRef, useState} from 'react';
 import axios from 'axios';
 import Eye from "./Eye";
 import '../../styles/FaceDetector.css';
+import {Box} from "@mui/material";
 
 /**
  * FaceDetector component is used to detect faces in the video stream and send the video frame data to the Flask backend.
@@ -84,9 +85,7 @@ const FaceDetector = () => {
     };
 
     return (
-
-        <div className="ui basic center aligned segment video-container"
-             style={{margin: "auto", width: "fit-content", maxWidth: "600px"}}>
+        <Box>
             <div className="circle">
                 <span className="circle__btn">
                     <video
@@ -106,7 +105,8 @@ const FaceDetector = () => {
 
             </div>
 
-        </div>
+
+        </Box>
     );
 };
 
