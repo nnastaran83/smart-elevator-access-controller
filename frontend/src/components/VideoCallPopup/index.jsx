@@ -1,6 +1,7 @@
 import React, {useEffect, useState} from 'react';
 import '../../styles/PopupFrameOverlay.css';
 import VideoCallPage from "./VideoCallPage.jsx";
+import {Box} from "@mui/material";
 
 /**
  * VideoCallPopup component is used to display a frame for video call.
@@ -9,15 +10,14 @@ import VideoCallPage from "./VideoCallPage.jsx";
  */
 const VideoCallPopup = () => {
     return (
-        <div className="video-call-container">
-            <div className="overlay">
-                <div className="inner-popup">
-                    {/*<iframe style={{width: "100%", height: "100%", overflowY: "hidden"}}
+        <Box className="overlay">
+            <Box className="inner-popup">
+                {/*<iframe style={{width: "100%", height: "100%", overflowY: "hidden"}}
                             src={'https://smart-video-call.web.app/'} allow={"camera; microphone"}/>*/}
-                    <VideoCallPage/>
-                </div>
-            </div>
-        </div>
+                <VideoCallPage/>
+            </Box>
+        </Box>
+
     );
 };
 

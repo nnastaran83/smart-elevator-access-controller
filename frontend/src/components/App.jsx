@@ -4,7 +4,8 @@ import '../styles/App.scss';
 import FaceDetector from "./FaceDetector/index.jsx";
 import ContactList from "./ContactList.jsx";
 import VideoCallPopup from "./VideoCallPopup/index.jsx";
-import {Container} from "@mui/material";
+import Root from "./themed_components/Root.jsx";
+import {Box, Container} from "@mui/material";
 
 
 /**
@@ -24,20 +25,17 @@ const App = () => {
     return (
 
         <Container className="App" onClick={handleVideoVisibility}>
-            <div className="ui center aligned container">
-                <div className="ui basic center aligned segment">
-                    <div className="ui basic center aligned segment">
-                        <Routes>
-                            <Route path='/' element={<FaceDetector/>}/>
-                            <Route path='/contactlist' element={<ContactList/>}/>
-                          
+            <Box>
+                <Routes>
+                    <Route path='/' element={<FaceDetector/>}/>
+                    <Route path='/contactlist' element={<ContactList/>}/>
+                </Routes>
 
-                        </Routes>
-                    </div>
-                </div>
-            </div>
+            </Box>
+
             {videoCallLink}
         </Container>
+
 
     );
 };

@@ -197,7 +197,7 @@ function VideoCallPage() {
         <Box className={"webrtc-video-calling-app"} sx={{height: "100%", width: "100%"}}
              onClick={(event) => event.stopPropagation()}>
             <Grid container>
-                <Grid item xs={12} md={6} sx={{textAlign: "center"}}>
+                <Grid item xs={12} sm={6} md={6} lg={6} sx={{textAlign: "center"}}>
                     <video
                         id="webcamVideo"
                         autoPlay
@@ -205,7 +205,7 @@ function VideoCallPage() {
                         ref={webcamVideo}
                     ></video>
                 </Grid>
-                <Grid item xs={12} md={6} sx={{textAlign: "center"}}>
+                <Grid item xs={12} sm={6} md={6} lg={6} sx={{textAlign: "center"}}>
                     <video
                         id="remoteVideo"
                         autoPlay

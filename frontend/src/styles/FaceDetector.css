@@ -8,12 +8,9 @@
 }
 
 #face-recognition-video-cam {
-    width: 450px;
-    height: 450px;
     border-radius: 50%;
     object-fit: cover;
     transform: scaleX(-1);
-    margin: 50px;
 
 
 }

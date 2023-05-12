@@ -22,8 +22,8 @@
     left: 50%;
     transform: translate(-50%, -50%);
     background-color: white;
-    height: 90vh;
-    width: 55vw;
+    height: 90%;
+    width: 55%;
     z-index: 1000;
     overflow-y: hidden;
 }
@@ -35,3 +35,5 @@
 
     }
 }
+
+
