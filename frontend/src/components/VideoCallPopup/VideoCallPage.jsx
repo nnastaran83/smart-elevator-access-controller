@@ -1,5 +1,5 @@
 import React from "react";
-import {Box, Grid} from "@mui/material";
+import {Box, Grid, styled} from "@mui/material";
 import {useEffect, useRef, useState} from "react";
 import {db} from "../../firebase_module";
 import "../../styles/VideoCallPage.css";
@@ -12,6 +12,8 @@ import {
     updateDoc,
     addDoc,
 } from "firebase/firestore";
+import StyledGridItem from "../themed_components/StyledGridItem.jsx";
+
 
 /**
  * Video Calling Page using WebRTC
@@ -197,22 +199,23 @@ function VideoCallPage() {
         <Box className={"webrtc-video-calling-app"} sx={{height: "100%", width: "100%"}}
              onClick={(event) => event.stopPropagation()}>
             <Grid container style={{height: "100%", margin: 0}}>
-                <Grid item xs={12} sm={6} md={6} lg={6} sx={{textAlign: "center", maxHeight: "50%"}}>
+                <StyledGridItem item xs={12} sm={12} md={6} lg={6} sx={{textAlign: "center"}}>
                     <video
                         id="webcamVideo"
                         autoPlay
                         playsInline
                         ref={webcamVideo}
                     ></video>
-                </Grid>
-                <Grid item xs={12} sm={6} md={6} lg={6} sx={{textAlign: "center"}}>
+                </StyledGridItem>
+                <StyledGridItem item xs={12} sm={12} md={6} lg={6} sx={{textAlign: "center"}}>
                     <video
                         id="remoteVideo"
                         autoPlay
                         playsInline
                         ref={remoteVideo}
                     ></video>
-                </Grid>
+                </StyledGridItem>
+
                 <Grid container style={{position: "fixed", bottom: 0, marginBottom: "1rem"}}>
                     <Grid item xs={6} sx={{textAlign: "center"}}>
                         <button
@@ -241,5 +244,6 @@ function VideoCallPage() {
         </Box>
     );
 }
+
 
 export default VideoCallPage;
