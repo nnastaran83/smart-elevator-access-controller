@@ -1,5 +1,5 @@
 import React from "react";
-import {Box, Grid} from "@mui/material";
+import {Box, Button, Grid} from "@mui/material";
 import {useEffect, useRef, useState} from "react";
 import {db} from "../../firebase_module";
 import "../../styles/VideoCallPage.css";
@@ -197,7 +197,7 @@ function VideoCallPage() {
         <Box className={"webrtc-video-calling-app"} sx={{height: "100%", width: "100%"}}
              onClick={(event) => event.stopPropagation()}>
             <Grid container style={{height: "100%", margin: 0}}>
-                <Grid item xs={12} sm={6} md={6} lg={6} sx={{textAlign: "center", maxHeight: "50%"}}>
+                <Grid item xs={12} sm={6} md={6} lg={6} sx={{textAlign: "center"}}>
                     <video
                         id="webcamVideo"
                         autoPlay
@@ -213,26 +213,26 @@ function VideoCallPage() {
                         ref={remoteVideo}
                     ></video>
                 </Grid>
-                <Grid container style={{position: "fixed", bottom: 0, marginBottom: "1rem"}}>
-                    <Grid item xs={6} sx={{textAlign: "center"}}>
-                        <button
+                <Grid container columnSpacing={10} style={{position: "fixed", bottom: 0, marginBottom: "1rem"}}>
+                    <Grid item xs={6} sx={{textAlign: "right"}}>
+                        <Button
                             id="callButton"
                             onClick={startCallWithUser}
                             ref={callButton}
                             disabled={!callButtonIsEnabled}
-                        >
-                            Create Call (offer)
-                        </button>
+                            style={{
+                                backgroundColor: `#0DE052`
+                            }} variant="contained">JOIN</Button>
                     </Grid>
-                    <Grid item xs={6} sx={{textAlign: "center"}}>
+                    <Grid item xs={6} sx={{textAlign: "left"}}>
                         <div>
-                            <button
+                            <Button
                                 id="hangupButton"
                                 disabled={!hangupButtonIsEnabled}
                                 ref={hangupButton}
-                            >
-                                Hangup
-                            </button>
+                                style={{
+                                    backgroundColor: `#dd2c00`
+                                }} variant="contained">X</Button>
                         </div>
                     </Grid>
                 </Grid>

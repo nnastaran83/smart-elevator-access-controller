@@ -12,8 +12,6 @@ const VideoCallPopup = () => {
     return (
         <Box className="overlay">
             <Box className="inner-popup">
-                {/*<iframe style={{width: "100%", height: "100%", overflowY: "hidden"}}
-                            src={'https://smart-video-call.web.app/'} allow={"camera; microphone"}/>*/}
                 <VideoCallPage/>
             </Box>
         </Box>

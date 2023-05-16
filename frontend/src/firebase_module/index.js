@@ -1,11 +1,7 @@
-import { initializeApp } from "firebase/app";
-import { getFirestore, collection, getDocs } from "firebase/firestore";
+import {initializeApp} from "firebase/app";
+import {getFirestore, collection, getDocs} from "firebase/firestore";
 import {
-  getAuth,
-  createUserWithEmailAndPassword,
-  signInWithEmailAndPassword,
-  onAuthStateChanged,
-  signOut,
+    getAuth,
 } from "firebase/auth";
 
 /**
@@ -15,13 +11,13 @@ import {
  * @type {{storageBucket: string, apiKey: string, messagingSenderId: string, appId: string, projectId: string, measurementId: string, authDomain: string}}
  */
 const firebaseConfig = {
-  apiKey: "AIzaSyBWLr7DrODHLbB2Zvb5o6ANvBAws0MH8_8",
-  authDomain: "smart-4e774.firebaseapp.com",
-  projectId: "smart-4e774",
-  storageBucket: "smart-4e774.appspot.com",
-  messagingSenderId: "267084890357",
-  appId: "1:267084890357:web:6aa5d0b170c3dcb44f45bc",
-  measurementId: "G-KQTK3EWGST",
+    apiKey: import.meta.env.VITE_APP_FIREBASE_API_KEY,
+    authDomain: import.meta.env.VITE_APP_FIREBASE_AUTH_DOMAIN,
+    projectId: import.meta.env.VITE_APP_FIREBASE_PROJECT_ID,
+    storageBucket: import.meta.env.VITE_APP_FIREBASE_STORAGE_BUCKET,
+    messagingSenderId: import.meta.env.VITE_APP_FIREBASE_MESSAGING_SENDER_ID,
+    appId: import.meta.env.VITE_APP_FIREBASE_APP_ID,
+    measurementId: import.meta.env.VITE_APP_FIREBASE_MEASUREMENT_ID
 };
 
 // Initialize Firebase
@@ -40,4 +36,4 @@ const auth = getAuth(app);
  * @param password
  */
 
-export { db, auth };
+export {db, auth};
