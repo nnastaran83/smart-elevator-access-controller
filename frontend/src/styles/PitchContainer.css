@@ -1,0 +1,82 @@
+:root {
+    --r: 120;
+    --range: calc(var(--r) * 1deg);
+    --speed: calc(var(--r) * 33ms);
+    --whole-bg-color: #E4EBF5;
+    --out-range-bg-color: #0001;
+    --pitch-dot-color: white;
+    --pitch-dot-outline-color: #888;
+    --pitch-line-color: #bbb;
+    --pitch-line-color-2: #bbb;
+    --padding: 0vmin;
+}
+
+
+.whole {
+    --content-size: calc(100% - var(--padding));
+    width: clamp(200px, 80vmin, 800px);
+    height: clamp(200px, 80vmin, 800px);
+    padding: var(--padding);
+    position: relative;
+    border-radius: 100%;
+    background: var(--whole-bg-color);
+}
+
+.whole::after {
+    --deg-to-cent: calc(100% / (360 / var(--r)));
+    content: "";
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: var(--content-size);
+    height: var(--content-size);
+    transform: translate(-50%, -50%);
+    border-radius: 100%;
+    background: conic-gradient(
+            from calc(var(--range) * 0.5),
+            var(--out-range-bg-color) 0 calc(100% - var(--deg-to-cent)),
+            transparent calc(100% - var(--deg-to-cent)) 100%
+    );
+}
+
+.pitch {
+    position: absolute;
+    z-index: 1;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    border: 1px solid var(--pitch-line-color);
+    border-radius: 100%;
+
+}
+
+.pitch::after {
+    content: "";
+    position: absolute;
+    top: 0;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 5px;
+    height: 5px;
+    background: var(--pitch-dot-color);
+    border: 1px solid var(--pitch-dot-outline-color);
+    border-radius: 100%;
+}
+
+@keyframes swing {
+    from, to, 24.25%, 28%, 74.25%, 78% {
+        border: 1px solid var(--pitch-line-color);
+        box-shadow: none;
+    }
+    25%, 75% {
+        border: 1px solid var(--pitch-line-color-2);
+        box-shadow: inset 0 0 0 .5vmin var(--pitch-line-color-2),
+        0 0 0 .5vmin var(--pitch-line-color-2);
+    }
+    25% {
+        transform: translate(-50%, -50%) rotate(calc(var(--range) / 2));
+    }
+    75% {
+        transform: translate(-50%, -50%) rotate(calc(var(--range) / -2));
+    }
+}
