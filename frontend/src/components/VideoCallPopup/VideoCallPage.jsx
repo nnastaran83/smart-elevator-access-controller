@@ -60,9 +60,7 @@ function VideoCallPage() {
      * @returns {Promise<void>}
      */
     const startWebCam = async () => {
-        console.log("Webcam Button Clicked");
         // setting local stream to the video from our camera
-
         localStream = await navigator.mediaDevices.getUserMedia({
             video: true,
             audio: true,
@@ -94,6 +92,7 @@ function VideoCallPage() {
         setAnswerButtonIsEnabled(true);
         setWebcamButtonIsEnabled(false);
     };
+
 
     /**
      * Handles the click event of the call button
@@ -129,6 +128,7 @@ function VideoCallPage() {
 
         //await callDoc.set({ offer });
         await setDoc(callDoc, {offer}); // setting the offer to the callDoc
+      
 
         // listening to changes in firestore and update the streams accordingly
         onSnapshot(callDoc, (snapshot) => {
@@ -152,51 +152,11 @@ function VideoCallPage() {
         setHangupButtonIsEnabled(true);
     };
 
-    const handleAnswerButtonClick = async () => {
-        const callId = callInput.current.value;
-
-        // getting the data for this particular call
-        const callDoc = doc(collection(db, "calls"), callId);
-        const answerCandidates = collection(callDoc, "answerCandidates");
-        const offerCandidates = collection(callDoc, "offerCandidates");
-
-        // here we listen to the changes and add it to the answerCandidates
-        pc.onicecandidate = (event) => {
-            event.candidate && addDoc(answerCandidates, event.candidate.toJSON());
-        };
-
-        const callData = (await getDoc(callDoc)).data();
-
-        // setting the remote video with offerDescription
-        const offerDescription = callData.offer;
-        await pc.setRemoteDescription(new RTCSessionDescription(offerDescription));
-
-        // setting the local video as the answer
-        const answerDescription = await pc.createAnswer();
-        await pc.setLocalDescription(new RTCSessionDescription(answerDescription));
-
-        // answer config
-        const answer = {
-            type: answerDescription.type,
-            sdp: answerDescription.sdp,
-        };
-
-        await updateDoc(callDoc, {answer});
-
-        onSnapshot(offerCandidates, (snapshot) => {
-            snapshot.docChanges().forEach((change) => {
-                if (change.type === "added") {
-                    let data = change.doc.data();
-                    pc.addIceCandidate(new RTCIceCandidate(data));
-                }
-            });
-        });
-    };
 
     return (
         <Box className={"webrtc-video-calling-app"} sx={{height: "100%", width: "100%"}}
              onClick={(event) => event.stopPropagation()}>
-            <Grid container style={{height: "100%", margin: 0}}>
+            <Grid container style={{margin: 0, padding: 0}}>
                 <Grid item xs={12} sm={6} md={6} lg={6} sx={{textAlign: "center"}}>
                     <video
                         id="webcamVideo"
@@ -221,18 +181,18 @@ function VideoCallPage() {
                             ref={callButton}
                             disabled={!callButtonIsEnabled}
                             style={{
-                                backgroundColor: `#0DE052`
+                                backgroundColor: "#00DE00"
                             }} variant="contained">JOIN</Button>
                     </Grid>
                     <Grid item xs={6} sx={{textAlign: "left"}}>
                         <div>
                             <Button
                                 id="hangupButton"
-                                disabled={!hangupButtonIsEnabled}
                                 ref={hangupButton}
                                 style={{
-                                    backgroundColor: `#dd2c00`
-                                }} variant="contained">X</Button>
+                                    backgroundColor: `#FF0000`
+                                }}
+                                variant="contained">X</Button>
                         </div>
                     </Grid>
                 </Grid>

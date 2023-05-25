@@ -98,8 +98,7 @@ const FaceDetector = () => {
 
                     />
                     <canvas ref={canvasRef}/>
- <PitchContainer/>
-                    {/*<Eye/>*/}
+                     <PitchContainer/>
                 </span>
 
                 <span className="circle__back-1"></span>
