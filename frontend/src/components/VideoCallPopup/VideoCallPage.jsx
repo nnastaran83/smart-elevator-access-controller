@@ -1,5 +1,5 @@
 import React from "react";
-import {Box, Button, Grid} from "@mui/material";
+import {Box, Button, Grid, styled} from "@mui/material";
 import {useEffect, useRef, useState} from "react";
 import {db} from "../../firebase_module";
 import "../../styles/VideoCallPage.css";
@@ -8,10 +8,31 @@ import {
     doc,
     setDoc,
     onSnapshot,
-    getDoc,
-    updateDoc,
     addDoc,
 } from "firebase/firestore";
+
+const VideoContainer = styled(Box)(({theme}) => ({
+    width: "100%",
+    textAlign: "center",
+
+    [theme.breakpoints.up('md')]: {
+        height: "100%",
+        maxHeight: "100%",
+    },
+    [theme.breakpoints.down('md')]: {
+        height: "45vh",
+        maxHeight: "45vh",
+    },
+}));
+
+const VideoItem = styled(Box)(({theme}) => ({
+    objectFit: "cover",
+    width: "100%",
+    height: "100vh",
+    maxHeight: "100%",
+    maxWidth: "100%",
+    backgroundColor: "#0A0A0A",
+}));
 
 /**
  * Video Calling Page using WebRTC
@@ -19,18 +40,11 @@ import {
  * @constructor
  */
 function VideoCallPage() {
-    const webcamButton = useRef(null);
     const webcamVideo = useRef(null);
     const callButton = useRef(null);
-    const callInput = useRef(null);
-    const answerButton = useRef(null);
     const remoteVideo = useRef(null);
     const hangupButton = useRef(null);
     const [callButtonIsEnabled, setCallButtonIsEnabled] = useState(false);
-    const [answerButtonIsEnabled, setAnswerButtonIsEnabled] = useState(false);
-    const [webcamButtonIsEnabled, setWebcamButtonIsEnabled] = useState(true);
-    const [hangupButtonIsEnabled, setHangupButtonIsEnabled] = useState(false);
-    const [callInputValue, setCallInputValue] = useState("");
 
     let localStream = null;
     let remoteStream = null;
@@ -74,9 +88,8 @@ function VideoCallPage() {
         // displaying the video data from the stream to the webpage
         webcamVideo.current.srcObject = localStream;
 
-        // initalizing the remote server to the mediastream
+        // initializing the remote server to the mediastream
         remoteStream = new MediaStream();
-
         remoteVideo.current.srcObject = remoteStream;
 
         pc.ontrack = (event) => {
@@ -89,8 +102,6 @@ function VideoCallPage() {
 
         // enabling and disabling interface based on the current condition
         setCallButtonIsEnabled(true);
-        setAnswerButtonIsEnabled(true);
-        setWebcamButtonIsEnabled(false);
     };
 
     /**
@@ -111,7 +122,6 @@ function VideoCallPage() {
         const offerCandidates = collection(callDoc, "offerCandidates"); //Sub collection of callDoc
         const answerCandidiates = collection(callDoc, "answerCandidates"); //Sub collection of callDoc
 
-        setCallInputValue(callDoc.id); // setting the input value to the calldoc id
 
         // get candidates for caller and save to db
         pc.onicecandidate = (event) => {
@@ -159,22 +169,27 @@ function VideoCallPage() {
             sx={{height: "100%", width: "100%"}}
             onClick={(event) => event.stopPropagation()}
         >
-            <Grid container style={{margin: 0, padding: 0}}>
-                <Grid item xs={12} sm={6} md={6} lg={6} sx={{textAlign: "center"}}>
-                    <video
-                        id="webcamVideo"
-                        autoPlay
-                        playsInline
-                        ref={webcamVideo}
-                    ></video>
+            <Grid container
+                  style={{height: "100%", maxHeight: "100%", margin: 0, padding: 0}}>
+                <Grid item xs={12} sm={12} md={6} lg={6} sx={{textAlign: "center"}}>
+                    <VideoContainer>
+                        <VideoItem component={"video"}
+                                   id="webcamVideo"
+                                   autoPlay
+                                   playsInline
+                                   ref={webcamVideo}
+                        ></VideoItem>
+                    </VideoContainer>
                 </Grid>
-                <Grid item xs={12} sm={6} md={6} lg={6} sx={{textAlign: "center"}}>
-                    <video
-                        id="remoteVideo"
-                        autoPlay
-                        playsInline
-                        ref={remoteVideo}
-                    ></video>
+                <Grid item xs={12} sm={12} md={6} lg={6} sx={{textAlign: "center"}}>
+                    <VideoContainer>
+                        <VideoItem component={"video"}
+                                   id="remoteVideo"
+                                   autoPlay
+                                   playsInline
+                                   ref={remoteVideo}
+                        ></VideoItem>
+                    </VideoContainer>
                 </Grid>
                 <Grid
                     container
