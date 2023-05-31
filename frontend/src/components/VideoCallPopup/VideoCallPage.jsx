@@ -2,6 +2,7 @@ import React from "react";
 import {Box, Button, Grid, styled} from "@mui/material";
 import {useEffect, useRef, useState} from "react";
 import {db} from "../../firebase_module";
+import VideoContainer from "./VideoContainer.jsx";
 import "../../styles/VideoCallPage.css";
 import {
     collection,
@@ -11,19 +12,6 @@ import {
     addDoc,
 } from "firebase/firestore";
 
-const VideoContainer = styled(Box)(({theme}) => ({
-    width: "100%",
-    textAlign: "center",
-
-    [theme.breakpoints.up('md')]: {
-        height: "100%",
-        maxHeight: "100%",
-    },
-    [theme.breakpoints.down('md')]: {
-        height: "45vh",
-        maxHeight: "45vh",
-    },
-}));
 
 const VideoItem = styled(Box)(({theme}) => ({
     objectFit: "cover",

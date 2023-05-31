@@ -4,15 +4,12 @@
     align-items: end;
     margin: auto;
 
-
 }
 
 #face-recognition-video-cam {
     border-radius: 50%;
     object-fit: cover;
     transform: scaleX(-1);
-
-
 }
 
 canvas {

@@ -4,68 +4,6 @@
   justify-content: center;
 }
 
-#face-recognition-video-cam {
-  box-shadow: 0.3rem 0.3rem 0.6rem var(--greyLight-2), -0.2rem -0.2rem 0.5rem var(--white);
-}
-
-/*  NAV-CONTAINER */
-.nav-container {
-  position: sticky;
-  bottom: 1vh;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-}
-
-.segmented-control {
-  width: 50rem;
-  height: 5rem;
-  box-shadow: 0.3rem 0.3rem 0.6rem var(--greyLight-2), -0.2rem -0.2rem 0.5rem var(--white);
-  border-radius: 1rem;
-  display: flex;
-  align-items: center;
-}
-.segmented-control input {
-  display: none;
-}
-.segmented-control > input:checked + label {
-  transition: all 0.5s ease;
-  color: var(--primary);
-}
-.segmented-control__1, .segmented-control__2 {
-  width: 25rem;
-  height: 3.6rem;
-  font-size: 1.4rem;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  cursor: pointer;
-  color: var(--greyDark);
-  transition: all 0.5s ease;
-}
-.segmented-control__1:hover, .segmented-control__2:hover {
-  color: var(--primary);
-}
-.segmented-control__color {
-  position: absolute;
-  height: 3.4rem;
-  width: 23rem;
-  margin-left: 1rem;
-  border-radius: 0.8rem;
-  box-shadow: inset 0.2rem 0.2rem 0.5rem var(--greyLight-2), inset -0.2rem -0.2rem 0.5rem var(--white);
-  pointer-events: none;
-}
-
-#tab-1:checked ~ .segmented-control__color {
-  transform: translateX(0rem);
-  transition: transform 0.3s cubic-bezier(0.645, 0.045, 0.355, 1);
-}
-
-#tab-2:checked ~ .segmented-control__color {
-  transform: translateX(25rem);
-  transition: transform 0.3s cubic-bezier(0.645, 0.045, 0.355, 1);
-}
-
 /*  WAVING CIRCLE */
 .circle {
   justify-self: center;

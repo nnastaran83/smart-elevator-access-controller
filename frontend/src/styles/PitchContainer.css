@@ -1,5 +1,5 @@
 :root {
-    --r: 120;
+    --r: 380;
     --range: calc(var(--r) * 1deg);
     --speed: calc(var(--r) * 33ms);
     --whole-bg-color: #E4EBF5;
@@ -19,7 +19,6 @@
     padding: var(--padding);
     position: relative;
     border-radius: 100%;
-    background: var(--whole-bg-color);
 }
 
 .whole::after {
@@ -51,7 +50,6 @@
 }
 
 .pitch::after {
-    content: "";
     position: absolute;
     top: 0;
     left: 50%;

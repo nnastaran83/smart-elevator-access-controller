@@ -1,9 +1,8 @@
 import React, {useEffect, useRef, useState} from 'react';
-import axios from 'axios';
-import Eye from "./Eye";
-import '../../styles/FaceDetector.css';
-import {Box} from "@mui/material";
-import PitchContainer from "../themed_components/PitchContainer.jsx";
+import {Box, styled} from "@mui/material";
+import PitchContainer from "./PitchContainer.jsx";
+import '../styles/FaceDetector.css';
+
 
 /**
  * FaceDetector component is used to detect faces in the video stream and send the video frame data to the Flask backend.
@@ -100,13 +99,9 @@ const FaceDetector = () => {
                     <canvas ref={canvasRef}/>
                      <PitchContainer/>
                 </span>
-
                 <span className="circle__back-1"></span>
                 <span className="circle__back-2"></span>
-
             </div>
-
-
         </Box>
     );
 };

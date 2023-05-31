@@ -1,11 +1,10 @@
-import React, { useEffect, useMemo, useState } from 'react';
-import { Route, Routes, Link, useNavigate } from 'react-router-dom';
+import React, {useState} from 'react';
+import {Route, Routes} from 'react-router-dom';
 import '../styles/App.scss';
-import FaceDetector from "./FaceDetector/index.jsx";
+import FaceDetector from "./FaceDetector.jsx";
 import ContactList from "./ContactList.jsx";
 import VideoCallPopup from "./VideoCallPopup/index.jsx";
-import Root from "./themed_components/Root.jsx";
-import { Box, Container } from "@mui/material";
+import {Box, Container} from "@mui/material";
 
 
 /**
@@ -20,14 +19,14 @@ const App = () => {
 
 
     const handleVideoVisibility = (event) => {
-        setVideoCallLink(videoCallLink ? null : <VideoCallPopup />);
+        setVideoCallLink(videoCallLink ? null : <VideoCallPopup/>);
         requestPermissionToSendNotification();
 
     };
 
     /**
-* Request permission from user to send notifications
-*/
+     * Request permission from user to send notifications
+     */
     function requestPermissionToSendNotification() {
         console.log("Requesting permission...");
         Notification.requestPermission().then((permission) => {
@@ -39,16 +38,16 @@ const App = () => {
 
     return (
 
-        <Container className="App" onClick={ handleVideoVisibility }>
+        <Container className="App" onClick={handleVideoVisibility}>
             <Box>
                 <Routes>
-                    <Route path='/' element={ <FaceDetector /> } />
-                    <Route path='/contactlist' element={ <ContactList /> } />
+                    <Route path='/' element={<FaceDetector/>}/>
+                    <Route path='/contactlist' element={<ContactList/>}/>
                 </Routes>
 
             </Box>
 
-            { videoCallLink }
+            {videoCallLink}
         </Container>
 
 
