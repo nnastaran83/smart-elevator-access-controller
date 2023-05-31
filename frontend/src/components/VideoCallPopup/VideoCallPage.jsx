@@ -93,7 +93,6 @@ function VideoCallPage() {
         setWebcamButtonIsEnabled(false);
     };
 
-
     /**
      * Handles the click event of the call button
      * @param calleeId - uid of the user to call - the uid is the UserUID of the user who signed up in the app in firebase
@@ -105,7 +104,10 @@ function VideoCallPage() {
         // referencing model_firebase collections
         //const callDoc = db.collection("calls").doc();
         //TODO: change the uid to the uid of the user to call
-        const callDoc = doc(collection(db, "calls"), "LS0w3t6T5ZbMVG2IlXghC6HdGti2"); // Main collection in firestore
+        const callDoc = doc(
+            collection(db, "calls"),
+            "LS0w3t6T5ZbMVG2IlXghC6HdGti2"
+        ); // Main collection in firestore
         const offerCandidates = collection(callDoc, "offerCandidates"); //Sub collection of callDoc
         const answerCandidiates = collection(callDoc, "answerCandidates"); //Sub collection of callDoc
 
@@ -128,7 +130,6 @@ function VideoCallPage() {
 
         //await callDoc.set({ offer });
         await setDoc(callDoc, {offer}); // setting the offer to the callDoc
-      
 
         // listening to changes in firestore and update the streams accordingly
         onSnapshot(callDoc, (snapshot) => {
@@ -152,10 +153,12 @@ function VideoCallPage() {
         setHangupButtonIsEnabled(true);
     };
 
-
     return (
-        <Box className={"webrtc-video-calling-app"} sx={{height: "100%", width: "100%"}}
-             onClick={(event) => event.stopPropagation()}>
+        <Box
+            className={"webrtc-video-calling-app"}
+            sx={{height: "100%", width: "100%"}}
+            onClick={(event) => event.stopPropagation()}
+        >
             <Grid container style={{margin: 0, padding: 0}}>
                 <Grid item xs={12} sm={6} md={6} lg={6} sx={{textAlign: "center"}}>
                     <video
@@ -173,7 +176,11 @@ function VideoCallPage() {
                         ref={remoteVideo}
                     ></video>
                 </Grid>
-                <Grid container columnSpacing={10} style={{position: "fixed", bottom: 0, marginBottom: "1rem"}}>
+                <Grid
+                    container
+                    columnSpacing={10}
+                    style={{position: "fixed", bottom: 0, marginBottom: "1rem"}}
+                >
                     <Grid item xs={6} sx={{textAlign: "right"}}>
                         <Button
                             id="callButton"
@@ -181,8 +188,12 @@ function VideoCallPage() {
                             ref={callButton}
                             disabled={!callButtonIsEnabled}
                             style={{
-                                backgroundColor: "#00DE00"
-                            }} variant="contained">JOIN</Button>
+                                backgroundColor: "#00DE00",
+                            }}
+                            variant="contained"
+                        >
+                            JOIN
+                        </Button>
                     </Grid>
                     <Grid item xs={6} sx={{textAlign: "left"}}>
                         <div>
@@ -190,13 +201,15 @@ function VideoCallPage() {
                                 id="hangupButton"
                                 ref={hangupButton}
                                 style={{
-                                    backgroundColor: `#FF0000`
+                                    backgroundColor: `#FF0000`,
                                 }}
-                                variant="contained">X</Button>
+                                variant="contained"
+                            >
+                                X
+                            </Button>
                         </div>
                     </Grid>
                 </Grid>
-
             </Grid>
         </Box>
     );
