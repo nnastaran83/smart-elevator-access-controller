@@ -25,6 +25,7 @@
     height: 90%;
     width: 55%;
     z-index: 1000;
+    border-radius: 10px;
     overflow-y: hidden;
 }
 

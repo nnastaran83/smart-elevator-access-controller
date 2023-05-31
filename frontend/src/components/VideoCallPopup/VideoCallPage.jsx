@@ -1,5 +1,5 @@
 import React from "react";
-import {Box, Button, Grid} from "@mui/material";
+import {Box, Button, Grid, styled} from "@mui/material";
 import {useEffect, useRef, useState} from "react";
 import {db} from "../../firebase_module";
 import "../../styles/VideoCallPage.css";
@@ -8,10 +8,31 @@ import {
     doc,
     setDoc,
     onSnapshot,
-    getDoc,
-    updateDoc,
     addDoc,
 } from "firebase/firestore";
+
+const VideoContainer = styled(Box)(({theme}) => ({
+    width: "100%",
+    textAlign: "center",
+
+    [theme.breakpoints.up('md')]: {
+        height: "100%",
+        maxHeight: "100%",
+    },
+    [theme.breakpoints.down('md')]: {
+        height: "45vh",
+        maxHeight: "45vh",
+    },
+}));
+
+const VideoItem = styled(Box)(({theme}) => ({
+    objectFit: "cover",
+    width: "100%",
+    height: "100vh",
+    maxHeight: "100%",
+    maxWidth: "100%",
+    backgroundColor: "#0A0A0A",
+}));
 
 /**
  * Video Calling Page using WebRTC
@@ -19,15 +40,11 @@ import {
  * @constructor
  */
 function VideoCallPage() {
-    const webcamButton = useRef(null);
     const webcamVideo = useRef(null);
     const callButton = useRef(null);
-    const callInput = useRef(null);
     const remoteVideo = useRef(null);
     const hangupButton = useRef(null);
     const [callButtonIsEnabled, setCallButtonIsEnabled] = useState(false);
-    const [webcamButtonIsEnabled, setWebcamButtonIsEnabled] = useState(true);
-    const [hangupButtonIsEnabled, setHangupButtonIsEnabled] = useState(false);
 
     let localStream = null;
     let remoteStream = null;
@@ -45,7 +62,7 @@ function VideoCallPage() {
         iceCandidatePoolSize: 10,
     };
 
-    const [peerConnection, setPeerConnection] = useState(new RTCPeerConnection(servers));
+    const [pc, setPc] = useState(new RTCPeerConnection(servers));
 
     useEffect(() => {
         console.log("Peer Connection Created");
@@ -57,8 +74,6 @@ function VideoCallPage() {
      * @returns {Promise<void>}
      */
     const startWebCam = async () => {
-        console.log("Webcam Button Clicked");
-
         // setting local stream to the video from our camera
         localStream = await navigator.mediaDevices.getUserMedia({
             video: true,
@@ -67,17 +82,17 @@ function VideoCallPage() {
 
         // Pushing tracks from local stream to peerConnection
         localStream.getTracks().forEach((track) => {
-            peerConnection.addTrack(track, localStream);
+            pc.addTrack(track, localStream);
         });
 
         // displaying the video data from the stream to the webpage
         webcamVideo.current.srcObject = localStream;
 
-        // initalizing the remote server to the mediastream
+        // initializing the remote server to the mediastream
         remoteStream = new MediaStream();
         remoteVideo.current.srcObject = remoteStream;
 
-        peerConnection.ontrack = (event) => {
+        pc.ontrack = (event) => {
             event.streams[0].getTracks().forEach((track) => {
                 console.log("Adding track to remoteStream", track);
                 remoteStream.addTrack(track);
@@ -87,7 +102,6 @@ function VideoCallPage() {
 
         // enabling and disabling interface based on the current condition
         setCallButtonIsEnabled(true);
-        setWebcamButtonIsEnabled(false);
     };
 
     /**
@@ -98,24 +112,25 @@ function VideoCallPage() {
     const startCallWithUser = async (calleeId) => {
         console.log("Call Button Clicked");
 
+        // referencing model_firebase collections
+        //const callDoc = db.collection("calls").doc();
         //TODO: change the uid to the uid of the user to call
-        //Get a DocumentReference instance that refers to the document at the specified absolute path.
-        const callDoc = doc(collection(db, "calls"), "LS0w3t6T5ZbMVG2IlXghC6HdGti2");
+        const callDoc = doc(
+            collection(db, "calls"),
+            "LS0w3t6T5ZbMVG2IlXghC6HdGti2"
+        ); // Main collection in firestore
+        const offerCandidates = collection(callDoc, "offerCandidates"); //Sub collection of callDoc
+        const answerCandidiates = collection(callDoc, "answerCandidates"); //Sub collection of callDoc
 
-        //Get CollectionReference instance that refers to a subcollection of callDoc.
-        const offerCandidates = collection(callDoc, "offerCandidates");
-
-        //Get CollectionReference instance that refers to a subcollection of callDoc.
-        const answerCandidiates = collection(callDoc, "answerCandidates");
 
         // get candidates for caller and save to db
-        peerConnection.onicecandidate = (event) => {
+        pc.onicecandidate = (event) => {
             event.candidate && addDoc(offerCandidates, event.candidate.toJSON());
         };
 
         // create offer
-        const offerDescription = await peerConnection.createOffer();
-        await peerConnection.setLocalDescription(offerDescription);
+        const offerDescription = await pc.createOffer();
+        await pc.setLocalDescription(offerDescription);
 
         // config for offer
         const offer = {
@@ -129,9 +144,9 @@ function VideoCallPage() {
         // listening to changes in firestore and update the streams accordingly
         onSnapshot(callDoc, (snapshot) => {
             const data = snapshot.data();
-            if (!peerConnection.currentRemoteDescription && data.answer) {
+            if (!pc.currentRemoteDescription && data.answer) {
                 const answerDescription = new RTCSessionDescription(data.answer);
-                peerConnection.setRemoteDescription(answerDescription);
+                pc.setRemoteDescription(answerDescription);
             }
 
             // if answered add candidates to peer connection
@@ -139,7 +154,7 @@ function VideoCallPage() {
                 snapshot.docChanges().forEach((change) => {
                     if (change.type === "added") {
                         const candidate = new RTCIceCandidate(change.doc.data());
-                        peerConnection.addIceCandidate(candidate);
+                        pc.addIceCandidate(candidate);
                     }
                 });
             });
@@ -148,68 +163,39 @@ function VideoCallPage() {
         setHangupButtonIsEnabled(true);
     };
 
-    const handleAnswerButtonClick = async () => {
-        const callId = callInput.current.value;
-
-        // getting the data for this particular call
-        const callDoc = doc(collection(db, "calls"), callId);
-        const answerCandidates = collection(callDoc, "answerCandidates");
-        const offerCandidates = collection(callDoc, "offerCandidates");
-
-        // here we listen to the changes and add it to the answerCandidates
-        peerConnection.onicecandidate = (event) => {
-            event.candidate && addDoc(answerCandidates, event.candidate.toJSON());
-        };
-
-        const callData = (await getDoc(callDoc)).data();
-
-        // setting the remote video with offerDescription
-        const offerDescription = callData.offer;
-        await peerConnection.setRemoteDescription(new RTCSessionDescription(offerDescription));
-
-        // setting the local video as the answer
-        const answerDescription = await peerConnection.createAnswer();
-        await peerConnection.setLocalDescription(new RTCSessionDescription(answerDescription));
-
-        // answer config
-        const answer = {
-            type: answerDescription.type,
-            sdp: answerDescription.sdp,
-        };
-
-        await updateDoc(callDoc, {answer});
-
-        onSnapshot(offerCandidates, (snapshot) => {
-            snapshot.docChanges().forEach((change) => {
-                if (change.type === "added") {
-                    let data = change.doc.data();
-                    peerConnection.addIceCandidate(new RTCIceCandidate(data));
-                }
-            });
-        });
-    };
-
     return (
-        <Box className={"webrtc-video-calling-app"} sx={{height: "100%", width: "100%"}}
-             onClick={(event) => event.stopPropagation()}>
-            <Grid container style={{height: "100%", margin: 0}}>
-                <Grid item xs={12} sm={6} md={6} lg={6} sx={{textAlign: "center"}}>
-                    <video
-                        id="webcamVideo"
-                        autoPlay
-                        playsInline
-                        ref={webcamVideo}
-                    ></video>
+        <Box
+            className={"webrtc-video-calling-app"}
+            sx={{height: "100%", width: "100%"}}
+            onClick={(event) => event.stopPropagation()}
+        >
+            <Grid container
+                  style={{height: "100%", maxHeight: "100%", margin: 0, padding: 0}}>
+                <Grid item xs={12} sm={12} md={6} lg={6} sx={{textAlign: "center"}}>
+                    <VideoContainer>
+                        <VideoItem component={"video"}
+                                   id="webcamVideo"
+                                   autoPlay
+                                   playsInline
+                                   ref={webcamVideo}
+                        ></VideoItem>
+                    </VideoContainer>
                 </Grid>
-                <Grid item xs={12} sm={6} md={6} lg={6} sx={{textAlign: "center"}}>
-                    <video
-                        id="remoteVideo"
-                        autoPlay
-                        playsInline
-                        ref={remoteVideo}
-                    ></video>
+                <Grid item xs={12} sm={12} md={6} lg={6} sx={{textAlign: "center"}}>
+                    <VideoContainer>
+                        <VideoItem component={"video"}
+                                   id="remoteVideo"
+                                   autoPlay
+                                   playsInline
+                                   ref={remoteVideo}
+                        ></VideoItem>
+                    </VideoContainer>
                 </Grid>
-                <Grid container columnSpacing={10} style={{position: "fixed", bottom: 0, marginBottom: "1rem"}}>
+                <Grid
+                    container
+                    columnSpacing={10}
+                    style={{position: "fixed", bottom: 0, marginBottom: "1rem"}}
+                >
                     <Grid item xs={6} sx={{textAlign: "right"}}>
                         <Button
                             id="callButton"
@@ -217,22 +203,28 @@ function VideoCallPage() {
                             ref={callButton}
                             disabled={!callButtonIsEnabled}
                             style={{
-                                backgroundColor: `#0DE052`
-                            }} variant="contained">JOIN</Button>
+                                backgroundColor: "#00DE00",
+                            }}
+                            variant="contained"
+                        >
+                            JOIN
+                        </Button>
                     </Grid>
                     <Grid item xs={6} sx={{textAlign: "left"}}>
                         <div>
                             <Button
                                 id="hangupButton"
-                                disabled={!hangupButtonIsEnabled}
                                 ref={hangupButton}
                                 style={{
-                                    backgroundColor: `#dd2c00`
-                                }} variant="contained">X</Button>
+                                    backgroundColor: `#FF0000`,
+                                }}
+                                variant="contained"
+                            >
+                                X
+                            </Button>
                         </div>
                     </Grid>
                 </Grid>
-
             </Grid>
         </Box>
     );
