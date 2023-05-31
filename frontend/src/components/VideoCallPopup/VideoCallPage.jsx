@@ -23,14 +23,11 @@ function VideoCallPage() {
     const webcamVideo = useRef(null);
     const callButton = useRef(null);
     const callInput = useRef(null);
-    const answerButton = useRef(null);
     const remoteVideo = useRef(null);
     const hangupButton = useRef(null);
     const [callButtonIsEnabled, setCallButtonIsEnabled] = useState(false);
-    const [answerButtonIsEnabled, setAnswerButtonIsEnabled] = useState(false);
     const [webcamButtonIsEnabled, setWebcamButtonIsEnabled] = useState(true);
     const [hangupButtonIsEnabled, setHangupButtonIsEnabled] = useState(false);
-    const [callInputValue, setCallInputValue] = useState("");
 
     let localStream = null;
     let remoteStream = null;
@@ -48,7 +45,7 @@ function VideoCallPage() {
         iceCandidatePoolSize: 10,
     };
 
-    const [pc, setPc] = useState(new RTCPeerConnection(servers));
+    const [peerConnection, setPeerConnection] = useState(new RTCPeerConnection(servers));
 
     useEffect(() => {
         console.log("Peer Connection Created");
@@ -61,8 +58,8 @@ function VideoCallPage() {
      */
     const startWebCam = async () => {
         console.log("Webcam Button Clicked");
-        // setting local stream to the video from our camera
 
+        // setting local stream to the video from our camera
         localStream = await navigator.mediaDevices.getUserMedia({
             video: true,
             audio: true,
@@ -70,7 +67,7 @@ function VideoCallPage() {
 
         // Pushing tracks from local stream to peerConnection
         localStream.getTracks().forEach((track) => {
-            pc.addTrack(track, localStream);
+            peerConnection.addTrack(track, localStream);
         });
 
         // displaying the video data from the stream to the webpage
@@ -78,10 +75,9 @@ function VideoCallPage() {
 
         // initalizing the remote server to the mediastream
         remoteStream = new MediaStream();
-
         remoteVideo.current.srcObject = remoteStream;
 
-        pc.ontrack = (event) => {
+        peerConnection.ontrack = (event) => {
             event.streams[0].getTracks().forEach((track) => {
                 console.log("Adding track to remoteStream", track);
                 remoteStream.addTrack(track);
@@ -91,7 +87,6 @@ function VideoCallPage() {
 
         // enabling and disabling interface based on the current condition
         setCallButtonIsEnabled(true);
-        setAnswerButtonIsEnabled(true);
         setWebcamButtonIsEnabled(false);
     };
 
@@ -103,23 +98,24 @@ function VideoCallPage() {
     const startCallWithUser = async (calleeId) => {
         console.log("Call Button Clicked");
 
-        // referencing model_firebase collections
-        //const callDoc = db.collection("calls").doc();
         //TODO: change the uid to the uid of the user to call
-        const callDoc = doc(collection(db, "calls"), "LS0w3t6T5ZbMVG2IlXghC6HdGti2"); // Main collection in firestore
-        const offerCandidates = collection(callDoc, "offerCandidates"); //Sub collection of callDoc
-        const answerCandidiates = collection(callDoc, "answerCandidates"); //Sub collection of callDoc
+        //Get a DocumentReference instance that refers to the document at the specified absolute path.
+        const callDoc = doc(collection(db, "calls"), "LS0w3t6T5ZbMVG2IlXghC6HdGti2");
 
-        setCallInputValue(callDoc.id); // setting the input value to the calldoc id
+        //Get CollectionReference instance that refers to a subcollection of callDoc.
+        const offerCandidates = collection(callDoc, "offerCandidates");
+
+        //Get CollectionReference instance that refers to a subcollection of callDoc.
+        const answerCandidiates = collection(callDoc, "answerCandidates");
 
         // get candidates for caller and save to db
-        pc.onicecandidate = (event) => {
+        peerConnection.onicecandidate = (event) => {
             event.candidate && addDoc(offerCandidates, event.candidate.toJSON());
         };
 
         // create offer
-        const offerDescription = await pc.createOffer();
-        await pc.setLocalDescription(offerDescription);
+        const offerDescription = await peerConnection.createOffer();
+        await peerConnection.setLocalDescription(offerDescription);
 
         // config for offer
         const offer = {
@@ -133,9 +129,9 @@ function VideoCallPage() {
         // listening to changes in firestore and update the streams accordingly
         onSnapshot(callDoc, (snapshot) => {
             const data = snapshot.data();
-            if (!pc.currentRemoteDescription && data.answer) {
+            if (!peerConnection.currentRemoteDescription && data.answer) {
                 const answerDescription = new RTCSessionDescription(data.answer);
-                pc.setRemoteDescription(answerDescription);
+                peerConnection.setRemoteDescription(answerDescription);
             }
 
             // if answered add candidates to peer connection
@@ -143,7 +139,7 @@ function VideoCallPage() {
                 snapshot.docChanges().forEach((change) => {
                     if (change.type === "added") {
                         const candidate = new RTCIceCandidate(change.doc.data());
-                        pc.addIceCandidate(candidate);
+                        peerConnection.addIceCandidate(candidate);
                     }
                 });
             });
@@ -161,7 +157,7 @@ function VideoCallPage() {
         const offerCandidates = collection(callDoc, "offerCandidates");
 
         // here we listen to the changes and add it to the answerCandidates
-        pc.onicecandidate = (event) => {
+        peerConnection.onicecandidate = (event) => {
             event.candidate && addDoc(answerCandidates, event.candidate.toJSON());
         };
 
@@ -169,11 +165,11 @@ function VideoCallPage() {
 
         // setting the remote video with offerDescription
         const offerDescription = callData.offer;
-        await pc.setRemoteDescription(new RTCSessionDescription(offerDescription));
+        await peerConnection.setRemoteDescription(new RTCSessionDescription(offerDescription));
 
         // setting the local video as the answer
-        const answerDescription = await pc.createAnswer();
-        await pc.setLocalDescription(new RTCSessionDescription(answerDescription));
+        const answerDescription = await peerConnection.createAnswer();
+        await peerConnection.setLocalDescription(new RTCSessionDescription(answerDescription));
 
         // answer config
         const answer = {
@@ -187,7 +183,7 @@ function VideoCallPage() {
             snapshot.docChanges().forEach((change) => {
                 if (change.type === "added") {
                     let data = change.doc.data();
-                    pc.addIceCandidate(new RTCIceCandidate(data));
+                    peerConnection.addIceCandidate(new RTCIceCandidate(data));
                 }
             });
         });
