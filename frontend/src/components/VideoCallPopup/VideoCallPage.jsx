@@ -129,7 +129,7 @@ function VideoCallPage() {
 
         });
 
-        // if answered add candidates to peer connection
+        // Listen for answer candidates and add them to peer connection
         onSnapshot(answerCandidiates, (snapshot) => {
             snapshot.docChanges().forEach((change) => {
                 if (change.type === "added") {
