@@ -97,12 +97,14 @@ function VideoCallPage() {
         const answerCandidiates = collection(callDoc, "answerCandidates"); //Sub collection of callDoc
 
 
-        // get candidates for caller and save to db
+        //Before the caller and callee can connect to each other, they need to exchange ICE candidates that tell WebRTC how to connect to the remote peer.
+        //Get candidates for caller and save to db
         pc.onicecandidate = (event) => {
+            console.log("Got Ice Candidate", event.candidate);
             event.candidate && addDoc(offerCandidates, event.candidate.toJSON());
         };
 
-        // create offer
+        // Create a RTCSessionDescription that will represent the offer from the caller, then set it as the local description,
         const offerDescription = await pc.createOffer();
         await pc.setLocalDescription(offerDescription);
 
@@ -116,22 +118,24 @@ function VideoCallPage() {
         // setting the offer to the callDoc
         await setDoc(callDoc, {offer});
 
-        // listening to changes in firestore and update the streams accordingly
-        onSnapshot(callDoc, (snapshot) => {
+        ///Listen for changes to the database and detect when an answer from the callee has been added.
+        onSnapshot(callDoc, async (snapshot) => {
             const data = snapshot.data();
             if (!pc.currentRemoteDescription && data.answer) {
+                //TODO: change the answerDescription name to answer
                 const answerDescription = new RTCSessionDescription(data.answer);
-                pc.setRemoteDescription(answerDescription);
+                await pc.setRemoteDescription(answerDescription);
             }
 
-            // if answered add candidates to peer connection
-            onSnapshot(answerCandidiates, (snapshot) => {
-                snapshot.docChanges().forEach((change) => {
-                    if (change.type === "added") {
-                        const candidate = new RTCIceCandidate(change.doc.data());
-                        pc.addIceCandidate(candidate);
-                    }
-                });
+        });
+
+        // if answered add candidates to peer connection
+        onSnapshot(answerCandidiates, (snapshot) => {
+            snapshot.docChanges().forEach((change) => {
+                if (change.type === "added") {
+                    const candidate = new RTCIceCandidate(change.doc.data());
+                    pc.addIceCandidate(candidate);
+                }
             });
         });
 
