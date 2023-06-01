@@ -24,8 +24,7 @@ inset -.2rem -.2rem .5rem var(--white);
   &__btn {
     grid-row: 1 / 2;
     grid-column: 1 / 2;
-    width: 455px;
-    height: 455px;
+
     display: flex;
     margin: .6rem;
     justify-content: center;
@@ -38,6 +37,8 @@ inset -.2rem -.2rem .5rem var(--white);
     box-shadow: $shadow;
     cursor: pointer;
     position: relative;
+    width: clamp(200px, 80vmin, 800px);
+    height: clamp(200px, 80vmin, 800px);
 
     &.shadow {
       box-shadow: $inner-shadow;
@@ -59,8 +60,8 @@ inset -.2rem -.2rem .5rem var(--white);
   &__back-1, &__back-2 {
     grid-row: 1 / 2;
     grid-column: 1 / 2;
-    width: 500px;
-    height: 500px;
+    width: clamp(200px, 80vmin, 800px);
+    height: clamp(200px, 80vmin, 800px);
     border-radius: 50%;
     filter: blur(1px);
     z-index: 100;

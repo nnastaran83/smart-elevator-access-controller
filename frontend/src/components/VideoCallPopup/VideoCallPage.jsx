@@ -3,7 +3,7 @@ import {Box, Button, Grid, styled} from "@mui/material";
 import {useEffect, useRef, useState} from "react";
 import {db} from "../../firebase_module";
 import VideoContainer from "./VideoContainer.jsx";
-import "../../styles/VideoCallPage.css";
+
 import {
     collection,
     doc,
@@ -100,13 +100,8 @@ function VideoCallPage() {
     const startCallWithUser = async (calleeId) => {
         console.log("Call Button Clicked");
 
-        // referencing model_firebase collections
-        //const callDoc = db.collection("calls").doc();
         //TODO: change the uid to the uid of the user to call
-        const callDoc = doc(
-            collection(db, "calls"),
-            "LS0w3t6T5ZbMVG2IlXghC6HdGti2"
-        ); // Main collection in firestore
+        const callDoc = doc(db, "calls", "LS0w3t6T5ZbMVG2IlXghC6HdGti2"); // Main collection in firestore
         const offerCandidates = collection(callDoc, "offerCandidates"); //Sub collection of callDoc
         const answerCandidiates = collection(callDoc, "answerCandidates"); //Sub collection of callDoc
 
@@ -148,7 +143,6 @@ function VideoCallPage() {
             });
         });
 
-        setHangupButtonIsEnabled(true);
     };
 
     return (
