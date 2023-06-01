@@ -3,7 +3,7 @@ import {Box, Button, Grid, styled} from "@mui/material";
 import {useEffect, useRef, useState} from "react";
 import {db} from "../../firebase_module";
 import VideoContainer from "./VideoContainer.jsx";
-
+import VideoItem from "./VideoItem.jsx";
 import {
     collection,
     doc,
@@ -12,15 +12,6 @@ import {
     addDoc,
 } from "firebase/firestore";
 
-
-const VideoItem = styled(Box)(({theme}) => ({
-    objectFit: "cover",
-    width: "100%",
-    height: "100vh",
-    maxHeight: "100%",
-    maxWidth: "100%",
-    backgroundColor: "#0A0A0A",
-}));
 
 /**
  * Video Calling Page using WebRTC
@@ -121,8 +112,9 @@ function VideoCallPage() {
             type: offerDescription.type,
         };
 
-        //await callDoc.set({ offer });
-        await setDoc(callDoc, {offer}); // setting the offer to the callDoc
+
+        // setting the offer to the callDoc
+        await setDoc(callDoc, {offer});
 
         // listening to changes in firestore and update the streams accordingly
         onSnapshot(callDoc, (snapshot) => {
