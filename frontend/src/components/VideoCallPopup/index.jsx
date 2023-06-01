@@ -1,7 +1,8 @@
-import React, {useEffect, useState} from 'react';
+import React from 'react';
 import '../../styles/PopupFrameOverlay.css';
 import VideoCallPage from "./VideoCallPage.jsx";
 import {Box} from "@mui/material";
+import ContactList from "./ContactList.jsx";
 
 /**
  * VideoCallPopup component is used to display a frame for video call.
@@ -11,8 +12,9 @@ import {Box} from "@mui/material";
 const VideoCallPopup = () => {
     return (
         <Box className="overlay">
-            <Box className="inner-popup">
-                <VideoCallPage/>
+            <Box className="inner-popup" onClick={(event) => (event.stopPropagation())}>
+                <ContactList/>
+                {/*<VideoCallPage/>*/}
             </Box>
         </Box>
 

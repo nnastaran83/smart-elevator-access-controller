@@ -145,7 +145,7 @@ function VideoCallPage() {
         <Box
             className={"webrtc-video-calling-app"}
             sx={{height: "100%", width: "100%"}}
-            onClick={(event) => event.stopPropagation()}
+
         >
             <Grid container
                   style={{height: "100%", maxHeight: "100%", margin: 0, padding: 0}}>

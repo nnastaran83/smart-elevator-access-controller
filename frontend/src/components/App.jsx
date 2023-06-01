@@ -2,7 +2,6 @@ import React, {useState} from 'react';
 import {Route, Routes} from 'react-router-dom';
 import '../styles/App.scss';
 import FaceDetector from "./FaceDetector.jsx";
-import ContactList from "./ContactList.jsx";
 import VideoCallPopup from "./VideoCallPopup/index.jsx";
 import {Box, Container} from "@mui/material";
 
@@ -15,11 +14,11 @@ import {Box, Container} from "@mui/material";
  *
  */
 const App = () => {
-    const [videoCallLink, setVideoCallLink] = useState(null);
+    const [videoCall, setVideoCall] = useState(null);
 
 
     const handleVideoVisibility = (event) => {
-        setVideoCallLink(videoCallLink ? null : <VideoCallPopup/>);
+        setVideoCall(videoCall ? null : <VideoCallPopup/>);
         requestPermissionToSendNotification();
 
     };
@@ -42,12 +41,11 @@ const App = () => {
             <Box>
                 <Routes>
                     <Route path='/' element={<FaceDetector/>}/>
-                    <Route path='/contactlist' element={<ContactList/>}/>
                 </Routes>
 
             </Box>
 
-            {videoCallLink}
+            {videoCall}
         </Container>
 
 
