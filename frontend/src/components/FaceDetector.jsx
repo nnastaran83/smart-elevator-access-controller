@@ -79,6 +79,7 @@ const FaceDetector = () => {
             body: JSON.stringify({frame_data: frameData}),
         });
 
+        console.log(response);
         const data = await response.json();
         console.log(data.name);
         setTimeout(() => detectFace(), 1000);
