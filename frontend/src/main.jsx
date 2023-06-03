@@ -4,6 +4,7 @@ import {BrowserRouter as Router} from 'react-router-dom';
 import App from './components/App.jsx';
 import './styles/index.css';
 import 'semantic-ui-css/semantic.min.css';
+import {RegisteredUsersProvider} from "./context/RegisteredUsersProvider.jsx";
 
 
 /**
@@ -11,6 +12,8 @@ import 'semantic-ui-css/semantic.min.css';
  */
 ReactDOM.createRoot(document.getElementById('root')).render(
     <Router>
-        <App/>
+        <RegisteredUsersProvider>
+            <App/>
+        </RegisteredUsersProvider>
     </Router>
 );

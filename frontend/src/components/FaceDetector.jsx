@@ -2,6 +2,7 @@ import React, {useEffect, useRef, useState} from 'react';
 import {Box, styled} from "@mui/material";
 import PitchContainer from "./PitchContainer.jsx";
 import '../styles/FaceDetector.css';
+import axios from "axios";
 
 
 /**
@@ -56,7 +57,7 @@ const FaceDetector = () => {
     const detectFace = async () => {
 
         if (videoRef.current.paused || videoRef.current.ended) {
-            setTimeout(() => detectFace());
+            setTimeout(() => detectFace(), 1000);
             return;
         }
 
@@ -67,21 +68,16 @@ const FaceDetector = () => {
         const ctx = canvas.getContext('2d');
         ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
 
-        // Convert the canvas to base64-encoded data
-        const frameData = canvas.toDataURL('image/jpeg', 0.8);
+        // Convert the content of the canvas to a Base64-encoded JPEG image.
+        const frameData = canvas.toDataURL('image/jpeg', 1);
 
-        // Send the video frame data to the Flask backend
-        const response = await fetch('http://localhost:5000/recognize_face', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-            },
-            body: JSON.stringify({frame_data: frameData}),
-        });
+        // Send the video frame data to backend server and wait for response.
+        const response = await axios.post('http://localhost:5000/recognize_face',
+            {frame_data: frameData},
+            {headers: {'Content-Type': 'application/json'}}
+        );
+        console.log(response.data);
 
-        console.log(response);
-        const data = await response.json();
-        console.log(data.name);
         setTimeout(() => detectFace(), 1000);
     };
 

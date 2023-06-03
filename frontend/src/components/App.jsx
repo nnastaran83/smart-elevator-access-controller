@@ -1,9 +1,10 @@
-import React, {useState} from 'react';
+import React, {useContext, useEffect, useState} from 'react';
 import {Route, Routes} from 'react-router-dom';
 import '../styles/App.scss';
 import FaceDetector from "./FaceDetector.jsx";
 import VideoCallPopup from "./VideoCallPopup/index.jsx";
 import {Box, Container} from "@mui/material";
+import RegisteredUsersContext from "../context/RegisteredUsersProvider.jsx";
 
 
 /**
@@ -15,8 +16,16 @@ import {Box, Container} from "@mui/material";
  */
 const App = () => {
     const [videoCall, setVideoCall] = useState(null);
+    const {registeredUsers, fetchRegisteredUsers} = useContext(RegisteredUsersContext);
 
+    useEffect(() => {
+        fetchRegisteredUsers();
+    }, [fetchRegisteredUsers]);
 
+    /**
+     * Handles the visibility of the video call popup
+     * @param event
+     */
     const handleVideoVisibility = (event) => {
         setVideoCall(videoCall ? null : <VideoCallPopup/>);
         requestPermissionToSendNotification();
@@ -34,6 +43,7 @@ const App = () => {
             }
         });
     }
+
 
     return (
 

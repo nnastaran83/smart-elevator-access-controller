@@ -10,6 +10,10 @@ import base64
 from PIL import Image
 from io import BytesIO
 from model.mongo_db import Model
+import configparser
+from pymongo import MongoClient
+from pymongo.errors import DuplicateKeyError
+from threading import Lock
 import json
 
 app = Flask(__name__)
@@ -27,15 +31,22 @@ known_face_encodings = [joe_encoding, nastaran_encoding]
 known_face_names = ["Joe", "Nastaran"]
 
 
-# @app.route('/')
-# def hello():  # put application's code here
-#     return 'Hello World!'
-
 @app.route('/')
-def load_data():
+def hello():
+    return "hello"
+
+
+@app.route('/get_registered_users', methods=['GET'])
+def get_registered_users():
+    result = Model.get_registered_users()
+    return jsonify(result)
+
+
+@app.route('/load_face_encodings', methods=['GET'])
+def load_face_encodings():
     """
-    Loads the necessary data for the application to run
-    :return: None
+    Load face encodings from mongoDB
+    :return:
     """
     # Load a sample picture and learn how to recognize it.
     # Load a second sample picture and learn how to recognize it.
@@ -44,28 +55,16 @@ def load_data():
     # Model.add_user(name="Joe", face_encoding=list(self.user_1_face_encoding), floor_number=4)
 
     # get all face_encodings from DB
-    registered_face_encodings_from_mongo = Model.get_all_face_encodings()
-    registered_face_encodings = []
-    for face_encoding_dict in registered_face_encodings_from_mongo:
-        registered_face_encodings.append(
+    known_face_encodings_from_mongo = Model.get_all_face_encodings()
+    for face_encoding_dict in known_face_encodings_from_mongo:
+        known_face_encodings.append(
             np.array(face_encoding_dict["face_encoding"]))
+    return "Data loaded successfully"
 
-    # create a numpy array
-    # array = np.array(registered_face_encodings)
-
-
-#
-## convert numpy array to list
-# array_list = array.tolist()
-#
-## now you can serialize it
-# json.dumps(array_list)
-#
-# return registered_face_encodings
-#
 
 @app.route('/recognize_face', methods=['POST'])
 def recognize_face():
+    # Get JSON data from an HTTP request.
     data = request.get_json()
     frame_data = data['frame_data']
 
@@ -122,7 +121,7 @@ def db():
     return db_instance
 
 
-@app.route('/')
+@app.route('/add_user')
 def add_user(name: str, face_encoding, floor_number: int):
     """
     Given a name, face_encoding and the floor number, inserts a document with those credentials

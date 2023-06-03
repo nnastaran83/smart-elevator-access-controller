@@ -1,57 +1,30 @@
-import React, {useEffect, useState} from "react";
+import React, {useContext, useEffect} from "react";
 import List from "@mui/material/List";
 import ListItemText from "@mui/material/ListItemText";
 import ListSubheader from "@mui/material/ListSubheader";
 import {Divider} from "@mui/material";
 import ListItemButton from "@mui/material/ListItemButton";
 import Avatar from "@mui/material/Avatar";
-
-///**
-// * ContactList component is used to display a list of contacts.
-// * @returns {JSX.Element}
-// * @component
-// */
-//const ContactList = () => {
-//    const [facetimeAddress, setFacetimeAddress] = useState("");
-//    const array = Array.from({length: 20}, (_, index) => index + 1);
-//
-//    useEffect(() => {
-//        console.log(facetimeAddress)
-//
-//    })
-//    const initiateFacetimeCall = (e) => {
-//
-//        window.location.href = `${e.target.dataset.facetimelink}`;
-//
-//    };
-//
-//    return (
-//        <div className="ui selection divided list scrolling"
-//             style={{textAlign: "start", overflowY: "auto", minHeight: "550px", maxHeight: "550px"}}>
-//            {
-//                array.map((value, index) => {
-//                    return (
-//                        <div
-//                            onClick={initiateFacetimeCall}
-//                            data-facetimelink="https://facetime.apple.com/join#v=1&p=eirO5sQQEe2uZZoVRAPR/A&k=FBPfijzErLjI-5nhKOnPf5XxCXD4ItPWAPR24IoKze8"
-//                            className="item"
-//                            key={index}
-//                        >
-//                            <img className="ui avatar image" src="/icons/number-1.png" alt={"1"}/>
-//                            <div className="content">
-//                                <div className="header">Apartment number {value}</div>
-//                            </div>
-//                        </div>
-//                    )
-//                })
-//            }
-//        </div>
-//    );
-//};
-//
+import RegisteredUsersContext from "../../context/RegisteredUsersProvider.jsx";
 
 
+/**
+ * ContactList component is used to display the list of contacts.
+ * @returns {JSX.Element}
+ * @constructor
+ */
 const ContactList = () => {
+    const {registeredUsers} = useContext(RegisteredUsersContext);
+
+    let floorMapping = registeredUsers.reduce((acc, user) => {
+        let key = `Floor ${user['floor_number']}`;
+        if (!acc[key]) {
+            acc[key] = [];
+        }
+        acc[key].push(user.name);
+        return acc;
+    }, {});
+
     return (
         <List
             sx={{
@@ -64,27 +37,27 @@ const ContactList = () => {
             }}
             subheader={<li/>}
         >
-            <ListSubheader sx={{bgcolor: "#f5f5f5", fontSize: "25px"}}>
+            <ListSubheader key="200" sx={{bgcolor: "#f5f5f5", fontSize: "25px"}}>
                 Contacts
             </ListSubheader>
             <Divider/>
-            {[1, 2, 3, 4].map((sectionId) => (
-                <li key={`section-${sectionId}`}>
+            {Object.keys(floorMapping).map((floor) => (
+                <li key={`section-${floor}`}>
                     <ul>
                         <ListSubheader sx={{bgcolor: "#f5f5f5", fontSize: "15px"}}>
-                            {`Floor ${sectionId}`}
+                            {`${floor}`}
                         </ListSubheader>
 
-                        {["Nas", "Shir", "Shila"].map((item) => (
-                            <React.Fragment>
-                                <ListItemButton key={`item-${sectionId}-${item}`}>
+                        {floorMapping[floor].map((name, index) => (
+                            <React.Fragment key={`item-${floor}-${name}-${index}`}>
+                                <ListItemButton>
                                     <Avatar
                                         sx={{
                                             marginRight: "10px",
                                             bgcolor: () => "#" + Math.random().toString(16).substr(-6)
                                         }}
-                                    >{`${sectionId}`}</Avatar>
-                                    <ListItemText primary={`${item}`}/>
+                                    >{`${name.charAt(0)}`}</Avatar>
+                                    <ListItemText primary={`${name}`}/>
                                 </ListItemButton>
                                 <Divider/>
                             </React.Fragment>
@@ -95,6 +68,7 @@ const ContactList = () => {
         </List>
     );
 };
+
 export default ContactList;
 
 

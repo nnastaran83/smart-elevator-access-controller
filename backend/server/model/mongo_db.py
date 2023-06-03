@@ -4,6 +4,8 @@ from pymongo.errors import DuplicateKeyError
 from threading import Lock
 import numpy as np
 
+USERS_INFO_COLLECTION = "users_info"
+
 
 class Model:
     _db_instance = None
@@ -22,6 +24,7 @@ class Model:
         if cls._db_instance is None:
             with cls._lock:
                 if cls._db_instance is None:
+                    print("Creating new db instance")
                     config = configparser.ConfigParser()
                     config.read("configuration_file.ini")
                     SMART_ELEVATOR_SYSTEM_DB_URI = config.get("CONNECTION_DATA", "SMART_ELEVATOR_SYSTEM_DB_URI")
@@ -29,7 +32,7 @@ class Model:
 
                     cls._db_instance = MongoClient(
                         SMART_ELEVATOR_SYSTEM_DB_URI,
-                        maxPoolSize=3,
+                        maxPoolSize=5,
                         connectTimeoutMS=2500)[SMART_ELEVATOR_SYSTEM_DB_NAME]
         return cls._db_instance
 
@@ -85,6 +88,28 @@ class Model:
 
         return list(result)[0]
 
+    @classmethod
+    def get_registered_users(cls):
+        """
+        :return: all registered users in the database
+        :return: iterable cursor
+        """
+        m_filter = {}
+        project = {
+            '_id': 0,
+            'name': 1,
+            'uid': 1,
+            'token': 1,
+            'floor_number': 1,
+            'messaging_token': 1
+        }
+        sort = list({
+                        'floor_number': 1
+                    }.items())
+        result = Model.get_instance()[USERS_INFO_COLLECTION].find(
+            filter=m_filter,
+            projection=project,
+            sort=sort
+        )
 
-
-
+        return list(result)

@@ -3,7 +3,7 @@ from app import *
 
 
 # cd backend/server
-# in commandline : waitress-serve --call 'server:smart_backend'
+# in commandline :
 def smart_backend(environ, start_response):
     """
     :param environ:
