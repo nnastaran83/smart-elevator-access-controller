@@ -18,7 +18,7 @@ import {
  * @returns {JSX.Element}
  * @constructor
  */
-function VideoCallPage() {
+function VideoCallPage({uid, token}) {
     const webcamVideo = useRef(null);
     const callButton = useRef(null);
     const remoteVideo = useRef(null);
@@ -27,6 +27,10 @@ function VideoCallPage() {
 
     let localStream = null;
     let remoteStream = null;
+    useEffect(() => {
+        console.log(token);
+        console.log(uid);
+    }, []);
 
     // server config
     const servers = {

@@ -1,10 +1,11 @@
-import React, {useContext, useEffect, useState} from 'react';
+import React, {useEffect, useState} from 'react';
 import {Route, Routes} from 'react-router-dom';
 import '../styles/App.scss';
 import FaceDetector from "./FaceDetector.jsx";
 import VideoCallPopup from "./VideoCallPopup/index.jsx";
 import {Box, Container} from "@mui/material";
-import RegisteredUsersContext from "../context/RegisteredUsersProvider.jsx";
+import {loadRegisteredUsers} from "../store/index.js";
+import {useDispatch, useSelector} from "react-redux";
 
 
 /**
@@ -16,11 +17,20 @@ import RegisteredUsersContext from "../context/RegisteredUsersProvider.jsx";
  */
 const App = () => {
     const [videoCall, setVideoCall] = useState(null);
-    const {registeredUsers, fetchRegisteredUsers} = useContext(RegisteredUsersContext);
+    // const {registeredUsers, fetchRegisteredUsers} = useContext(RegisteredUsersContext);
+    const dispatch = useDispatch();
+    const registeredUsers = useSelector(state => state.contactList.registeredUsers);
 
     useEffect(() => {
-        fetchRegisteredUsers();
-    }, [fetchRegisteredUsers]);
+        console.log("App is running");
+       
+        dispatch(loadRegisteredUsers());
+    }, []);
+
+
+    // useEffect(() => {
+    //     fetchRegisteredUsers();
+    // }, [fetchRegisteredUsers]);
 
     /**
      * Handles the visibility of the video call popup

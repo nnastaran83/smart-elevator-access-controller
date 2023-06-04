@@ -21,45 +21,30 @@ app = Flask(__name__)
 CORS(app, resources={r"/*": {"origins": ["http://localhost:5173"]}})
 
 # Load reference images and compute face encodings
-joe_image = face_recognition.load_image_file("people_images/1.jpg")
-nastaran_image = face_recognition.load_image_file("people_images/6.jpg")
+# joe_image = face_recognition.load_image_file("people_images/1.jpg")
+# nastaran_image = face_recognition.load_image_file("people_images/6.jpg")
+#
+# joe_encoding = face_recognition.face_encodings(joe_image)[0]
+# nastaran_encoding = face_recognition.face_encodings(nastaran_image)[0]
+#
+# known_face_encodings = [joe_encoding, nastaran_encoding]
 
-joe_encoding = face_recognition.face_encodings(joe_image)[0]
-nastaran_encoding = face_recognition.face_encodings(nastaran_image)[0]
-
-known_face_encodings = [joe_encoding, nastaran_encoding]
+known_face_encodings = []
 known_face_names = ["Joe", "Nastaran"]
 
-
-@app.route('/')
-def hello():
-    return "hello"
+# get all face_encodings from DB
+print("Loading face encodings from DB...")
+known_face_encodings_from_mongo = Model.get_all_face_encodings()
+for face_encoding_dict in known_face_encodings_from_mongo:
+    known_face_encodings.append(
+        np.array(face_encoding_dict["face_encoding"]))
+print("Loaded face encodings from DB successfully")
 
 
 @app.route('/get_registered_users', methods=['GET'])
 def get_registered_users():
     result = Model.get_registered_users()
     return jsonify(result)
-
-
-@app.route('/load_face_encodings', methods=['GET'])
-def load_face_encodings():
-    """
-    Load face encodings from mongoDB
-    :return:
-    """
-    # Load a sample picture and learn how to recognize it.
-    # Load a second sample picture and learn how to recognize it.
-    # self.user_1_image = face_recognition.load_image_file("app\model\images\1.jpg")
-    # self.user_1_face_encoding = face_recognition.face_encodings(self.user_1_image)[0]
-    # Model.add_user(name="Joe", face_encoding=list(self.user_1_face_encoding), floor_number=4)
-
-    # get all face_encodings from DB
-    known_face_encodings_from_mongo = Model.get_all_face_encodings()
-    for face_encoding_dict in known_face_encodings_from_mongo:
-        known_face_encodings.append(
-            np.array(face_encoding_dict["face_encoding"]))
-    return "Data loaded successfully"
 
 
 @app.route('/recognize_face', methods=['POST'])
@@ -87,11 +72,15 @@ def recognize_face():
     best_match_index = np.argmin(face_distances)
 
     if matches[best_match_index]:
-        name = known_face_names[best_match_index]
+        # name = known_face_names[best_match_index]
+        name = Model.get_user_info(known_face_encodings[best_match_index])['name']
+        floor_number = Model.get_user_info(known_face_encodings[best_match_index])['floor_number']
+
     else:
         name = "Unknown"
+        floor_number = "Unknown"
 
-    return jsonify({"name": name})
+    return jsonify({"name": name, "floor_number": floor_number})
 
 
 @app.route('/my-endpoint', methods=['POST'])
@@ -155,25 +144,6 @@ def get_all_face_encodings():
         projection=project
     )
     return list(result)
-
-
-@app.route('/')
-def get_user_info(face_encoding):
-    """
-    :return: users information with this face_encoding
-    """
-
-    m_filter = {
-        'face_encoding': list(face_encoding)
-    }
-
-    project = {}
-
-    result = db().users_info.find(
-        filter=m_filter
-    )
-
-    return list(result)[0]
 
 
 if __name__ == '__main__':

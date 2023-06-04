@@ -3,6 +3,7 @@ import {Box, styled} from "@mui/material";
 import PitchContainer from "./PitchContainer.jsx";
 import '../styles/FaceDetector.css';
 import axios from "axios";
+import {store} from "../store/index.js";
 
 
 /**
@@ -55,8 +56,8 @@ const FaceDetector = () => {
      * @returns {Promise<void>}
      */
     const detectFace = async () => {
-
         if (videoRef.current.paused || videoRef.current.ended) {
+            console.log("video paused or ended");
             setTimeout(() => detectFace(), 1000);
             return;
         }
@@ -72,13 +73,17 @@ const FaceDetector = () => {
         const frameData = canvas.toDataURL('image/jpeg', 1);
 
         // Send the video frame data to backend server and wait for response.
-        const response = await axios.post('http://localhost:5000/recognize_face',
-            {frame_data: frameData},
-            {headers: {'Content-Type': 'application/json'}}
-        );
-        console.log(response.data);
+        try {
+            const response = await axios.post('http://localhost:5000/recognize_face',
+                {frame_data: frameData},
+                {headers: {'Content-Type': 'application/json'}}
+            );
+            console.log(response.data);
+        } catch (error) {
+            console.log(error);
+        }
 
-        setTimeout(() => detectFace(), 1000);
+        setTimeout(() => detectFace(), 4000);
     };
 
     return (

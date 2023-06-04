@@ -5,7 +5,7 @@ import ListSubheader from "@mui/material/ListSubheader";
 import {Divider} from "@mui/material";
 import ListItemButton from "@mui/material/ListItemButton";
 import Avatar from "@mui/material/Avatar";
-import RegisteredUsersContext from "../../context/RegisteredUsersProvider.jsx";
+import {useSelector} from "react-redux";
 
 
 /**
@@ -13,17 +13,19 @@ import RegisteredUsersContext from "../../context/RegisteredUsersProvider.jsx";
  * @returns {JSX.Element}
  * @constructor
  */
-const ContactList = () => {
-    const {registeredUsers} = useContext(RegisteredUsersContext);
+const ContactList = ({handleContactButtonClick}) => {
+    const registeredUsers = useSelector(state => state.contactList.registeredUsers);
 
+    // Group users by floor number
     let floorMapping = registeredUsers.reduce((acc, user) => {
         let key = `Floor ${user['floor_number']}`;
         if (!acc[key]) {
             acc[key] = [];
         }
-        acc[key].push(user.name);
+        acc[key].push(user);
         return acc;
     }, {});
+
 
     return (
         <List
@@ -48,16 +50,18 @@ const ContactList = () => {
                             {`${floor}`}
                         </ListSubheader>
 
-                        {floorMapping[floor].map((name, index) => (
-                            <React.Fragment key={`item-${floor}-${name}-${index}`}>
-                                <ListItemButton>
+                        {floorMapping[floor].map((user, index) => (
+                            <React.Fragment key={`item-${floor}-${user.name}-${index}`}>
+                                <ListItemButton data-uid={user.uid}
+                                                data-token={user.messaging_token}
+                                                onClick={handleContactButtonClick}>
                                     <Avatar
                                         sx={{
                                             marginRight: "10px",
                                             bgcolor: () => "#" + Math.random().toString(16).substr(-6)
                                         }}
-                                    >{`${name.charAt(0)}`}</Avatar>
-                                    <ListItemText primary={`${name}`}/>
+                                    >{`${user.name.charAt(0)}`}</Avatar>
+                                    <ListItemText primary={`${user.name}`}/>
                                 </ListItemButton>
                                 <Divider/>
                             </React.Fragment>
