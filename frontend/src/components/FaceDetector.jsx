@@ -1,4 +1,4 @@
-import React, {useEffect, useRef, useState} from 'react';
+import React, {useCallback, useEffect, useRef, useState} from 'react';
 import {Box, styled} from "@mui/material";
 import PitchContainer from "./PitchContainer.jsx";
 import '../styles/FaceDetector.css';
@@ -16,6 +16,7 @@ const FaceDetector = () => {
     const canvasRef = useRef(null);
     const [detected, setDetected] = useState(false);
     const speech = new SpeechSynthesisUtterance();
+    const [color, setColor] = useState("#");
 
 
     const log = (...args) => {
@@ -51,6 +52,10 @@ const FaceDetector = () => {
             });
     };
 
+    const changeColor = useCallback((color) => {
+        setColor(color);
+    }, []);
+
     /**
      * Detects faces in the video stream and sends the video frame data to the Flask backend
      * @returns {Promise<void>}
@@ -72,6 +77,7 @@ const FaceDetector = () => {
         // Convert the content of the canvas to a Base64-encoded JPEG image.
         const frameData = canvas.toDataURL('image/jpeg', 1);
 
+
         // Send the video frame data to backend server and wait for response.
         try {
             const response = await axios.post('http://localhost:5000/recognize_face',
@@ -79,11 +85,16 @@ const FaceDetector = () => {
                 {headers: {'Content-Type': 'application/json'}}
             );
             console.log(response.data);
+            if (response.data.name === "Unknown") {
+                changeColor("#E00800")
+            } else {
+                changeColor("#0DF205");
+            }
         } catch (error) {
             console.log(error);
         }
 
-        setTimeout(() => detectFace(), 4000);
+        setTimeout(() => detectFace(), 5000);
     };
 
     return (
