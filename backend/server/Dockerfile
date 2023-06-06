@@ -19,4 +19,4 @@ COPY . .
 EXPOSE 5000
 
 # Define the command to run your app (optional)
-ENTRYPOINT ["conda", "run", "--no-capture-output", "-n", "smart_env","waitress-serve","--call", "server:create_app"]
+ENTRYPOINT ["conda", "run", "--no-capture-output", "-n", "smart_env","waitress-serve","--call", "server:create_ap"]
