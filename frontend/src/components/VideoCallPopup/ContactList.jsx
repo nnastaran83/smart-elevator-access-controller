@@ -15,6 +15,10 @@ import {useSelector} from "react-redux";
  */
 const ContactList = ({handleContactButtonClick}) => {
     const registeredUsers = useSelector(state => state.contactList.registeredUsers);
+    useEffect(() => {
+            console.log(registeredUsers);
+        }
+        , []);
 
     // Group users by floor number
     let floorMapping = registeredUsers.reduce((acc, user) => {
@@ -54,6 +58,7 @@ const ContactList = ({handleContactButtonClick}) => {
                             <React.Fragment key={`item-${floor}-${user.name}-${index}`}>
                                 <ListItemButton data-uid={user.uid}
                                                 data-token={user.messaging_token}
+                                                data-email={user.email}
                                                 onClick={handleContactButtonClick}>
                                     <Avatar
                                         sx={{

@@ -1,9 +1,10 @@
 import {initializeApp} from "firebase/app";
-import {getFirestore, collection, getDocs} from "firebase/firestore";
+import {getFirestore, collection, getDoc, doc} from "firebase/firestore";
 import {
     getAuth,
 } from "firebase/auth";
 import {getMessaging} from "firebase/messaging";
+import axios from "axios";
 
 /**
  * Web Firebase configuration
@@ -20,6 +21,8 @@ const firebaseConfig = {
     appId: import.meta.env.VITE_APP_FIREBASE_APP_ID,
     measurementId: import.meta.env.VITE_APP_FIREBASE_MEASUREMENT_ID
 };
+
+const SERVER_KEY = import.meta.env.VITE_APP_MESSAGING_SERVER_KEY;
 
 // Initialize Firebase
 const app = initializeApp(firebaseConfig);
@@ -57,4 +60,54 @@ const messaging = getMessaging(app);
 //        });
 //}
 
-export {db, auth};
+
+/**
+ * Send video call request message to user
+ * @param userId - in our case it is email of user
+ * @param message
+ * @returns {Promise<void>}
+ */
+const sendVideoCallRequestMessageToUser = async (userId, message) => {
+    // Get a reference to this user's specific status document.
+    const userRef = doc(collection(db, "users"), userId);
+
+    try {
+        // Find document with userRef
+        const userSnap = await getDoc(userRef);
+
+        if (userSnap.exists()) {
+            let registrationToken = userSnap.data().token;
+            console.log(registrationToken);
+
+            //Create data to send
+            const data = JSON.stringify({
+                data: message,
+                to: registrationToken,
+            });
+
+            //Create configuration for axios request to FCM
+            const config = {
+                method: "post",
+                maxBodyLength: Infinity,
+                url: "https://fcm.googleapis.com/fcm/send",
+                headers: {
+                    "Content-Type": "application/json",
+                    Authorization: SERVER_KEY,
+                },
+                data,
+            };
+
+            //Send request to FCM
+            const response = await axios.request(config);
+
+            console.log(JSON.stringify(response.data));
+        } else {
+            console.log("No such document!");
+        }
+    } catch (error) {
+        console.log("Error getting document!", error);
+    }
+};
+
+
+export {db, auth, sendVideoCallRequestMessageToUser};

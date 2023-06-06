@@ -138,14 +138,14 @@ class PostgresModel:
         """
         with cls.get_cursor() as cursor:
             cursor.execute("""
-                SELECT name, uid, floor_number, messaging_token
+                SELECT name, uid, floor_number, messaging_token, email
                 FROM registered
                 WHERE uid IS NOT NULL
                 ORDER BY floor_number ASC
             """)
             result = cursor.fetchall()
             # define column names
-            columns = ['name', 'uid', 'floor_number', 'messaging_token']
+            columns = ['name', 'uid', 'floor_number', 'messaging_token', 'email']
 
             # convert list of tuples into list of dictionaries
             result = [dict(zip(columns, row)) for row in result]

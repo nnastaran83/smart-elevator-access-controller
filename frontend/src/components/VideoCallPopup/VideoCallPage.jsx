@@ -11,6 +11,7 @@ import {
     onSnapshot,
     addDoc,
 } from "firebase/firestore";
+import {sendVideoCallRequestMessageToUser} from "../../firebase_module";
 
 
 /**
@@ -18,7 +19,7 @@ import {
  * @returns {JSX.Element}
  * @constructor
  */
-function VideoCallPage({uid, token}) {
+function VideoCallPage({uid, token, email}) {
     const webcamVideo = useRef(null);
     const callButton = useRef(null);
     const remoteVideo = useRef(null);
@@ -27,10 +28,7 @@ function VideoCallPage({uid, token}) {
 
     let localStream = null;
     let remoteStream = null;
-    useEffect(() => {
-        console.log(token);
-        console.log(uid);
-    }, []);
+
 
     // server config
     const servers = {
@@ -49,7 +47,15 @@ function VideoCallPage({uid, token}) {
 
     useEffect(() => {
         console.log("Peer Connection Created");
-        startWebCam();
+        const message = {
+            title: "New Text Message",
+            message: "Hello, how are you?",
+        };
+        sendVideoCallRequestMessageToUser(
+            "nnastaran83@gmail.com",
+            message).then(startWebCam());
+
+
     }, []);
 
     /**
