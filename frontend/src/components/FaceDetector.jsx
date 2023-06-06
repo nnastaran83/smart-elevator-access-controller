@@ -1,5 +1,5 @@
 import React, {useCallback, useEffect, useRef, useState} from 'react';
-import {Box, styled} from "@mui/material";
+import {Box} from "@mui/material";
 import PitchContainer from "./PitchContainer.jsx";
 import '../styles/FaceDetector.css';
 import axios from "axios";

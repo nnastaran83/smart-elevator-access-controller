@@ -89,14 +89,13 @@ function VideoCallPage({uid, token}) {
 
     /**
      * Handles the click event of the call button
-     * @param calleeId - uid of the user to call - the uid is the UserUID of the user who signed up in the app in firebase
      * @returns {Promise<void>}
      */
-    const startCallWithUser = async (calleeId) => {
+    const startCallWithUser = async () => {
         console.log("Call Button Clicked");
 
         //TODO: change the uid to the uid of the user to call
-        const callDoc = doc(db, "calls", "LS0w3t6T5ZbMVG2IlXghC6HdGti2"); // Main collection in firestore
+        const callDoc = doc(db, "calls", uid); // Main collection in firestore
         const offerCandidates = collection(callDoc, "offerCandidates"); //Sub collection of callDoc
         const answerCandidiates = collection(callDoc, "answerCandidates"); //Sub collection of callDoc
 

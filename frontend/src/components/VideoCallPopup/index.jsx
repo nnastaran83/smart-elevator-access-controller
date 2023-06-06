@@ -33,7 +33,7 @@ const VideoCallPopup = () => {
         <Box className="overlay">
             <Box className="inner-popup" onClick={(event) => (event.stopPropagation())}>
                 {videoCall ? videoCall : <ContactList handleContactButtonClick={handleContactButtonClick}/>}
-                {/*<VideoCallPage/>*/}
+
             </Box>
         </Box>
 

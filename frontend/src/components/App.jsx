@@ -23,14 +23,15 @@ const App = () => {
 
     useEffect(() => {
         console.log("App is running");
-       
+
+        // Ask for registered users from server
         dispatch(loadRegisteredUsers());
+
+        return () => {
+            console.log(registeredUsers)
+        }
     }, []);
 
-
-    // useEffect(() => {
-    //     fetchRegisteredUsers();
-    // }, [fetchRegisteredUsers]);
 
     /**
      * Handles the visibility of the video call popup
