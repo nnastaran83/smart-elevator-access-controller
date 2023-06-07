@@ -2,11 +2,10 @@ import React, {useEffect, useState} from 'react';
 import {Route, Routes} from 'react-router-dom';
 import '../styles/App.scss';
 import FaceDetector from "./FaceDetector.jsx";
-import Siri from './Siri.jsx';
 import VideoCallPopup from "./VideoCallPopup/index.jsx";
 import {Box, Container} from "@mui/material";
 import {loadRegisteredUsers} from "../store/index.js";
-import {useDispatch, useSelector} from "react-redux";
+import {useDispatch} from "react-redux";
 
 
 /**
@@ -18,19 +17,10 @@ import {useDispatch, useSelector} from "react-redux";
  */
 const App = () => {
     const [videoCall, setVideoCall] = useState(null);
-    // const {registeredUsers, fetchRegisteredUsers} = useContext(RegisteredUsersContext);
     const dispatch = useDispatch();
-    const registeredUsers = useSelector(state => state.contactList.registeredUsers);
 
     useEffect(() => {
-        console.log("App is running");
-
-        // Ask for registered users from server
         dispatch(loadRegisteredUsers());
-
-        return () => {
-            console.log(registeredUsers)
-        }
     }, []);
 
 
