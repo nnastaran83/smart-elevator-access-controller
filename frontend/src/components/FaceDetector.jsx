@@ -4,6 +4,7 @@ import PitchContainer from "./PitchContainer.jsx";
 import '../styles/FaceDetector.css';
 import axios from "axios";
 import {store} from "../store/index.js";
+import Siri from "./Siri.jsx";
 
 
 /**
@@ -26,8 +27,6 @@ const FaceDetector = () => {
     useEffect(() => {
         const run = async () => {
             log("run started");
-            speech.voice = speechSynthesis.getVoices()[5];
-            speech.lang = "en-US";
 
 
         };
@@ -37,8 +36,12 @@ const FaceDetector = () => {
     }, []);
 
 
-    const talkToUser = () => {
-        speech.text = "hello";
+    const talkToUser = (text) => {
+        speech.voice = speechSynthesis.getVoices()[5];
+        console.log(speechSynthesis.getVoices());
+        speech.lang = "en-US";
+        speech.text = text;
+
         speechSynthesis.speak(speech);
     };
 
@@ -56,6 +59,7 @@ const FaceDetector = () => {
         setColor(color);
     }, []);
 
+
     /**
      * Detects faces in the video stream and sends the video frame data to the Flask backend
      * @returns {Promise<void>}
@@ -63,7 +67,7 @@ const FaceDetector = () => {
     const detectFace = async () => {
         if (videoRef.current.paused || videoRef.current.ended) {
             console.log("video paused or ended");
-            setTimeout(() => detectFace(), 1000);
+            setTimeout(() => detectFace(), 5000);
             return;
         }
 
@@ -87,8 +91,11 @@ const FaceDetector = () => {
             console.log(response.data);
             if (response.data.name === "Unknown") {
                 changeColor("#E00800")
-            } else {
+
+            } else if (response.data.name) {
+                // talkToUser("Welcome!  Would you want to get home?");
                 changeColor("#0DF205");
+
             }
         } catch (error) {
             console.log(error);
@@ -100,6 +107,7 @@ const FaceDetector = () => {
     return (
         <Box>
             <div className="circle">
+
                 <span className="circle__btn">
                     <video
                         id={"face-recognition-video-cam"}
@@ -111,7 +119,10 @@ const FaceDetector = () => {
                     />
                     <canvas ref={canvasRef}/>
                      <PitchContainer/>
+
+
                 </span>
+
                 <span className="circle__back-1"></span>
                 <span className="circle__back-2"></span>
             </div>

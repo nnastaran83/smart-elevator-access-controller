@@ -2,6 +2,7 @@ import React from 'react';
 import {Box} from '@mui/material';
 import {styled} from '@mui/material';
 import '../styles/PitchContainer.css';
+import Siri from "./Siri.jsx";
 
 
 const CustomBox = styled(Box)(({theme}) => ({
@@ -52,10 +53,6 @@ const Pitch = ({index, pitchNumber}) => {
                 '--pitch-line-color-2': 'white',
                 width: `calc((var(--content-size) / var(--pitch-n)) * var(--index))`,
                 height: `calc((var(--content-size) / var(--pitch-n)) * var(--index))`,
-                transform: `translate(-50%, -50%)`,
-                border: `1px solid var(--pitch-line-color)`,
-                borderRadius: `100%`,
-                animation: `swing linear infinite calc(var(--speed) + var(--index) * 2s)`
             }}
         />
     );
@@ -68,7 +65,7 @@ const PitchContainer = () => {
         <Pitch index={i} pitchNumber={pitchNumber} key={i}/>
     ));
 
-    return <Whole>{pitches}</Whole>;
+    return <Whole>{pitches} {/*<Siri/>*/}</Whole>;
 };
 
 export default PitchContainer;

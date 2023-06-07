@@ -1,5 +1,5 @@
 :root {
-    --r: 380;
+    --r: 360;
     --range: calc(var(--r) * 1deg);
     --speed: calc(var(--r) * 33ms);
     --whole-bg-color: #E4EBF5;
@@ -22,7 +22,7 @@
 }
 
 .whole::after {
-    --deg-to-cent: calc(100% / (360 / var(--r)));
+
     content: "";
     position: absolute;
     top: 50%;
@@ -31,11 +31,6 @@
     height: var(--content-size);
     transform: translate(-50%, -50%);
     border-radius: 100%;
-    background: conic-gradient(
-            from calc(var(--range) * 0.5),
-            var(--out-range-bg-color) 0 calc(100% - var(--deg-to-cent)),
-            transparent calc(100% - var(--deg-to-cent)) 100%
-    );
 }
 
 .pitch {
