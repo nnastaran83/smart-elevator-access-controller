@@ -9,20 +9,21 @@
     --pitch-line-color: #bbb;
     --pitch-line-color-2: #bbb;
     --padding: 0vmin;
+
 }
 
 
-.whole {
+.whole-container {
     --content-size: calc(100% - var(--padding));
+    background: var(--whole-bg-color);
     width: clamp(200px, 80vmin, 800px);
     height: clamp(200px, 80vmin, 800px);
     padding: var(--padding);
-    position: relative;
+    position: absolute;
     border-radius: 100%;
 }
 
-.whole::after {
-
+.whole-container::after {
     content: "";
     position: absolute;
     top: 50%;
@@ -46,6 +47,7 @@
 
 .pitch::after {
     position: absolute;
+    content: "";
     top: 0;
     left: 50%;
     transform: translate(-50%, -50%);
