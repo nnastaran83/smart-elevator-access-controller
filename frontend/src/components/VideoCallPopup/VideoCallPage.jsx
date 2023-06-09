@@ -1,5 +1,5 @@
-import React from "react";
-import {Box, Button, Grid, styled} from "@mui/material";
+import React, {useCallback} from "react";
+import {Box, Button, Grid, Stack, styled} from "@mui/material";
 import {useEffect, useRef, useState} from "react";
 import {db} from "../../firebase_module";
 import VideoContainer from "./VideoContainer.jsx";
@@ -12,6 +12,8 @@ import {
     addDoc,
 } from "firebase/firestore";
 import {sendVideoCallRequestMessageToUser} from "../../firebase_module";
+import JoinButton from "../buttons/JoinButton.jsx";
+import {deleteDoc, query, getDocs} from 'firebase/firestore';
 
 
 /**
@@ -20,18 +22,20 @@ import {sendVideoCallRequestMessageToUser} from "../../firebase_module";
  * @constructor
  */
 function VideoCallPage({uid, token, email}) {
-    const webcamVideo = useRef(null);
-    const callButton = useRef(null);
+    const localWebcamVideo = useRef(null);
     const remoteVideo = useRef(null);
-    const hangupButton = useRef(null);
-    const [callButtonIsEnabled, setCallButtonIsEnabled] = useState(false);
+    const [joinedCall, setJoinedCall] = useState(false);
+    const message = {
+        title: "New Text Message",
+        message: "Hello, how are you?",
+    };
 
     let localStream = null;
     let remoteStream = null;
 
 
-    // server config
-    const servers = {
+    // ice servers configuration
+    const iceConfig = {
         iceServers: [
             {
                 urls: [
@@ -43,62 +47,59 @@ function VideoCallPage({uid, token, email}) {
         iceCandidatePoolSize: 10,
     };
 
-    const [pc, setPc] = useState(new RTCPeerConnection(servers));
+    // Creating peer connection
+    const [pc, setPc] = useState(new RTCPeerConnection(iceConfig));
 
     useEffect(() => {
-        console.log("Peer Connection Created");
-        const message = {
-            title: "New Text Message",
-            message: "Hello, how are you?",
-        };
-        sendVideoCallRequestMessageToUser(
-            "nnastaran83@gmail.com",
-            message).then(startWebCam());
-
+        startWebCam();
 
     }, []);
+
 
     /**
      * Handles the click event of the webcam button
      * @returns {Promise<void>}
      */
-    const startWebCam = async () => {
-        // setting local stream to the video from our camera
-        localStream = await navigator.mediaDevices.getUserMedia({
-            video: true,
-            audio: true,
-        });
-
-        // Pushing tracks from local stream to peerConnection
-        localStream.getTracks().forEach((track) => {
-            pc.addTrack(track, localStream);
-        });
-
-        // displaying the video data from the stream to the webpage
-        webcamVideo.current.srcObject = localStream;
-
-        // initializing the remote server to the mediastream
-        remoteStream = new MediaStream();
-        remoteVideo.current.srcObject = remoteStream;
-
-        pc.ontrack = (event) => {
-            event.streams[0].getTracks().forEach((track) => {
-                console.log("Adding track to remoteStream", track);
-                remoteStream.addTrack(track);
+    const startWebCam = useCallback(
+        async () => {
+            // setting local stream to the video from our camera
+            localStream = await navigator.mediaDevices.getUserMedia({
+                video: true,
+                audio: true,
             });
-            remoteVideo.current.srcObject = remoteStream;
-        };
 
-        // enabling and disabling interface based on the current condition
-        setCallButtonIsEnabled(true);
-    };
+            // Pushing tracks from local stream to peerConnection
+            localStream.getTracks().forEach((track) => {
+                pc.addTrack(track, localStream);
+            });
+
+            // displaying the video data from the stream to the webpage
+            localWebcamVideo.current.srcObject = localStream;
+
+            // initializing the remote server to the media stream
+            remoteStream = new MediaStream();
+            remoteVideo.current.srcObject = remoteStream;
+
+            pc.ontrack = (event) => {
+                event.streams[0].getTracks().forEach((track) => {
+                    console.log("Adding track to remoteStream", track);
+                    remoteStream.addTrack(track);
+                });
+                remoteVideo.current.srcObject = remoteStream;
+            };
+
+        }, [pc]);
 
     /**
      * Handles the click event of the call button
      * @returns {Promise<void>}
      */
     const startCallWithUser = async () => {
+        //TODO: Delete the call document after call ends
+        
         console.log("Call Button Clicked");
+        await deleteDoc(doc(db, 'calls', uid));
+        await sendVideoCallRequestMessageToUser(email, message);
 
         //TODO: change the uid to the uid of the user to call
         const callDoc = doc(db, "calls", uid); // Main collection in firestore
@@ -127,6 +128,7 @@ function VideoCallPage({uid, token, email}) {
         // setting the offer to the callDoc
         await setDoc(callDoc, {offer});
 
+        let candidatesQueue = [];
         ///Listen for changes to the database and detect when an answer from the callee has been added.
         onSnapshot(callDoc, async (snapshot) => {
             const data = snapshot.data();
@@ -148,7 +150,17 @@ function VideoCallPage({uid, token, email}) {
             });
         });
 
+        setJoinedCall(true);
+
     };
+    /**
+     * Hang up the video call
+     */
+    const hangupCall = () => {
+        //TODO: compelete this function
+        setJoinedCall(false);
+    }
+
 
     return (
         <Box
@@ -164,7 +176,7 @@ function VideoCallPage({uid, token, email}) {
                                    id="webcamVideo"
                                    autoPlay
                                    playsInline
-                                   ref={webcamVideo}
+                                   ref={localWebcamVideo}
                         ></VideoItem>
                     </VideoContainer>
                 </Grid>
@@ -178,41 +190,18 @@ function VideoCallPage({uid, token, email}) {
                         ></VideoItem>
                     </VideoContainer>
                 </Grid>
-                <Grid
-                    container
-                    columnSpacing={10}
-                    style={{position: "fixed", bottom: 0, marginBottom: "1rem"}}
-                >
-                    <Grid item xs={6} sx={{textAlign: "right"}}>
-                        <Button
-                            id="callButton"
-                            onClick={startCallWithUser}
-                            ref={callButton}
-                            disabled={!callButtonIsEnabled}
-                            style={{
-                                backgroundColor: "#00DE00",
-                            }}
-                            variant="contained"
-                        >
-                            JOIN
-                        </Button>
-                    </Grid>
-                    <Grid item xs={6} sx={{textAlign: "left"}}>
-                        <div>
-                            <Button
-                                id="hangupButton"
-                                ref={hangupButton}
-                                style={{
-                                    backgroundColor: `#FF0000`,
-                                }}
-                                variant="contained"
-                            >
-                                X
-                            </Button>
-                        </div>
-                    </Grid>
-                </Grid>
             </Grid>
+            <Stack spacing={3}
+                   sx={{position: "absolute", bottom: 0, right: 0, padding: "1rem"}}>
+                {/*TODO: Add camera on or of button*/}
+                <JoinButton
+                    id="hangupButton"
+                    bgcolor={joinedCall ? "#FF0000" : "#00FF00"}
+                    hovercolor={joinedCall ? "#930000" : "#009900"}
+                    onClick={joinedCall ? hangupCall : startCallWithUser}
+                    variant="contained"
+                >{joinedCall ? "X" : "JOIN"}</JoinButton>
+            </Stack>
         </Box>
     );
 }

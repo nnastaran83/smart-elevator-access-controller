@@ -4,12 +4,14 @@
     align-items: end;
     margin: auto;
 
+
 }
 
 #face-recognition-video-cam {
     border-radius: 50%;
     object-fit: cover;
     transform: scaleX(-1);
+
 }
 
 canvas {
@@ -26,5 +28,6 @@ video {
     height: 100%;
     width: 100%;
     object-fit: cover;
+
 
 }

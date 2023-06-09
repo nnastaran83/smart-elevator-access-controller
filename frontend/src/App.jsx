@@ -1,11 +1,11 @@
 import React, {useEffect, useState} from 'react';
 import {Route, Routes} from 'react-router-dom';
-import '../styles/App.scss';
-import FaceDetector from "./FaceDetector.jsx";
-import VideoCallPopup from "./VideoCallPopup/index.jsx";
+import FaceDetector from "./components/FaceDetector.jsx";
+import VideoCallPopup from "./components/VideoCallPopup/index.jsx";
 import {Box, Container} from "@mui/material";
-import {loadRegisteredUsers} from "../store/index.js";
+import {loadRegisteredUsers} from "./store/index.js";
 import {useDispatch} from "react-redux";
+import './styles/App.scss';
 
 
 /**

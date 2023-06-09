@@ -2,16 +2,17 @@ import React from 'react';
 import {Box} from '@mui/material';
 import {styled} from '@mui/material';
 import '../styles/PitchContainer.css';
+import AnimationContainer from "./AnimationContainer.jsx";
 import Siri from "./Siri.jsx";
 
 
-const AnimationBox = styled(Box)(({theme}) => ({
+const AnimatorBox = styled(Box)(({theme}) => ({
     animation: 'swing linear infinite calc(var(--speed) + var(--index) * 150ms)',
 }));
 
 const Pitch = ({index, pitchNumber}) => {
     return (
-        <AnimationBox
+        <AnimatorBox
             className="pitch"
             style={{
                 '--index': index + 1,
@@ -32,7 +33,7 @@ const PitchContainer = () => {
         <Pitch index={i} pitchNumber={pitchNumber} key={i}/>
     ));
 
-    return <Box className={"whole-container"}>{pitches} {/*<Siri/>*/}</Box>;
+    return <AnimationContainer>{pitches}</AnimationContainer>;
 };
 
 export default PitchContainer;

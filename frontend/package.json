@@ -23,6 +23,8 @@
     "react-dom": "^18.2.0",
     "react-player": "^2.12.0",
     "react-redux": "^8.0.5",
+    "react-speech-recognition": "^3.10.0",
+    "regenerator-runtime": "^0.13.11",
     "sass": "^1.59.3",
     "semantic-ui-css": "^2.5.0",
     "socket.io-client": "^4.6.1"

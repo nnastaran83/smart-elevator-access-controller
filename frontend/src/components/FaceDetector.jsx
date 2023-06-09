@@ -1,12 +1,24 @@
 import React, {useCallback, useEffect, useRef, useState} from 'react';
-import {Box} from "@mui/material";
+import SpeechRecognition, {useSpeechRecognition} from 'react-speech-recognition';
+import {Box, Chip, IconButton, Stack} from "@mui/material";
+import Skeleton from '@mui/material/Skeleton';
+import Typography from '@mui/material/Typography';
+import MicIcon from '@mui/icons-material/Mic';
+import MicOffIcon from '@mui/icons-material/MicOff';
+import axios from "axios";
 import PitchContainer from "./PitchContainer.jsx";
 import '../styles/FaceDetector.css';
-import axios from "axios";
-import {store} from "../store/index.js";
 import Siri from "./Siri.jsx";
+import {useDispatch, useSelector} from "react-redux";
+import {setDetectedUserInfo, startFaceRecognition, startSiri, store} from "../store/index.js";
 
 
+//TODO : to stop the camera use this in the code : before it save the stream as state
+
+//                      let tracks = stream.getTracks();
+//                     tracks.forEach(function (track) {
+//                         track.stop();
+//                     });
 /**
  * FaceDetector component is used to detect faces in the video stream and send the video frame data to the Flask backend.
  * @returns {JSX.Element}
@@ -15,9 +27,10 @@ import Siri from "./Siri.jsx";
 const FaceDetector = () => {
     const videoRef = useRef(null);
     const canvasRef = useRef(null);
-    const [detected, setDetected] = useState(false);
-    const speech = new SpeechSynthesisUtterance();
-    const [color, setColor] = useState("#");
+    const dispatch = useDispatch();
+    const isSiriActive = useSelector(state => state.faceDetector.isSiriActive);
+    const isFaceRecognitionActive = useSelector(state => state.faceDetector.isFaceRecognitionActive);
+    const [utterance, setUtterance] = useState(new SpeechSynthesisUtterance());
 
 
     const log = (...args) => {
@@ -27,37 +40,30 @@ const FaceDetector = () => {
     useEffect(() => {
         const run = async () => {
             log("run started");
-
+            utterance.voice = speechSynthesis.getVoices()[5];
+            utterance.lang = "en-US";
 
         };
-
         run().then(startVideo);
 
-    }, []);
+    }, [isFaceRecognitionActive]);
 
 
-    const talkToUser = (text) => {
-        speech.voice = speechSynthesis.getVoices()[5];
-        console.log(speechSynthesis.getVoices());
-        speech.lang = "en-US";
-        speech.text = text;
-
-        speechSynthesis.speak(speech);
-    };
-
+    /**
+     * Starts webcam video stream
+     * @returns {Promise<void>}
+     */
     const startVideo = async () => {
-        navigator.mediaDevices.getUserMedia({video: true})
-            .then((stream) => {
-                videoRef.current.srcObject = stream;
-            })
-            .catch((err) => {
-                console.error(err);
-            });
+        if (isFaceRecognitionActive) {
+            navigator.mediaDevices.getUserMedia({video: true})
+                .then((stream) => {
+                    videoRef.current.srcObject = stream;
+                })
+                .catch((err) => {
+                    console.error(err);
+                });
+        }
     };
-
-    const changeColor = useCallback((color) => {
-        setColor(color);
-    }, []);
 
 
     /**
@@ -65,61 +71,66 @@ const FaceDetector = () => {
      * @returns {Promise<void>}
      */
     const detectFace = async () => {
-        if (videoRef.current.paused || videoRef.current.ended) {
-            console.log("video paused or ended");
-            setTimeout(() => detectFace(), 5000);
-            return;
-        }
-
-        const video = videoRef.current;
-        const canvas = document.createElement('canvas');
-        canvas.width = video.videoWidth;
-        canvas.height = video.videoHeight;
-        const ctx = canvas.getContext('2d');
-        ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
-
-        // Convert the content of the canvas to a Base64-encoded JPEG image.
-        const frameData = canvas.toDataURL('image/jpeg', 1);
-
-
-        // Send the video frame data to backend server and wait for response.
-        try {
-            const response = await axios.post('http://localhost:5000/recognize_face',
-                {frame_data: frameData},
-                {headers: {'Content-Type': 'application/json'}}
-            );
-            console.log(response.data);
-            if (response.data.name === "Unknown") {
-                changeColor("#E00800")
-
-            } else if (response.data.name) {
-                // talkToUser("Welcome!  Would you want to get home?");
-                changeColor("#0DF205");
-
+        if (isFaceRecognitionActive) {
+            if (videoRef.current.paused || videoRef.current.ended) {
+                setTimeout(() => detectFace(), 1000);
+                return;
             }
-        } catch (error) {
-            console.log(error);
-        }
 
-        setTimeout(() => detectFace(), 5000);
+            const video = videoRef.current;
+            const canvas = document.createElement('canvas');
+            canvas.width = video.videoWidth;
+            canvas.height = video.videoHeight;
+            const ctx = canvas.getContext('2d');
+            ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
+
+            // Convert the content of the canvas to a Base64-encoded JPEG image.
+            const frameData = canvas.toDataURL('image/jpeg', 1);
+
+            // Send the video frame data to backend server and wait for response.
+            try {
+                const response = await axios.post('http://localhost:5000/recognize_face',
+                    {frame_data: frameData},
+                    {headers: {'Content-Type': 'application/json'}}
+                );
+
+                console.log(response.data);
+
+                if (response.data.name) {
+                    await dispatch(setDetectedUserInfo(response.data));
+                    await dispatch(startSiri());
+                } else {
+                    setTimeout(() => detectFace(), 5000);
+                }
+
+            } catch (error) {
+                console.log(error);
+            }
+
+
+        }
     };
 
     return (
         <Box>
             <div className="circle">
-
                 <span className="circle__btn">
-                    <video
-                        id={"face-recognition-video-cam"}
-                        ref={videoRef}
-                        autoPlay
-                        onPlay={detectFace}
-                        style={{display: "block"}}
+                   {isFaceRecognitionActive && <React.Fragment>
+                       <video
+                           id={"face-recognition-video-cam"}
+                           ref={videoRef}
+                           autoPlay
+                           onPlay={detectFace}
+                           style={{display: "block"}}
 
-                    />
-                    <canvas ref={canvasRef}/>
-                     <PitchContainer/>
-
+                       />
+                       <canvas ref={canvasRef}/>
+                       <PitchContainer/>
+                   </React.Fragment>
+                   }
+                    {
+                        isSiriActive && <Siri utterance={utterance}/>
+                    }
 
                 </span>
 

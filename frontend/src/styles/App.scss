@@ -40,6 +40,7 @@ inset -.2rem -.2rem .5rem var(--white);
     width: clamp(200px, 80vmin, 800px);
     height: clamp(200px, 80vmin, 800px);
 
+
     &.shadow {
       box-shadow: $inner-shadow;
     }

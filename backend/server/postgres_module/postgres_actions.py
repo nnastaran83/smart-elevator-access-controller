@@ -90,6 +90,9 @@ class PostgresModel:
          :param img_array:
          :return:
          """
+        best_match_name = None
+        best_floor_number = None
+        best_match_uid = None
 
         # Get the face encodings for the picture
         new_face_encodings = face_recognition.face_encodings(img_array)
@@ -105,7 +108,7 @@ class PostgresModel:
                 """)
 
                 min_distance = 0.7  # Maximum possible distance is 1.0
-                best_match_name = None
+                best_match_name = "Unknown"
                 best_match_encoding = None
                 best_floor_number = None
                 best_match_uid = None
@@ -124,11 +127,7 @@ class PostgresModel:
                         if min_distance < 0.4:
                             break
 
-                # If a match was found, print the name
-                if best_match_name is not None:
-                    return {"name": best_match_name, "floor_number": best_floor_number, "uid": best_match_uid}
-
-        return None, None
+        return {"name": best_match_name, "floor_number": best_floor_number, "uid": best_match_uid}
 
     @classmethod
     def get_registered_users(cls):
