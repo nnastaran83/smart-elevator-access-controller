@@ -6,6 +6,7 @@ const faceDetectorSlice = createSlice({
         detectedUserInfo: {name: null, floor_number: null, uid: null},
         isFaceRecognitionActive: true,
         isSiriActive: false,
+
     },
     reducers: {
         startFaceRecognition: (state) => {

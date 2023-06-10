@@ -1,6 +1,6 @@
 import React, {useEffect, useState} from 'react';
 import {Route, Routes} from 'react-router-dom';
-import FaceDetector from "./components/FaceDetector.jsx";
+import Controller from "./components/Controller/index.jsx";
 import VideoCallPopup from "./components/VideoCallPopup/index.jsx";
 import {Box, Container} from "@mui/material";
 import {loadRegisteredUsers} from "./store/index.js";
@@ -52,7 +52,7 @@ const App = () => {
         <Container className="App" onClick={handleVideoVisibility}>
             <Box>
                 <Routes>
-                    <Route path='/' element={<FaceDetector/>}/>
+                    <Route path='/' element={<Controller/>}/>
                 </Routes>
 
             </Box>

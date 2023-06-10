@@ -1,24 +1,27 @@
 import React, {useCallback, useEffect, useState} from 'react';
-import '../styles/Siri.css';
+import '../../styles/Siri.css';
 import {Box, Chip, IconButton} from "@mui/material";
-import AnimationContainer from "./AnimationContainer.jsx";
+import AnimationContainer from "../AnimationContainer.jsx";
 import {useDispatch, useSelector} from "react-redux";
 import SpeechRecognition, {useSpeechRecognition} from "react-speech-recognition";
 import MicIcon from "@mui/icons-material/Mic";
 import MicOffIcon from "@mui/icons-material/MicOff";
-import {startFaceRecognition} from "../store/index.js";
+import {startFaceRecognition} from "../../store/index.js";
 
 const Siri = ({utterance}) => {
     const detectedUserInfo = useSelector(state => state.faceDetector.detectedUserInfo);
+
     const [siriMessage, setSiriMessage] = useState("");
-    const [questionNumber, setQuestionNumber] = useState(0);
     const [isSpeechSynthesisEnded, setSpeechSynthesisEnded] = useState(false);
     const dispatch = useDispatch();
     const commands = [
         {
-            command: '*',
-            callback: (food) => console.log(`Your order is for: ${food}`)
+            command: 'yes',
+            callback: (command) => {
+                console.log("Command: ", command);
+            }
         }];
+
     const {
         listening,
         resetTranscript,
@@ -36,13 +39,10 @@ const Siri = ({utterance}) => {
 
     useEffect(() => {
         if (!listening && isSpeechSynthesisEnded && transcript.length == 0) {
-
             // Speech recognition has ended and speech synthesis had finished, dispatch your action here
             dispatch(startFaceRecognition());
-            // reset isSpeechSynthesisEnded state
-            setSpeechSynthesisEnded(false);
         }
-    }, [listening, isSpeechSynthesisEnded, dispatch, transcript]);
+    }, [listening]);
 
     /**
      * Talking to user
@@ -51,7 +51,6 @@ const Siri = ({utterance}) => {
     const talkToUser = async () => {
         utterance.voice = speechSynthesis.getVoices()[5];
         utterance.lang = "en-US";
-        console.log("talkToUser started");
 
         if (detectedUserInfo.uid) {//If user has uid, it means that the user is registered.
             utterance.text = "Welcome! Would you like to go home?";
@@ -61,12 +60,15 @@ const Siri = ({utterance}) => {
             utterance.text = `Sorry! Can't recognize you! Would you like to make a video call for approval?`;
         }
 
+
         setSiriMessage(utterance.text);
         utterance.onend = () => {
             setSpeechSynthesisEnded(true);
+
             SpeechRecognition.startListening();
         };
         speechSynthesis.speak(utterance);
+
     };
 
 
