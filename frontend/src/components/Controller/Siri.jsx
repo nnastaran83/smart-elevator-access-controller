@@ -9,18 +9,60 @@ import MicOffIcon from "@mui/icons-material/MicOff";
 import {startFaceRecognition} from "../../store/index.js";
 
 const Siri = ({utterance}) => {
+    const REGISTERED_USER = 'registered';
+    const RETURNING_USER = 'returning_user';
+    const UNREGISTERED_USER = 'unregistered';
+    const INITIAL = 'initial';
+    const FLOOR_QUESTION = 'floor_question';
     const detectedUserInfo = useSelector(state => state.faceDetector.detectedUserInfo);
-
+    const [userType, setUserType] = useState(null);
+    const [currentQuestionStep, setCurrentQuestionStep] = useState(INITIAL);
     const [siriMessage, setSiriMessage] = useState("");
     const [isSpeechSynthesisEnded, setSpeechSynthesisEnded] = useState(false);
     const dispatch = useDispatch();
     const commands = [
         {
             command: 'yes',
-            callback: (command) => {
-                console.log("Command: ", command);
+            callback: () => {
+                if ((userType === REGISTERED_USER || userType === RETURNING_USER) && currentQuestionStep === INITIAL) {
+                    utterance.voice = speechSynthesis.getVoices()[5];
+                    utterance.lang = "en-US";
+                    utterance.text = "No problem! Have a nice day!";
+                    setSiriMessage(utterance.text);
+                    utterance.onend = () => {
+                        setSpeechSynthesisEnded(true);
+                        dispatch(startFaceRecognition());
+                    };
+                    speechSynthesis.speak(utterance);
+
+                }
             }
-        }];
+        },
+        {
+            command: 'no',
+            callback: () => {
+                if (userType === REGISTERED_USER || userType === RETURNING_USER || currentQuestionStep === INITIAL) {
+                    setCurrentQuestionStep(FLOOR_QUESTION);
+                    askUser("Which floor would you like to go to?");
+
+                } else {
+                    setSiriMessage("Goodbye!");
+                }
+            }
+        },
+        {
+            command: ['(floor) one', '(floor) 1', '(floor) 2', '(floor) 3', '(floor) 4', '(floor) 5', '(floor) 6', '(floor) 7', '(floor) 8', '(floor) 9', '(floor) 10'],
+            callback: ({command}) => {
+                if (currentQuestionStep === FLOOR_QUESTION) {
+                    console.log(`Hi there! You said: "${command}"`)
+                }
+            }
+            ,
+            matchInterim: true
+
+        },
+    ];
+
 
     const {
         listening,
@@ -34,7 +76,19 @@ const Siri = ({utterance}) => {
         if (!browserSupportsSpeechRecognition) {
             console.log("Attention! Browser doesn't support speech recognition");
         }
-        talkToUser();
+
+        if (detectedUserInfo.uid) {
+            setUserType(REGISTERED_USER);
+            askUser("Welcome! Would you like to go home?");
+
+        } else if (detectedUserInfo.floor_number) {
+            setUserType(RETURNING_USER);
+            askUser(`Welcome! Would you like to go to floor ${detectedUserInfo.floor_number} like the last time?`);
+        } else {
+            setUserType(UNREGISTERED_USER);
+            askUser("Sorry! Can't recognize you! Would you like to make a video call for approval?");
+        }
+
     }, []);
 
     useEffect(() => {
@@ -42,25 +96,16 @@ const Siri = ({utterance}) => {
             // Speech recognition has ended and speech synthesis had finished, dispatch your action here
             dispatch(startFaceRecognition());
         }
-    }, [listening]);
+    }, [listening, isSpeechSynthesisEnded]);
 
     /**
      * Talking to user
      * @returns {Promise<void>}
      */
-    const talkToUser = async () => {
+    const askUser = async (text) => {
         utterance.voice = speechSynthesis.getVoices()[5];
         utterance.lang = "en-US";
-
-        if (detectedUserInfo.uid) {//If user has uid, it means that the user is registered.
-            utterance.text = "Welcome! Would you like to go home?";
-        } else if (detectedUserInfo.floor_number) { //If user doesn't have uid, but has a floor, it means the user is a guest who came back.
-            utterance.text = `Welcome! Would you like to go to floor ${detectedUserInfo.floor} like the last time?`;
-        } else { //If user doesn't have uid and floor, it means the user is a guest who came for the first time.
-            utterance.text = `Sorry! Can't recognize you! Would you like to make a video call for approval?`;
-        }
-
-
+        utterance.text = text;
         setSiriMessage(utterance.text);
         utterance.onend = () => {
             setSpeechSynthesisEnded(true);
