@@ -1,16 +1,11 @@
 import React, {useCallback, useEffect, useRef, useState} from 'react';
-import SpeechRecognition, {useSpeechRecognition} from 'react-speech-recognition';
-import {Box, Chip, IconButton, Stack} from "@mui/material";
-import Skeleton from '@mui/material/Skeleton';
-import Typography from '@mui/material/Typography';
-import MicIcon from '@mui/icons-material/Mic';
-import MicOffIcon from '@mui/icons-material/MicOff';
+import {Box} from "@mui/material";
 import axios from "axios";
 import PitchContainer from "./PitchContainer.jsx";
 import '../styles/FaceDetector.css';
 import Siri from "./Siri.jsx";
 import {useDispatch, useSelector} from "react-redux";
-import {setDetectedUserInfo, startFaceRecognition, startSiri, store} from "../store/index.js";
+import {setDetectedUserInfo, startSiri} from "../store/index.js";
 
 
 //TODO : to stop the camera use this in the code : before it save the stream as state
@@ -25,11 +20,16 @@ import {setDetectedUserInfo, startFaceRecognition, startSiri, store} from "../st
  * @component
  */
 const FaceDetector = () => {
+    const dispatch = useDispatch();
+    const {isSiriActive, isFaceRecognitionActive} = useSelector(state => {
+            return {
+                isSiriActive: state.faceDetector.isSiriActive,
+                isFaceRecognitionActive: state.faceDetector.isFaceRecognitionActive
+            }
+        }
+    );
     const videoRef = useRef(null);
     const canvasRef = useRef(null);
-    const dispatch = useDispatch();
-    const isSiriActive = useSelector(state => state.faceDetector.isSiriActive);
-    const isFaceRecognitionActive = useSelector(state => state.faceDetector.isFaceRecognitionActive);
     const [utterance, setUtterance] = useState(new SpeechSynthesisUtterance());
 
 
