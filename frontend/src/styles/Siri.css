@@ -49,16 +49,17 @@
 }
 
 .green {
-    background: -webkit-linear-gradient(left, rgba(182, 64, 53, 0) 0%, rgba(34, 98, 50, 0) 0%, rgb(76, 120, 255) 100%);
+    background: -webkit-linear-gradient(left, rgba(195, 241, 252, 0.5) 0%, rgba(224, 195, 252, 0.7) 43%, rgba(142, 197, 252, 1) 100%);
     transform: rotateY(0) skew(15deg) rotate3d(1.1, 1, 0.9, 0);
     animation: curve-rotate-green 50s infinite linear;
 }
 
 .pink {
-    background: -webkit-linear-gradient(left, rgba(255, 255, 255, 0) 0%, rgba(255, 255, 255, 0) 0%, rgb(255, 99, 251) 100%);
+    background: -webkit-linear-gradient(left, rgba(195, 234, 167, 0.51) 0%, rgba(252, 203, 144, 0.7) 43%, rgba(213, 126, 235, 1) 100%);
     transform: rotateY(180deg) skew(15deg) rotate3d(1.1, 1, 0.9, 0);
     animation: curve-rotate-pink 50s infinite linear;
 }
+
 
 @-webkit-keyframes curve-rotate-green {
     0% {
