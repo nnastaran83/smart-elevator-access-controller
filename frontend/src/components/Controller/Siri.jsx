@@ -24,17 +24,19 @@ const Siri = ({utterance}) => {
         {
             command: 'yes',
             callback: () => {
-                if (currentQuestionStep === INITIAL && (userType === REGISTERED_USER || userType === RETURNING_USER)) {
-                    utterance.voice = speechSynthesis.getVoices()[5];
-                    utterance.lang = "en-US";
-                    utterance.text = "No problem! Have a nice day!";
-                    setSiriMessage(utterance.text);
-                    utterance.onend = () => {
-                        setSpeechSynthesisEnded(true);
-                        dispatch(startFaceRecognition());
-                    };
-                    speechSynthesis.speak(utterance);
-
+                if (currentQuestionStep === INITIAL) {
+                    if ((userType === REGISTERED_USER || userType === RETURNING_USER)) {
+                        utterance.voice = speechSynthesis.getVoices()[5];
+                        utterance.lang = "en-US";
+                        utterance.text = "No problem! Have a nice day!";
+                        setSiriMessage(utterance.text);
+                        utterance.onend = () => {
+                            setSpeechSynthesisEnded(true);
+                            dispatch(startFaceRecognition());
+                        };
+                        speechSynthesis.speak(utterance);
+                    }
+                    
                 }
             }
         },
