@@ -1,4 +1,4 @@
-import React, {useCallback, useEffect, useState} from 'react';
+import React, {useEffect, useState} from 'react';
 import '../../styles/Siri.css';
 import {Box, Chip, IconButton} from "@mui/material";
 import AnimationContainer from "../AnimationContainer.jsx";
@@ -24,7 +24,7 @@ const Siri = ({utterance}) => {
         {
             command: 'yes',
             callback: () => {
-                if ((userType === REGISTERED_USER || userType === RETURNING_USER) && currentQuestionStep === INITIAL) {
+                if (currentQuestionStep === INITIAL && (userType === REGISTERED_USER || userType === RETURNING_USER)) {
                     utterance.voice = speechSynthesis.getVoices()[5];
                     utterance.lang = "en-US";
                     utterance.text = "No problem! Have a nice day!";
@@ -41,6 +41,7 @@ const Siri = ({utterance}) => {
         {
             command: 'no',
             callback: () => {
+
                 if (userType === REGISTERED_USER || userType === RETURNING_USER || currentQuestionStep === INITIAL) {
                     setCurrentQuestionStep(FLOOR_QUESTION);
                     askUser("Which floor would you like to go to?");
@@ -53,6 +54,7 @@ const Siri = ({utterance}) => {
         {
             command: ['(floor) one', '(floor) 1', '(floor) 2', '(floor) 3', '(floor) 4', '(floor) 5', '(floor) 6', '(floor) 7', '(floor) 8', '(floor) 9', '(floor) 10'],
             callback: ({command}) => {
+
                 if (currentQuestionStep === FLOOR_QUESTION) {
                     console.log(`Hi there! You said: "${command}"`)
                 }
@@ -61,7 +63,9 @@ const Siri = ({utterance}) => {
             matchInterim: true
 
         },
+
     ];
+    const validCommands = ['yes', 'no', 'floor one', 'floor 1', 'floor 2', 'floor 3', 'floor 4', 'floor 5', 'floor 6', 'floor 7', 'floor 8', 'floor 9', 'floor 10', '1', '2', '3', '4', '5', '6', '7', '8', '9', '10'];
 
 
     const {
@@ -95,7 +99,10 @@ const Siri = ({utterance}) => {
         if (!listening && isSpeechSynthesisEnded && transcript.length == 0) {
             // Speech recognition has ended and speech synthesis had finished, dispatch your action here
             dispatch(startFaceRecognition());
+        } else if (transcript.length > 0 && !validCommands.includes(transcript)) {
+            console.log(transcript);
         }
+
     }, [listening, isSpeechSynthesisEnded]);
 
     /**
