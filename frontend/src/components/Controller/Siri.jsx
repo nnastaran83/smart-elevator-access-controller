@@ -137,7 +137,7 @@ const Siri = ({utterance}) => {
                     </div>
                 </Box>
             </AnimationContainer>
-            <p style={{textAlign: "center"}}>{siriMessage}</p>
+            <h1 style={{textAlign: "center", zIndex: 1, padding: "40px"}}>{siriMessage}</h1>
             <Box sx={{position: "absolute", left: 0, bottom: 0}}>
                 <IconButton sx={{color: listening ? "#1cb612" : "#ce1313"}}>
                     {listening ? <MicIcon/> : <MicOffIcon/>}

@@ -3,7 +3,7 @@ import {Box, styled} from "@mui/material";
 
 const AnimationContainer = styled(Box)(({theme}) => ({
         '--content-size': "calc(100% - var(--padding))",
-        /*  background: `var(--whole-bg-color)`*/
+        background: `var(--whole-bg-color)`,
         width: `clamp(200px, 80vmin, 800px)`,
         height: `clamp(200px, 80vmin, 800px)`,
         padding: `var(--padding)`,

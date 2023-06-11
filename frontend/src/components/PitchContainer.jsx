@@ -3,7 +3,6 @@ import {Box} from '@mui/material';
 import {styled} from '@mui/material';
 import '../styles/PitchContainer.css';
 import AnimationContainer from "./AnimationContainer.jsx";
-import Siri from "./Controller/Siri.jsx";
 
 
 const AnimatorBox = styled(Box)(({theme}) => ({
