@@ -1,3 +1,4 @@
+import 'core-js/stable';
 import 'regenerator-runtime/runtime'; //This import is required for the speech recognition
 import React from 'react';
 import ReactDOM from 'react-dom/client';

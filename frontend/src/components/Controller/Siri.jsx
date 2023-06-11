@@ -1,6 +1,6 @@
 import React, {useEffect, useState} from 'react';
 import '../../styles/Siri.css';
-import {Box, Chip, IconButton} from "@mui/material";
+import {Box, Chip, IconButton, Stack, Typography} from "@mui/material";
 import AnimationContainer from "../AnimationContainer.jsx";
 import {useDispatch, useSelector} from "react-redux";
 import SpeechRecognition, {useSpeechRecognition} from "react-speech-recognition";
@@ -9,17 +9,17 @@ import MicOffIcon from "@mui/icons-material/MicOff";
 import {startFaceRecognition} from "../../store/index.js";
 
 const Siri = ({utterance}) => {
-    const REGISTERED_USER = 'registered';
-    const RETURNING_USER = 'returning_user';
-    const UNREGISTERED_USER = 'unregistered';
-    const INITIAL = 'initial';
-    const FLOOR_QUESTION = 'floor_question';
-    const detectedUserInfo = useSelector(state => state.faceDetector.detectedUserInfo);
+    const validCommands = ['yes', 'no', 'floor one', 'floor 1', 'floor 2', 'floor 3', 'floor 4', 'floor 5', 'floor 6', 'floor 7', 'floor 8', 'floor 9', 'floor 10', '1', '2', '3', '4', '5', '6', '7', '8', '9', '10', 'one', 'two', 'three', 'four', 'five', 'six', 'seven', 'eight', 'nine', 'ten'];
+    const [REGISTERED_USER, RETURNING_USER, UNREGISTERED_USER] = ['registered', 'returning_user', 'unregistered'];
+    const [INITIAL, FLOOR_QUESTION] = ['initial', 'floor_question'];
     const [userType, setUserType] = useState(null);
     const [currentQuestionStep, setCurrentQuestionStep] = useState(INITIAL);
     const [siriMessage, setSiriMessage] = useState("");
     const [isSpeechSynthesisEnded, setSpeechSynthesisEnded] = useState(false);
     const dispatch = useDispatch();
+    const detectedUserInfo = useSelector(state => state.faceDetector.detectedUserInfo);
+
+    // Speech recognition commands and responses
     const commands = [
         {
             command: 'yes',
@@ -61,11 +61,9 @@ const Siri = ({utterance}) => {
             }
             ,
             matchInterim: true
-
         },
 
     ];
-    const validCommands = ['yes', 'no', 'floor one', 'floor 1', 'floor 2', 'floor 3', 'floor 4', 'floor 5', 'floor 6', 'floor 7', 'floor 8', 'floor 9', 'floor 10', '1', '2', '3', '4', '5', '6', '7', '8', '9', '10'];
 
 
     const {
@@ -74,6 +72,7 @@ const Siri = ({utterance}) => {
         transcript,
         browserSupportsSpeechRecognition
     } = useSpeechRecognition({commands});
+
 
     useEffect(() => {
         console.log("Siri component mounted");
@@ -95,15 +94,17 @@ const Siri = ({utterance}) => {
 
     }, []);
 
+
     useEffect(() => {
         if (!listening && isSpeechSynthesisEnded && transcript.length == 0) {
             // Speech recognition has ended and speech synthesis had finished, dispatch your action here
             dispatch(startFaceRecognition());
         } else if (transcript.length > 0 && !validCommands.includes(transcript)) {
-            console.log(transcript);
+            askUser("Sorry! I didn't get that! Please repeat!");
         }
 
     }, [listening, isSpeechSynthesisEnded]);
+
 
     /**
      * Talking to user
@@ -126,6 +127,7 @@ const Siri = ({utterance}) => {
 
     return (
         <React.Fragment>
+
             <AnimationContainer>
                 <Box sx={{
                     width: "100%",
@@ -143,18 +145,27 @@ const Siri = ({utterance}) => {
                         <div className="blue"></div>
                     </div>
                 </Box>
+
             </AnimationContainer>
-            <h1 style={{textAlign: "center", zIndex: 1, padding: "40px"}}>{siriMessage}</h1>
-            <Box sx={{position: "absolute", left: 0, bottom: 0}}>
-                <IconButton sx={{color: listening ? "#1cb612" : "#ce1313"}}>
-                    {listening ? <MicIcon/> : <MicOffIcon/>}
-                </IconButton>
-                {transcript ? <Chip label={`${transcript}`} variant="outlined"/> : null}
-            </Box>
+            <Typography variant="h5" gutterBottom
+                        style={{textAlign: "center", zIndex: 1, padding: "40px"}}>
+                {siriMessage}
+            </Typography>
+            <Stack spacing={2} sx={{zIndex: 1, position: "absolute", bottom: 30, textAlign: "center"}}>
+                <Box>
+                    {transcript ? <Chip label={`${transcript}`} variant="outlined"/> : null}
+                </Box>
+                <Box>
+                    <IconButton sx={{color: listening ? "#1cb612" : "#ce1313"}}>
+                        {listening ? <MicIcon/> : <MicOffIcon/>}
+                    </IconButton>
+                </Box>
+            </Stack>
+
+
         </React.Fragment>
 
-
     );
-}
+};
 
 export default Siri;
