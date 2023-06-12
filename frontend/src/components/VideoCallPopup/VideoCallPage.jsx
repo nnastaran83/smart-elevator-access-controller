@@ -20,6 +20,9 @@ const message = {
     message: "Hello, how are you?",
 };
 
+let localStream = null;
+let remoteStream = null;
+
 
 // ice servers configuration
 const iceConfig = {
@@ -34,9 +37,6 @@ const iceConfig = {
     iceCandidatePoolSize: 10,
 };
 
-// Creating peer connection
-const pc = new RTCPeerConnection(iceConfig);
-
 
 /**
  * Video Calling Page using WebRTC
@@ -46,9 +46,11 @@ const pc = new RTCPeerConnection(iceConfig);
 function VideoCallPage({uid, token, email}) {
     const localWebcamVideo = useRef(null);
     const remoteVideo = useRef(null);
+    // Creating peer connection
+    const pc = useRef(new RTCPeerConnection(iceConfig));
+    const sendSignalChannel = useRef(null);
+
     const [joinedCall, setJoinedCall] = useState(false);
-    let localStream = null;
-    let remoteStream = null;
 
 
     useEffect(() => {
@@ -70,7 +72,7 @@ function VideoCallPage({uid, token, email}) {
 
         // Pushing tracks from local stream to peerConnection
         localStream.getTracks().forEach((track) => {
-            pc.addTrack(track, localStream);
+            pc.current.addTrack(track, localStream);
         });
 
         // displaying the video data from the stream to the webpage
@@ -80,21 +82,21 @@ function VideoCallPage({uid, token, email}) {
         remoteStream = new MediaStream();
         remoteVideo.current.srcObject = remoteStream;
 
-        pc.ontrack = (event) => {
+        pc.current.ontrack = (event) => {
             event.streams[0].getTracks().forEach((track) => {
                 console.log("Adding track to remoteStream", track);
                 remoteStream.addTrack(track);
             });
             remoteVideo.current.srcObject = remoteStream;
         };
-        pc.oniceconnectionstatechange = (e) => {
-            console.log("ICE connection state change: ", pc.iceConnectionState);
-            if (pc.iceConnectionState === "connected" || pc.iceConnectionState === "completed") {
+        pc.current.oniceconnectionstatechange = (e) => {
+            console.log("ICE connection state change: ", pc.current.iceConnectionState);
+            if (pc.current.iceConnectionState === "connected" || pc.current.iceConnectionState === "completed") {
                 // Connection has been established
                 // You can set your state variable here
 
                 setJoinedCall(true);
-            } else if (pc.iceConnectionState === "disconnected" || pc.iceConnectionState === "failed" || pc.iceConnectionState === "closed") {
+            } else if (pc.current.iceConnectionState === "disconnected" || pc.current.iceConnectionState === "failed" || pc.current.iceConnectionState === "closed") {
                 // Connection has been closed/failed
                 // You can reset your state variable here
                 setJoinedCall(false);
@@ -120,17 +122,20 @@ function VideoCallPage({uid, token, email}) {
         const offerCandidates = collection(callDoc, "offerCandidates"); //Sub collection of callDoc
         const answerCandidiates = collection(callDoc, "answerCandidates"); //Sub collection of callDoc
 
-
+        sendSignalChannel.current = pc.current.createDataChannel("sendSignalChannel");
+        sendSignalChannel.current.onmessage = (event) => {
+            console.log("Got message from sendSignalChannel", event.data);
+        };
         //Before the caller and callee can connect to each other, they need to exchange ICE candidates that tell WebRTC how to connect to the remote peer.
         //Get candidates for caller and save to db
-        pc.onicecandidate = (event) => {
+        pc.current.onicecandidate = (event) => {
             console.log("Got Ice Candidate", event.candidate);
             event.candidate && addDoc(offerCandidates, event.candidate.toJSON());
         };
 
         // Create a RTCSessionDescription that will represent the offer from the caller, then set it as the local description,
-        const offerDescription = await pc.createOffer();
-        await pc.setLocalDescription(offerDescription);
+        const offerDescription = await pc.current.createOffer();
+        await pc.current.setLocalDescription(offerDescription);
 
         // config for offer
         const offer = {
@@ -146,10 +151,10 @@ function VideoCallPage({uid, token, email}) {
         ///Listen for changes to the database and detect when an answer from the callee has been added.
         onSnapshot(callDoc, async (snapshot) => {
             const data = snapshot.data();
-            if (!pc.currentRemoteDescription && data.answer) {
+            if (!pc.current.currentRemoteDescription && data.answer) {
                 //TODO: change the answerDescription name to answer
                 const answerDescription = new RTCSessionDescription(data.answer);
-                await pc.setRemoteDescription(answerDescription);
+                await pc.current.setRemoteDescription(answerDescription);
             }
 
         });
@@ -159,7 +164,7 @@ function VideoCallPage({uid, token, email}) {
             snapshot.docChanges().forEach((change) => {
                 if (change.type === "added") {
                     const candidate = new RTCIceCandidate(change.doc.data());
-                    pc.addIceCandidate(candidate);
+                    pc.current.addIceCandidate(candidate);
                 }
             });
         });
@@ -221,3 +226,4 @@ function VideoCallPage({uid, token, email}) {
 }
 
 export default VideoCallPage;
+
