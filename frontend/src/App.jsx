@@ -45,14 +45,11 @@ const App = () => {
 
 
     return (
-
         <Container className="App" onClick={startFaceDetector}>
             <Box>
                 <Controller/>
             </Box>
         </Container>
-
-
     );
 };
 
