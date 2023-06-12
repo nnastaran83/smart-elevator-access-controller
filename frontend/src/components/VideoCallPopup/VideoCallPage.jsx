@@ -13,7 +13,29 @@ import {
 } from "firebase/firestore";
 import {sendVideoCallRequestMessageToUser} from "../../firebase_module";
 import JoinButton from "../buttons/JoinButton.jsx";
-import {deleteDoc, query, getDocs} from 'firebase/firestore';
+import {deleteDoc} from 'firebase/firestore';
+
+const message = {
+    title: "New Text Message",
+    message: "Hello, how are you?",
+};
+
+
+// ice servers configuration
+const iceConfig = {
+    iceServers: [
+        {
+            urls: [
+                "stun:stun1.l.google.com:19302",
+                "stun:stun2.l.google.com:19302",
+            ], // free stun server
+        },
+    ],
+    iceCandidatePoolSize: 10,
+};
+
+// Creating peer connection
+const pc = new RTCPeerConnection(iceConfig);
 
 
 /**
@@ -25,30 +47,9 @@ function VideoCallPage({uid, token, email}) {
     const localWebcamVideo = useRef(null);
     const remoteVideo = useRef(null);
     const [joinedCall, setJoinedCall] = useState(false);
-    const message = {
-        title: "New Text Message",
-        message: "Hello, how are you?",
-    };
-
     let localStream = null;
     let remoteStream = null;
 
-
-    // ice servers configuration
-    const iceConfig = {
-        iceServers: [
-            {
-                urls: [
-                    "stun:stun1.l.google.com:19302",
-                    "stun:stun2.l.google.com:19302",
-                ], // free stun server
-            },
-        ],
-        iceCandidatePoolSize: 10,
-    };
-
-    // Creating peer connection
-    const [pc, setPc] = useState(new RTCPeerConnection(iceConfig));
 
     useEffect(() => {
         startWebCam();
@@ -60,35 +61,48 @@ function VideoCallPage({uid, token, email}) {
      * Handles the click event of the webcam button
      * @returns {Promise<void>}
      */
-    const startWebCam = useCallback(
-        async () => {
-            // setting local stream to the video from our camera
-            localStream = await navigator.mediaDevices.getUserMedia({
-                video: true,
-                audio: true,
+    const startWebCam = async () => {
+        // setting local stream to the video from our camera
+        localStream = await navigator.mediaDevices.getUserMedia({
+            video: true,
+            audio: true,
+        });
+
+        // Pushing tracks from local stream to peerConnection
+        localStream.getTracks().forEach((track) => {
+            pc.addTrack(track, localStream);
+        });
+
+        // displaying the video data from the stream to the webpage
+        localWebcamVideo.current.srcObject = localStream;
+
+        // initializing the remote server to the media stream
+        remoteStream = new MediaStream();
+        remoteVideo.current.srcObject = remoteStream;
+
+        pc.ontrack = (event) => {
+            event.streams[0].getTracks().forEach((track) => {
+                console.log("Adding track to remoteStream", track);
+                remoteStream.addTrack(track);
             });
-
-            // Pushing tracks from local stream to peerConnection
-            localStream.getTracks().forEach((track) => {
-                pc.addTrack(track, localStream);
-            });
-
-            // displaying the video data from the stream to the webpage
-            localWebcamVideo.current.srcObject = localStream;
-
-            // initializing the remote server to the media stream
-            remoteStream = new MediaStream();
             remoteVideo.current.srcObject = remoteStream;
+        };
+        pc.oniceconnectionstatechange = (e) => {
+            console.log("ICE connection state change: ", pc.iceConnectionState);
+            if (pc.iceConnectionState === "connected" || pc.iceConnectionState === "completed") {
+                // Connection has been established
+                // You can set your state variable here
 
-            pc.ontrack = (event) => {
-                event.streams[0].getTracks().forEach((track) => {
-                    console.log("Adding track to remoteStream", track);
-                    remoteStream.addTrack(track);
-                });
-                remoteVideo.current.srcObject = remoteStream;
-            };
+                setJoinedCall(true);
+            } else if (pc.iceConnectionState === "disconnected" || pc.iceConnectionState === "failed" || pc.iceConnectionState === "closed") {
+                // Connection has been closed/failed
+                // You can reset your state variable here
+                setJoinedCall(false);
+            }
+        };
 
-        }, [pc]);
+
+    };
 
     /**
      * Handles the click event of the call button
@@ -96,7 +110,7 @@ function VideoCallPage({uid, token, email}) {
      */
     const startCallWithUser = async () => {
         //TODO: Delete the call document after call ends
-        
+
         console.log("Call Button Clicked");
         await deleteDoc(doc(db, 'calls', uid));
         await sendVideoCallRequestMessageToUser(email, message);
@@ -150,7 +164,7 @@ function VideoCallPage({uid, token, email}) {
             });
         });
 
-        setJoinedCall(true);
+        // setJoinedCall(true);
 
     };
     /**

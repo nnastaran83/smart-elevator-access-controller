@@ -46,7 +46,6 @@ const Siri = ({utterance}) => {
     const [currentQuestionStep, setCurrentQuestionStep] = useState(QUESTION_STEPS.INITIAL);
     const [siriMessage, setSiriMessage] = useState("");
     const [isSpeechSynthesisEnded, setSpeechSynthesisEnded] = useState(false);
-    const [videoCallRequest, setVideoCallRequest] = useState(false);
 
     const dispatch = useDispatch();
     const detectedUserInfo = useSelector(state => state.faceDetector.detectedUserInfo);
@@ -178,14 +177,11 @@ const Siri = ({utterance}) => {
 
 
     useEffect(() => {
-        console.log("listening", listening);
-        console.log("isSpeechSynthesisEnded", isSpeechSynthesisEnded);
-        console.log("transcript", transcript)
-        if (!listening && isSpeechSynthesisEnded && transcript.length == 0) {
+        if (!listening && isSpeechSynthesisEnded && transcript.length === 0) {
             // Speech recognition has ended and speech synthesis had finished, dispatch your action here
             dispatch(startFaceRecognition());
             setSpeechSynthesisEnded(false);
-        } else if (transcript.length > 0 && !VALID_COMMANDS.includes(transcript.toLowerCase())) {
+        } else if (!listening && transcript.length > 0 && !VALID_COMMANDS.includes(transcript.toLowerCase())) {
             console.log("transcript", transcript);
             askUser("Sorry! I didn't quite get that! Please repeat your answer!");
         }
@@ -199,6 +195,7 @@ const Siri = ({utterance}) => {
      * @returns {Promise<void>}
      */
     const askUser = async (text) => {
+        setSpeechSynthesisEnded(false);
         utterance.voice = speechSynthesis.getVoices()[5];
         utterance.lang = "en-US";
         utterance.text = text;

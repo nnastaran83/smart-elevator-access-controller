@@ -4,6 +4,7 @@ import {Box, Container} from "@mui/material";
 import {loadRegisteredUsers, setIsVideoCallActive, startFaceRecognition} from "./store/index.js";
 import {useDispatch} from "react-redux";
 import './styles/App.scss';
+import VideoCallPopup from "./components/VideoCallPopup/index.jsx";
 
 
 /**
@@ -49,6 +50,7 @@ const App = () => {
             <Box>
                 <Controller/>
             </Box>
+            <VideoCallPopup/>
         </Container>
     );
 };

@@ -64,7 +64,7 @@ const FaceDetector = () => {
 
         // Convert the content of the canvas to a Base64-encoded JPEG image.
         const frameData = canvas.toDataURL('image/jpeg', 1);
-        dispatch(setCurrentDetectedImageFrameData(frameData));
+
 
         // Send the video frame data to backend server and wait for response.
         try {
@@ -73,7 +73,7 @@ const FaceDetector = () => {
                 {headers: {'Content-Type': 'application/json'}}
             );
 
-            console.log(response.data);
+            dispatch(setCurrentDetectedImageFrameData(frameData));
 
             if (response.data.name) {
                 await dispatch(setDetectedUserInfo(response.data));
