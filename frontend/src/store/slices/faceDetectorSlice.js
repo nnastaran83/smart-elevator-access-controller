@@ -6,6 +6,7 @@ const faceDetectorSlice = createSlice({
         detectedUserInfo: {name: null, floor_number: null, uid: null},
         isFaceRecognitionActive: true,
         isSiriActive: false,
+        currentDetectedImageFrameData: null,
 
     },
     reducers: {
@@ -20,6 +21,9 @@ const faceDetectorSlice = createSlice({
         setDetectedUserInfo: (state, action) => {
             state.detectedUserInfo = action.payload;
 
+        },
+        setCurrentDetectedImageFrameData: (state, action) => {
+            state.currentDetectedImageFrameData = action.payload;
         }
     },
 });
@@ -29,6 +33,7 @@ export const faceDetectorReducer = faceDetectorSlice.reducer;
 export const {
     startFaceRecognition,
     startSiri,
-    setDetectedUserInfo
+    setDetectedUserInfo,
+    setCurrentDetectedImageFrameData
 } = faceDetectorSlice.actions;
 

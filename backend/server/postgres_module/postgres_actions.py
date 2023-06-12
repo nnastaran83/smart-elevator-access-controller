@@ -130,6 +130,40 @@ class PostgresModel:
         return {"name": best_match_name, "floor_number": best_floor_number, "uid": best_match_uid}
 
     @classmethod
+    def check_access_permission(cls, img_array, floor_number):
+        """
+        Checks if the person has access permission to the floor
+        :param img_array:
+        :param floor_number:
+        :return:
+        """
+        # Get the face encodings for the picture
+        new_face_encodings = face_recognition.face_encodings(img_array)
+        access_permission = False
+
+        if len(new_face_encodings) > 0:
+            new_face_encoding = new_face_encodings[0]
+
+            with cls.get_cursor() as cursor:
+                # Get all the face encodings from the people table
+                cursor.execute("""
+                    SELECT face_encoding, floor_number
+                    FROM registered
+                    WHERE floor_number = %s
+                """, (floor_number,))
+
+                # Iterate over each stored face encoding from floor_number
+                for face_encoding, floor_number in cursor:
+                    print(face_encoding, floor_number)
+                    results = face_recognition.compare_faces([face_encoding], new_face_encoding, tolerance=0.7)
+                    print(results)
+                    if results[0]:
+                        access_permission = True
+                        break
+
+        return {"access_permission": access_permission}
+
+    @classmethod
     def get_registered_users(cls):
         """
         :return: all registered users in the database

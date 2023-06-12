@@ -3,7 +3,7 @@ import axios from "axios";
 import PitchContainer from "../PitchContainer.jsx";
 import '../../styles/FaceDetector.css';
 import {useDispatch} from "react-redux";
-import {setDetectedUserInfo, startSiri} from "../../store/index.js";
+import {setCurrentDetectedImageFrameData, setDetectedUserInfo, startSiri} from "../../store/index.js";
 
 
 //TODO : to stop the camera use this in the code : before it save the stream as state
@@ -64,6 +64,7 @@ const FaceDetector = () => {
 
         // Convert the content of the canvas to a Base64-encoded JPEG image.
         const frameData = canvas.toDataURL('image/jpeg', 1);
+        dispatch(setCurrentDetectedImageFrameData(frameData));
 
         // Send the video frame data to backend server and wait for response.
         try {

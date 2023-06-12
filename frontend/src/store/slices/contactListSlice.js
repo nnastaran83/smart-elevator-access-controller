@@ -17,7 +17,7 @@ const contactListSlice = createSlice({
 
         builder.addCase(loadRegisteredUsers.fulfilled, (state, action) => {
             state.loading = false;
-            state.registeredUsers = state.registeredUsers.concat(action.payload);
+            state.registeredUsers = action.payload;
 
 
         });

@@ -1,9 +1,5 @@
-import sys
-import os
-import glob
 from flask import Flask, request, jsonify
 from flask_cors import CORS
-import face_recognition
 import numpy as np
 import base64
 from PIL import Image
@@ -57,11 +53,20 @@ def recognize_face():
     return jsonify(info)
 
 
-@app.route('/my-endpoint', methods=['POST'])
-def my_endpoint():
+@app.route('/check_access_permission', methods=['POST'])
+def check_access_permission():
+    # Get JSON data from an HTTP request.
     data = request.get_json()
-    face_data = data['face_data']
-    return jsonify({'status': 'ok', 'face_data': face_data})
+    frame_data = data['frame_data']
+    floor_number = data['floor_number']
+
+    # Decode the base64-encoded image
+    img_data = base64.b64decode(frame_data.split(',')[1])
+    img = Image.open(BytesIO(img_data))
+    img_array = np.array(img)
+    info = PostgresModel.check_access_permission(img_array, floor_number)
+
+    return jsonify(info)
 
 
 if __name__ == '__main__':

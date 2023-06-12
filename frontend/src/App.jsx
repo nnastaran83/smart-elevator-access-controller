@@ -1,9 +1,7 @@
-import React, {useEffect, useState} from 'react';
-import {Route, Routes} from 'react-router-dom';
+import React, {useEffect} from 'react';
 import Controller from "./components/Controller/index.jsx";
-import VideoCallPopup from "./components/VideoCallPopup/index.jsx";
 import {Box, Container} from "@mui/material";
-import {loadRegisteredUsers} from "./store/index.js";
+import {loadRegisteredUsers, setIsVideoCallActive, startFaceRecognition} from "./store/index.js";
 import {useDispatch} from "react-redux";
 import './styles/App.scss';
 
@@ -16,10 +14,10 @@ import './styles/App.scss';
  *
  */
 const App = () => {
-    const [videoCall, setVideoCall] = useState(null);
     const dispatch = useDispatch();
 
     useEffect(() => {
+
         dispatch(loadRegisteredUsers());
     }, []);
 
@@ -28,17 +26,16 @@ const App = () => {
      * Handles the visibility of the video call popup
      * @param event
      */
-    const handleVideoVisibility = (event) => {
-        setVideoCall(videoCall ? null : <VideoCallPopup/>);
+    const startFaceDetector = (event) => {
+        dispatch(setIsVideoCallActive(false));
+        dispatch(startFaceRecognition());
         requestPermissionToSendNotification();
-
     };
 
     /**
      * Request permission from user to send notifications
      */
     function requestPermissionToSendNotification() {
-        console.log("Requesting permission...");
         Notification.requestPermission().then((permission) => {
             if (permission === "granted") {
                 console.log("Notification permission granted.");
@@ -49,15 +46,10 @@ const App = () => {
 
     return (
 
-        <Container className="App" onClick={handleVideoVisibility}>
+        <Container className="App" onClick={startFaceDetector}>
             <Box>
-                <Routes>
-                    <Route path='/' element={<Controller/>}/>
-                </Routes>
-
+                <Controller/>
             </Box>
-
-            {videoCall}
         </Container>
 
 
