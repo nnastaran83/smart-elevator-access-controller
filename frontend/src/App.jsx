@@ -4,7 +4,6 @@ import {Box, Container} from "@mui/material";
 import {loadRegisteredUsers, setIsVideoCallActive, startFaceRecognition} from "./store/index.js";
 import {useDispatch} from "react-redux";
 import './styles/App.scss';
-import VideoCallPopup from "./components/VideoCallPopup/index.jsx";
 
 
 /**
@@ -18,7 +17,6 @@ const App = () => {
     const dispatch = useDispatch();
 
     useEffect(() => {
-
         dispatch(loadRegisteredUsers());
     }, []);
 
@@ -32,6 +30,7 @@ const App = () => {
         dispatch(startFaceRecognition());
         requestPermissionToSendNotification();
     };
+
 
     /**
      * Request permission from user to send notifications
@@ -50,7 +49,6 @@ const App = () => {
             <Box>
                 <Controller/>
             </Box>
-            <VideoCallPopup/>
         </Container>
     );
 };

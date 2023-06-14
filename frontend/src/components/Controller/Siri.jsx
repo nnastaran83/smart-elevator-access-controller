@@ -1,14 +1,14 @@
 import React, {useEffect, useState} from 'react';
-import '../../styles/Siri.css';
-import {Box, Chip, IconButton, Stack, Typography} from "@mui/material";
-import AnimationContainer from "../AnimationContainer.jsx";
 import {useDispatch, useSelector} from "react-redux";
 import SpeechRecognition, {useSpeechRecognition} from "react-speech-recognition";
+import axios from "axios";
+import {Box, Chip, IconButton, Stack, Typography} from "@mui/material";
 import MicIcon from "@mui/icons-material/Mic";
 import MicOffIcon from "@mui/icons-material/MicOff";
-import {startFaceRecognition, setIsVideoCallActive} from "../../store/index.js";
+import AnimationContainer from "../AnimationContainer.jsx";
 import VideoCallPopup from "../VideoCallPopup/index.jsx";
-import axios from "axios";
+import {startFaceRecognition, setIsVideoCallActive} from "../../store/index.js";
+import '../../styles/Siri.css';
 
 const FLOOR_MAP = {
     '1': 1, 'one': 1,
@@ -21,8 +21,20 @@ const FLOOR_MAP = {
     '8': 8, 'eight': 8,
     '9': 9, 'nine': 9,
     '10': 10, 'ten': 10,
+    'floor 1': 1, 'floor one': 1,
+    'floor 2': 2, 'floor two': 2,
+    'floor 3': 3, 'floor three': 3,
+    'floor 4': 4, 'floor four': 4,
+    'floor 5': 5, 'floor five': 5,
+    'floor 6': 6, 'floor six': 6,
+    'floor 7': 7, 'floor seven': 7,
+    'floor 8': 8, 'floor eight': 8,
+    'floor 9': 9, 'floor nine': 9,
+    'floor 10': 10, 'floor ten': 10,
 };
-const VALID_FLOOR_NUMBERS = [...Object.keys(FLOOR_MAP).map(key => 'floor ' + key), ...Object.keys(FLOOR_MAP)];
+
+const VALID_FLOOR_NUMBERS = [...Object.keys(FLOOR_MAP)];
+
 const VALID_COMMANDS = ['yes', 'no', ...VALID_FLOOR_NUMBERS];
 const USER_STATES = {
     REGISTERED_USER: 'registered',

@@ -124,7 +124,7 @@ class PostgresModel:
                         best_match_encoding = face_encoding
                         best_floor_number = floor_number
                         best_match_uid = uid
-                        if min_distance < 0.4:
+                        if min_distance < 0.5:
                             break
 
         return {"name": best_match_name, "floor_number": best_floor_number, "uid": best_match_uid}

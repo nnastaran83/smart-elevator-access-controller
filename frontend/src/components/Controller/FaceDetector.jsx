@@ -1,10 +1,9 @@
 import React, {useEffect, useRef} from 'react';
+import {useDispatch} from "react-redux";
 import axios from "axios";
 import PitchContainer from "../PitchContainer.jsx";
-import '../../styles/FaceDetector.css';
-import {useDispatch} from "react-redux";
 import {setCurrentDetectedImageFrameData, setDetectedUserInfo, startSiri} from "../../store/index.js";
-
+import '../../styles/FaceDetector.css';
 
 //TODO : to stop the camera use this in the code : before it save the stream as state
 
@@ -22,9 +21,8 @@ const FaceDetector = () => {
     const videoRef = useRef(null);
     const canvasRef = useRef(null);
 
-
     useEffect(() => {
-        startVideo();
+        startWebCamForFaceDetection();
 
     }, []);
 
@@ -33,7 +31,7 @@ const FaceDetector = () => {
      * Starts webcam video stream
      * @returns {Promise<void>}
      */
-    const startVideo = async () => {
+    const startWebCamForFaceDetection = async () => {
         navigator.mediaDevices.getUserMedia({video: true})
             .then((stream) => {
                 videoRef.current.srcObject = stream;
@@ -85,7 +83,6 @@ const FaceDetector = () => {
         } catch (error) {
             console.log(error);
         }
-
 
     };
 

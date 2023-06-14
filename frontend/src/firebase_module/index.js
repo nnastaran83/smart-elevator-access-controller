@@ -37,30 +37,6 @@ const auth = getAuth(app);
 const messaging = getMessaging(app);
 
 
-//const sendVideoCallRequest = async () => {
-//    // This registration token comes from the client FCM SDKs.
-//    const registrationToken = 'elTrm_4G3HFChZxPEcxg1C:APA91bFqpTdGrthaQoeScYvHQLV5UGjbzlGv5NMfv_1lLbgdjvgMWw3zAyxI5ZbXW2nN-w1cjSAZQenbft7BQ2YxEKEknAbU1PUE8_bKNIxfJVVrJKlZ0J-JrPw-E3QVRA4cZc2YosJz';
-//
-//    const message = {
-//        data: {
-//            score: '850',
-//            time: '2:45'
-//        },
-//        token: registrationToken
-//    };
-//
-//    // Send a message to the device corresponding to the provided
-//    // registration token.
-//    messaging.send(messaging, message).then((response) => {
-//        // Response is a message ID string.
-//        console.log('Successfully sent message:', response);
-//    })
-//        .catch((error) => {
-//            console.log('Error sending message:', error);
-//        });
-//}
-
-
 /**
  * Send video call request message to user
  * @param userId - in our case it is email of user
