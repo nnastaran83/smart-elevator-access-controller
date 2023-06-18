@@ -2,6 +2,11 @@ import React from 'react';
 import {useSelector} from "react-redux";
 import {FLOOR_MAP} from "../util/constants.js";
 
+/**
+ * This hook is used to get the current state of the user + registered users from the redux store.
+ * and also calculate the VALID_COMMANDS and VALID_FLOOR_NUMBERS based on the registered users floor number.
+ * @returns {{detectedUserInfo: unknown, VALID_COMMANDS: (string|string)[], userType: unknown, isVideoCallActive: unknown, requestedFloorNumber: unknown, VALID_FLOOR_NUMBERS: string[]}}
+ */
 export const useSiriData = () => {
     const {
         detectedUserInfo,

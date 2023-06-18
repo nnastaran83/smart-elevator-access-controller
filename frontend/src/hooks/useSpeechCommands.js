@@ -11,7 +11,17 @@ import {
     setRequestedFloorNumber
 } from "../store/index.js";
 
-
+/**
+ * This hook is used to handle the speech recognition commands and responses.
+ * @param utterance
+ * @param userType
+ * @param currentQuestionStep
+ * @param setCurrentQuestionStep
+ * @param detectedUserInfo
+ * @param VALID_COMMANDS
+ * @param VALID_FLOOR_NUMBERS
+ * @returns {{listening, askUser: ((function(*): Promise<void>)|*), transcript, isSpeechSynthesisEnded: boolean, resetTranscript, siriMessage: string, browserSupportsSpeechRecognition}}
+ */
 export const useSpeechCommands = (utterance, userType, currentQuestionStep, setCurrentQuestionStep, detectedUserInfo, VALID_COMMANDS, VALID_FLOOR_NUMBERS) => {
     const dispatch = useDispatch();
     const [siriMessage, setSiriMessage] = useState("");

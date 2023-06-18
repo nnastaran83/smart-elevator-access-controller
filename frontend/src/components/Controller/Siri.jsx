@@ -10,7 +10,12 @@ import {useSpeechCommands} from '../../hooks/useSpeechCommands.js';
 import {useSiriData} from '../../hooks/useSiriData.js';
 import {QUESTION_STEPS} from "../../util/constants.js";
 
-
+/**
+ * Siri component is used to display the Siri UI and handle the speech commands.
+ * @param utterance
+ * @returns {JSX.Element}
+ * @constructor
+ */
 const Siri = ({utterance}) => {
     const [currentQuestionStep, setCurrentQuestionStep] = useState(QUESTION_STEPS.INITIAL);
     const {
