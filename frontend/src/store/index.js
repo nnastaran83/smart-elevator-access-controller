@@ -7,31 +7,33 @@ import {
     startSiri
 } from "./slices/controllerSlice.js";
 import {
-    faceDetectorReducer,
+    currentDetectedUserReducer,
     setDetectedUserInfo,
-    setCurrentDetectedImageFrameData
-} from "./slices/faceDetectorSlice.js";
+    changeUserType
+} from "./slices/currentDetectedUser.js";
 import {videoCallReducer, setIsVideoCallActive} from "./slices/videoCallSlice.js";
+import {siriReducer} from "./slices/siriSlice.js";
 
 
 const store = configureStore({
     reducer: {
         contactList: contactListReducer,
-        faceDetector: faceDetectorReducer,
         videoCall: videoCallReducer,
         controller: controllerReducer,
+        siri: siriReducer,
+        currentDetectedUser: currentDetectedUserReducer
 
     }
 });
 
 export {
     store,
-    faceDetectorReducer,
-    contactListReducer,
     startFaceRecognition,
     startSiri,
     setDetectedUserInfo,
-    setCurrentDetectedImageFrameData,
     setIsVideoCallActive,
+    changeUserType,
+
+
 };
 export * from "./thunks/loadRegisteredUsers.js";

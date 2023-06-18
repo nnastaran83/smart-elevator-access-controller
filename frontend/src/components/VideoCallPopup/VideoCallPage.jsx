@@ -17,8 +17,8 @@ import EllipseButton from "../buttons/EllipseButton.jsx";
 
 
 const message = {
-    title: "New Text Message",
-    message: "Hello, how are you?",
+    title: "Smart",
+    message: "New Incoming Video Call",
 };
 
 let localStream = null;
@@ -50,7 +50,6 @@ function VideoCallPage({uid, token, email}) {
     // Creating peer connection
     const pc = useRef(new RTCPeerConnection(iceConfig));
     const sendSignalChannel = useRef(null);
-
     const [joinedCall, setJoinedCall] = useState(false);
 
 
@@ -103,8 +102,6 @@ function VideoCallPage({uid, token, email}) {
                 setJoinedCall(false);
             }
         };
-
-
     };
 
     /**
@@ -113,8 +110,7 @@ function VideoCallPage({uid, token, email}) {
      */
     const startCallWithUser = async () => {
         //TODO: Delete the call document after call ends
-
-        console.log("Call Button Clicked");
+        setJoinedCall(true);
         await deleteDoc(doc(db, 'calls', uid));
         await sendVideoCallRequestMessageToUser(email, message);
 
@@ -152,10 +148,12 @@ function VideoCallPage({uid, token, email}) {
         ///Listen for changes to the database and detect when an answer from the callee has been added.
         onSnapshot(callDoc, async (snapshot) => {
             const data = snapshot.data();
-            if (!pc.current.currentRemoteDescription && data.answer) {
-                //TODO: change the answerDescription name to answer
-                const answerDescription = new RTCSessionDescription(data.answer);
-                await pc.current.setRemoteDescription(answerDescription);
+            if (data) {
+                if (!pc.current.currentRemoteDescription && data.answer) {
+                    //TODO: change the answerDescription name to answer
+                    const answerDescription = new RTCSessionDescription(data.answer);
+                    await pc.current.setRemoteDescription(answerDescription);
+                }
             }
 
         });
@@ -169,10 +167,9 @@ function VideoCallPage({uid, token, email}) {
                 }
             });
         });
-
-        // setJoinedCall(true);
-
     };
+
+
     /**
      * Hang up the video call
      */

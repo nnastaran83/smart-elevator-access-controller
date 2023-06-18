@@ -2,7 +2,7 @@ import React, {useEffect, useRef} from 'react';
 import {useDispatch} from "react-redux";
 import axios from "axios";
 import PitchContainer from "../PitchContainer.jsx";
-import {setCurrentDetectedImageFrameData, setDetectedUserInfo, startSiri} from "../../store/index.js";
+import {setDetectedUserInfo, startSiri} from "../../store/index.js";
 import '../../styles/FaceDetector.css';
 
 //TODO : to stop the camera use this in the code : before it save the stream as state
@@ -71,11 +71,11 @@ const FaceDetector = () => {
                 {headers: {'Content-Type': 'application/json'}}
             );
 
-            dispatch(setCurrentDetectedImageFrameData(frameData));
 
-            if (response.data.name) {
-                await dispatch(setDetectedUserInfo(response.data));
+            if (response.data) {
+                await dispatch(setDetectedUserInfo({...response.data, imageFrameData: frameData}));
                 await dispatch(startSiri());
+
             } else {
                 setTimeout(() => detectFace(), 5000);
             }

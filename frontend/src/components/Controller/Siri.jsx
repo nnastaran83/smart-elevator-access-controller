@@ -7,7 +7,7 @@ import MicIcon from "@mui/icons-material/Mic";
 import MicOffIcon from "@mui/icons-material/MicOff";
 import AnimationContainer from "../AnimationContainer.jsx";
 import VideoCallPopup from "../VideoCallPopup/index.jsx";
-import {startFaceRecognition, setIsVideoCallActive} from "../../store/index.js";
+import {startFaceRecognition, setIsVideoCallActive, changeUserType} from "../../store/index.js";
 import '../../styles/Siri.css';
 
 const FLOOR_MAP = {
@@ -54,15 +54,22 @@ const QUESTION_STEPS = {
  * @constructor
  */
 const Siri = ({utterance}) => {
-    const [userType, setUserType] = useState(null);
     const [currentQuestionStep, setCurrentQuestionStep] = useState(QUESTION_STEPS.INITIAL);
     const [siriMessage, setSiriMessage] = useState("");
     const [isSpeechSynthesisEnded, setSpeechSynthesisEnded] = useState(false);
 
     const dispatch = useDispatch();
-    const detectedUserInfo = useSelector(state => state.faceDetector.detectedUserInfo);
-    const isVideoCallActive = useSelector(state => state.videoCall.isVideoCallActive);
-    const currentDetectedImageFrameData = useSelector(state => state.faceDetector.currentDetectedImageFrameData);
+    const {
+        detectedUserInfo,
+        userType,
+        isVideoCallActive,
+    } = useSelector(state => {
+        return {
+            detectedUserInfo: state.currentDetectedUser.detectedUserInfo,
+            userType: state.currentDetectedUser.userType,
+            isVideoCallActive: state.videoCall.isVideoCallActive,
+        }
+    });
 
     // Speech recognition commands and responses
     const commands = [
@@ -127,7 +134,7 @@ const Siri = ({utterance}) => {
                         setSiriMessage(utterance.text);
                         utterance.onend = async () => {
                             const response = axios.post('http://localhost:5000/check_access_permission',
-                                {frame_data: currentDetectedImageFrameData, floor_number: floorNumber}
+                                {frame_data: detectedUserInfo.imageFrameData, floor_number: floorNumber}
                             ).then(response => {
                                 if (response.data.access_permission) {
                                     utterance.text = "Access granted! Have a nice day!";
@@ -138,7 +145,7 @@ const Siri = ({utterance}) => {
                                     };
                                     speechSynthesis.speak(utterance);
                                 } else {
-                                    setUserType(USER_STATES.UNREGISTERED_USER);
+                                    dispatch(changeUserType(USER_STATES.UNREGISTERED_USER));
                                     setCurrentQuestionStep(QUESTION_STEPS.VIDEO_CALL_QUESTION);
                                     askUser("Access denied! Would you like to make a video call for approval?");
 
@@ -172,15 +179,12 @@ const Siri = ({utterance}) => {
         if (!browserSupportsSpeechRecognition) {
             console.log("Attention! Browser doesn't support speech recognition");
         }
-        if (detectedUserInfo.uid) {
-            setUserType(USER_STATES.REGISTERED_USER);
+        if (userType === USER_STATES.REGISTERED_USER) {
             askUser("Welcome! Would you like to go home?");
 
-        } else if (detectedUserInfo.floor_number) {
-            setUserType(USER_STATES.RETURNING_USER);
+        } else if (userType === USER_STATES.RETURNING_USER) {
             askUser(`Welcome! Would you like to go to floor ${detectedUserInfo.floor_number} like the last time?`);
         } else {
-            setUserType(USER_STATES.UNREGISTERED_USER);
             setCurrentQuestionStep(QUESTION_STEPS.VIDEO_CALL_QUESTION);
             askUser("Sorry! Can't recognize you! Would you like to make a video call for approval?");
         }

@@ -96,6 +96,8 @@ class PostgresModel:
 
         # Get the face encodings for the picture
         new_face_encodings = face_recognition.face_encodings(img_array)
+        if len(new_face_encodings) == 0:
+            return None
 
         if len(new_face_encodings) > 0:
             new_face_encoding = new_face_encodings[0]
