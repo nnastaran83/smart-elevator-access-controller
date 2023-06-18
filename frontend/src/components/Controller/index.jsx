@@ -20,8 +20,8 @@ import FaceDetector from "./FaceDetector.jsx";
 const Controller = () => {
     const {isSiriActive, isFaceRecognitionActive} = useSelector(state => {
             return {
-                isSiriActive: state.faceDetector.isSiriActive,
-                isFaceRecognitionActive: state.faceDetector.isFaceRecognitionActive
+                isSiriActive: state.controller.isSiriActive,
+                isFaceRecognitionActive: state.controller.isFaceRecognitionActive
             }
         }
     );
