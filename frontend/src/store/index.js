@@ -2,9 +2,12 @@ import React from 'react';
 import {configureStore} from "@reduxjs/toolkit";
 import {contactListReducer} from "./slices/contactListSlice.js";
 import {
-    faceDetectorReducer,
+    controllerReducer,
     startFaceRecognition,
-    startSiri,
+    startSiri
+} from "./slices/controllerSlice.js";
+import {
+    faceDetectorReducer,
     setDetectedUserInfo,
     setCurrentDetectedImageFrameData
 } from "./slices/faceDetectorSlice.js";
@@ -15,7 +18,9 @@ const store = configureStore({
     reducer: {
         contactList: contactListReducer,
         faceDetector: faceDetectorReducer,
-        videoCall: videoCallReducer
+        videoCall: videoCallReducer,
+        controller: controllerReducer,
+
     }
 });
 
