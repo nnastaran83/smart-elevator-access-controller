@@ -1,5 +1,5 @@
-import React, {useCallback} from "react";
-import {Box, Button, Grid, Stack, styled} from "@mui/material";
+import React from "react";
+import {Box, Grid, Stack} from "@mui/material";
 import {useEffect, useRef, useState} from "react";
 import {db} from "../../firebase_module";
 import VideoContainer from "./VideoContainer.jsx";
@@ -10,10 +10,11 @@ import {
     setDoc,
     onSnapshot,
     addDoc,
+    deleteDoc
 } from "firebase/firestore";
 import {sendVideoCallRequestMessageToUser} from "../../firebase_module";
-import JoinButton from "../buttons/JoinButton.jsx";
-import {deleteDoc} from 'firebase/firestore';
+import EllipseButton from "../buttons/EllipseButton.jsx";
+
 
 const message = {
     title: "New Text Message",
@@ -147,7 +148,7 @@ function VideoCallPage({uid, token, email}) {
         // setting the offer to the callDoc
         await setDoc(callDoc, {offer});
 
-        let candidatesQueue = [];
+
         ///Listen for changes to the database and detect when an answer from the callee has been added.
         onSnapshot(callDoc, async (snapshot) => {
             const data = snapshot.data();
@@ -213,13 +214,13 @@ function VideoCallPage({uid, token, email}) {
             <Stack spacing={3}
                    sx={{position: "absolute", bottom: 0, right: 0, padding: "1rem"}}>
                 {/*TODO: Add camera on or of button*/}
-                <JoinButton
+                <EllipseButton
                     id="hangupButton"
                     bgcolor={joinedCall ? "#FF0000" : "#00FF00"}
                     hovercolor={joinedCall ? "#930000" : "#009900"}
                     onClick={joinedCall ? hangupCall : startCallWithUser}
                     variant="contained"
-                >{joinedCall ? "X" : "JOIN"}</JoinButton>
+                >{joinedCall ? "X" : "JOIN"}</EllipseButton>
             </Stack>
         </Box>
     );

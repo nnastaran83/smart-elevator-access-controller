@@ -2,7 +2,7 @@ import React, {useState} from 'react';
 import Button from "@mui/material/Button";
 import {styled} from "@mui/material";
 
-const JoinButton = styled(Button)(({theme, bgcolor, hovercolor}) => ({
+const EllipseButton = styled(Button)(({theme, bgcolor, hovercolor}) => ({
     backgroundColor: bgcolor,
     width: "50px",
     height: "50px",
@@ -13,4 +13,4 @@ const JoinButton = styled(Button)(({theme, bgcolor, hovercolor}) => ({
 }));
 
 
-export default JoinButton;
+export default EllipseButton;
