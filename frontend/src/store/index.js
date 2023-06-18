@@ -9,7 +9,8 @@ import {
 import {
     currentDetectedUserReducer,
     setDetectedUserInfo,
-    changeUserType
+    changeUserType,
+    setRequestedFloorNumber
 } from "./slices/currentDetectedUser.js";
 import {videoCallReducer, setIsVideoCallActive} from "./slices/videoCallSlice.js";
 import {siriReducer} from "./slices/siriSlice.js";
@@ -33,6 +34,7 @@ export {
     setDetectedUserInfo,
     setIsVideoCallActive,
     changeUserType,
+    setRequestedFloorNumber
 
 
 };

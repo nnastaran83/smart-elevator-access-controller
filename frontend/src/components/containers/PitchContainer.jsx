@@ -1,7 +1,7 @@
 import React from 'react';
 import {Box} from '@mui/material';
 import {styled} from '@mui/material';
-import '../styles/PitchContainer.css';
+import '../../styles/PitchContainer.css';
 import AnimationContainer from "./AnimationContainer.jsx";
 
 

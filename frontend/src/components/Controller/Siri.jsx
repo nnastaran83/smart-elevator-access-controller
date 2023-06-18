@@ -5,47 +5,17 @@ import axios from "axios";
 import {Box, Chip, IconButton, Stack, Typography} from "@mui/material";
 import MicIcon from "@mui/icons-material/Mic";
 import MicOffIcon from "@mui/icons-material/MicOff";
-import AnimationContainer from "../AnimationContainer.jsx";
+import AnimationContainer from "../containers/AnimationContainer.jsx";
 import VideoCallPopup from "../VideoCallPopup/index.jsx";
-import {startFaceRecognition, setIsVideoCallActive, changeUserType} from "../../store/index.js";
-import '../../styles/Siri.css';
+import Rainbow from "../containers/Rainbow.jsx";
+import {FLOOR_MAP, QUESTION_STEPS, USER_STATES} from "../../util/constants.js";
+import {
+    startFaceRecognition,
+    setIsVideoCallActive,
+    changeUserType,
+    setRequestedFloorNumber
+} from "../../store/index.js";
 
-const FLOOR_MAP = {
-    '1': 1, 'one': 1,
-    '2': 2, 'two': 2,
-    '3': 3, 'three': 3,
-    '4': 4, 'four': 4,
-    '5': 5, 'five': 5,
-    '6': 6, 'six': 6,
-    '7': 7, 'seven': 7,
-    '8': 8, 'eight': 8,
-    '9': 9, 'nine': 9,
-    '10': 10, 'ten': 10,
-    'floor 1': 1, 'floor one': 1,
-    'floor 2': 2, 'floor two': 2,
-    'floor 3': 3, 'floor three': 3,
-    'floor 4': 4, 'floor four': 4,
-    'floor 5': 5, 'floor five': 5,
-    'floor 6': 6, 'floor six': 6,
-    'floor 7': 7, 'floor seven': 7,
-    'floor 8': 8, 'floor eight': 8,
-    'floor 9': 9, 'floor nine': 9,
-    'floor 10': 10, 'floor ten': 10,
-};
-
-const VALID_FLOOR_NUMBERS = [...Object.keys(FLOOR_MAP)];
-
-const VALID_COMMANDS = ['yes', 'no', ...VALID_FLOOR_NUMBERS];
-const USER_STATES = {
-    REGISTERED_USER: 'registered',
-    RETURNING_USER: 'returning_user',
-    UNREGISTERED_USER: 'unregistered'
-};
-const QUESTION_STEPS = {
-    INITIAL: 'initial',
-    FLOOR_QUESTION: 'floor_question',
-    VIDEO_CALL_QUESTION: 'video_call_question'
-};
 
 /***
  * Siri component is used to handle speech recognition and help the user.
@@ -57,19 +27,31 @@ const Siri = ({utterance}) => {
     const [currentQuestionStep, setCurrentQuestionStep] = useState(QUESTION_STEPS.INITIAL);
     const [siriMessage, setSiriMessage] = useState("");
     const [isSpeechSynthesisEnded, setSpeechSynthesisEnded] = useState(false);
-
     const dispatch = useDispatch();
     const {
         detectedUserInfo,
         userType,
         isVideoCallActive,
+        requestedFloorNumber,
+        registeredUsers
     } = useSelector(state => {
         return {
             detectedUserInfo: state.currentDetectedUser.detectedUserInfo,
             userType: state.currentDetectedUser.userType,
             isVideoCallActive: state.videoCall.isVideoCallActive,
+            requestedFloorNumber: state.currentDetectedUser.requestedFloorNumber,
+            registeredUsers: state.contactList.registeredUsers
         }
     });
+
+
+    // Create a set of floor numbers from your array of objects
+    const floorNumberSet = new Set(registeredUsers.map(obj => obj.floor_number));
+    // Filter VALID_FLOOR_NUMBERS to only include numbers in the set
+    const VALID_FLOOR_NUMBERS = Object.keys(FLOOR_MAP).filter(floor =>
+        floorNumberSet.has(FLOOR_MAP[floor])
+    );
+    const VALID_COMMANDS = ['yes', 'no', ...VALID_FLOOR_NUMBERS];
 
     // Speech recognition commands and responses
     const commands = [
@@ -108,7 +90,6 @@ const Siri = ({utterance}) => {
                 if ((userType === USER_STATES.REGISTERED_USER || userType === USER_STATES.RETURNING_USER) && currentQuestionStep === QUESTION_STEPS.INITIAL) {
                     setCurrentQuestionStep(QUESTION_STEPS.FLOOR_QUESTION);
                     askUser("Which floor would you like to go to?");
-
                 } else if (userType === USER_STATES.UNREGISTERED_USER && currentQuestionStep === QUESTION_STEPS.VIDEO_CALL_QUESTION) {
 
                     utterance.text = "Goodbye!";
@@ -128,6 +109,7 @@ const Siri = ({utterance}) => {
                 if (currentQuestionStep === QUESTION_STEPS.FLOOR_QUESTION) {
                     const floorNumber = FLOOR_MAP[command.toLowerCase()];
                     if (floorNumber) {
+                        dispatch(setRequestedFloorNumber(floorNumber));
                         utterance.voice = speechSynthesis.getVoices()[5];
                         utterance.lang = "en-US";
                         utterance.text = "Checking for access permission! Please wait...";
@@ -148,10 +130,7 @@ const Siri = ({utterance}) => {
                                     dispatch(changeUserType(USER_STATES.UNREGISTERED_USER));
                                     setCurrentQuestionStep(QUESTION_STEPS.VIDEO_CALL_QUESTION);
                                     askUser("Access denied! Would you like to make a video call for approval?");
-
                                 }
-
-
                             }).catch(error => {
                                     console.log("error", error);
                                 }
@@ -161,11 +140,8 @@ const Siri = ({utterance}) => {
                     }
                 }
             }
-
         },
-
     ];
-
 
     const {
         listening,
@@ -188,7 +164,6 @@ const Siri = ({utterance}) => {
             setCurrentQuestionStep(QUESTION_STEPS.VIDEO_CALL_QUESTION);
             askUser("Sorry! Can't recognize you! Would you like to make a video call for approval?");
         }
-
     }, []);
 
 
@@ -198,11 +173,9 @@ const Siri = ({utterance}) => {
             dispatch(startFaceRecognition());
             setSpeechSynthesisEnded(false);
         } else if (!listening && transcript.length > 0 && !VALID_COMMANDS.includes(transcript.toLowerCase())) {
-            console.log("transcript", transcript);
+            resetTranscript();
             askUser("Sorry! I didn't quite get that! Please repeat your answer!");
         }
-
-
     }, [listening, isSpeechSynthesisEnded]);
 
 
@@ -218,17 +191,14 @@ const Siri = ({utterance}) => {
         setSiriMessage(utterance.text);
         utterance.onend = () => {
             setSpeechSynthesisEnded(true);
-
             SpeechRecognition.startListening();
         };
         speechSynthesis.speak(utterance);
-
     };
 
 
     return (
         <React.Fragment>
-
             <AnimationContainer>
                 <Box sx={{
                     width: "100%",
@@ -237,36 +207,28 @@ const Siri = ({utterance}) => {
                     display: "flex",
                     justifyContent: "center",
                     alignItems: "center"
-                }
-                }>
-
-                    <div className="rainbow-container">
-                        <div className="green"></div>
-                        <div className="pink"></div>
-                        <div className="blue"></div>
-                    </div>
+                }}>
+                    <Rainbow/>
                 </Box>
-
             </AnimationContainer>
-            <Typography variant="h5" gutterBottom
-                        style={{textAlign: "center", zIndex: 1, padding: "40px"}}>
+
+            <Typography variant="h5" gutterBottom sx={{textAlign: "center", zIndex: 1, padding: "40px"}}>
                 {siriMessage}
             </Typography>
+
             <Stack spacing={2} sx={{zIndex: 1, position: "absolute", bottom: 40, textAlign: "center"}}>
                 <Box>
                     {transcript ? <Chip label={`${transcript}`} variant="outlined"/> : null}
                 </Box>
-                <Box>
-                    <IconButton sx={{
-                        background: listening ? "rgba(106,245,82,0.18)" : "rgba(255,17,17,0.18)",
-                        color: listening ? "#1aa600" : "#ff0c0c"
-                    }}>
-                        {listening ? <MicIcon/> : <MicOffIcon/>}
-                    </IconButton>
-                </Box>
+                <IconButton sx={{
+                    background: listening ? "rgba(106,245,82,0.18)" : "rgba(255,17,17,0.18)",
+                    color: listening ? "#1aa600" : "#ff0c0c"
+                }}>
+                    {listening ? <MicIcon/> : <MicOffIcon/>}
+                </IconButton>
             </Stack>
 
-            {isVideoCallActive && <VideoCallPopup/>}
+            {isVideoCallActive ? <VideoCallPopup floorNumber={requestedFloorNumber}/> : null}
         </React.Fragment>
 
     );

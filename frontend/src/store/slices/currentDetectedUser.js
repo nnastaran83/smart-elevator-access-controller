@@ -11,6 +11,7 @@ const currentDetectedUser = createSlice({
     initialState: {
         detectedUserInfo: {name: null, floor_number: null, uid: null, imageFrameData: null},
         userType: null,
+        requestedFloorNumber: null,
     },
     reducers: {
 
@@ -29,6 +30,9 @@ const currentDetectedUser = createSlice({
 
         changeUserType: (state, action) => {
             state.userType = action.payload;
+        },
+        setRequestedFloorNumber: (state, action) => {
+            state.requestedFloorNumber = action.payload;
         }
     },
 });
@@ -37,6 +41,7 @@ const currentDetectedUser = createSlice({
 export const currentDetectedUserReducer = currentDetectedUser.reducer;
 export const {
     setDetectedUserInfo,
-    changeUserType
+    changeUserType,
+    setRequestedFloorNumber
 } = currentDetectedUser.actions;
 

@@ -1,7 +1,7 @@
 import React, {useEffect, useRef} from 'react';
-import {useDispatch} from "react-redux";
+import {useDispatch, useSelector} from "react-redux";
 import axios from "axios";
-import PitchContainer from "../PitchContainer.jsx";
+import PitchContainer from "../containers/PitchContainer.jsx";
 import {setDetectedUserInfo, startSiri} from "../../store/index.js";
 import '../../styles/FaceDetector.css';
 
@@ -20,6 +20,7 @@ const FaceDetector = () => {
     const dispatch = useDispatch();
     const videoRef = useRef(null);
     const canvasRef = useRef(null);
+    const {registeredUsers} = useSelector(state => state.contactList.registeredUsers);
 
     useEffect(() => {
         startWebCamForFaceDetection();

@@ -9,7 +9,7 @@ import ContactList from "./ContactList.jsx";
  * @returns {JSX.Element}
  * @component
  */
-const VideoCallPopup = () => {
+const VideoCallPopup = ({floorNumber}) => {
     const [videoCall, setVideoCall] = useState(null);
 
 
@@ -33,7 +33,8 @@ const VideoCallPopup = () => {
     return (
         <Box className="overlay">
             <Box className="inner-popup" onClick={(event) => (event.stopPropagation())}>
-                {videoCall ? videoCall : <ContactList handleContactButtonClick={handleContactButtonClick}/>}
+                {videoCall ? videoCall :
+                    <ContactList handleContactButtonClick={handleContactButtonClick} floorNumber={floorNumber}/>}
 
             </Box>
         </Box>

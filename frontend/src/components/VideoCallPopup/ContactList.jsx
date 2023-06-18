@@ -13,12 +13,9 @@ import {useSelector} from "react-redux";
  * @returns {JSX.Element}
  * @constructor
  */
-const ContactList = ({handleContactButtonClick}) => {
-    const registeredUsers = useSelector(state => state.contactList.registeredUsers);
-    useEffect(() => {
-            console.log(registeredUsers);
-        }
-        , []);
+const ContactList = ({handleContactButtonClick, floorNumber}) => {
+    const registeredUsers = useSelector(state => state.contactList.registeredUsers.filter(user => user.floor_number === floorNumber));
+    
 
     // Group users by floor number
     let floorMapping = registeredUsers.reduce((acc, user) => {
