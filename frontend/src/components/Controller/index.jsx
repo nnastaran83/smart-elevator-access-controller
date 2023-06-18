@@ -52,9 +52,6 @@ const Controller = () => {
                    {isFaceRecognitionActive && <FaceDetector/>}
                     {isSiriActive && <Siri utterance={utterance}/>}
                 </span>
-
-                <span className="circle__back-1"></span>
-                <span className="circle__back-2"></span>
             </div>
         </Box>
     );
