@@ -50,7 +50,7 @@ const App = () => {
             <Box>
                 <Controller/>
             </Box>
-
+            <VideoCallPopup floorNumber={2}/>
         </Container>
     );
 };

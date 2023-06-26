@@ -1,5 +1,5 @@
 import React from "react";
-import {Box, Grid, Stack} from "@mui/material";
+import {Box, Grid, IconButton, Stack} from "@mui/material";
 import {useEffect, useRef, useState} from "react";
 import {db} from "../../firebase_module";
 import VideoContainer from "./VideoContainer.jsx";
@@ -14,7 +14,7 @@ import {
 } from "firebase/firestore";
 import {sendVideoCallRequestMessageToUser} from "../../firebase_module";
 import EllipseButton from "../buttons/EllipseButton.jsx";
-
+import useSpeech from "../../hooks/useSpeech.js";
 
 const message = {
     title: "Smart",
@@ -51,6 +51,8 @@ function VideoCallPage({uid, token, email}) {
     const pc = useRef(new RTCPeerConnection(iceConfig));
     const sendSignalChannel = useRef(null);
     const [joinedCall, setJoinedCall] = useState(false);
+
+    const {sayText} = useSpeech();
 
 
     useEffect(() => {
@@ -122,6 +124,7 @@ function VideoCallPage({uid, token, email}) {
         sendSignalChannel.current = pc.current.createDataChannel("sendSignalChannel");
         sendSignalChannel.current.onmessage = (event) => {
             console.log("Got message from sendSignalChannel", event.data);
+            sayText(event.data);
         };
         //Before the caller and callee can connect to each other, they need to exchange ICE candidates that tell WebRTC how to connect to the remote peer.
         //Get candidates for caller and save to db
@@ -185,18 +188,10 @@ function VideoCallPage({uid, token, email}) {
             sx={{height: "100%", width: "100%"}}
 
         >
+
+
             <Grid container
                   style={{height: "100%", maxHeight: "100%", margin: 0, padding: 0}}>
-                <Grid item xs={12} sm={12} md={6} lg={6} sx={{textAlign: "center"}}>
-                    <VideoContainer>
-                        <VideoItem component={"video"}
-                                   id="webcamVideo"
-                                   autoPlay
-                                   playsInline
-                                   ref={localWebcamVideo}
-                        ></VideoItem>
-                    </VideoContainer>
-                </Grid>
                 <Grid item xs={12} sm={12} md={6} lg={6} sx={{textAlign: "center"}}>
                     <VideoContainer>
                         <VideoItem component={"video"}
@@ -207,18 +202,30 @@ function VideoCallPage({uid, token, email}) {
                         ></VideoItem>
                     </VideoContainer>
                 </Grid>
+                <Grid item xs={12} sm={12} md={6} lg={6} sx={{textAlign: "center"}}>
+                    <VideoContainer>
+                        <VideoItem component={"video"}
+                                   id="webcamVideo"
+                                   autoPlay
+                                   playsInline
+                                   ref={localWebcamVideo}
+                        ></VideoItem>
+                    </VideoContainer>
+                </Grid>
+
             </Grid>
-            <Stack spacing={3}
-                   sx={{position: "absolute", bottom: 0, right: 0, padding: "1rem"}}>
-                {/*TODO: Add camera on or of button*/}
-                <EllipseButton
-                    id="hangupButton"
-                    bgcolor={joinedCall ? "#FF0000" : "#00FF00"}
-                    hovercolor={joinedCall ? "#930000" : "#009900"}
-                    onClick={joinedCall ? hangupCall : startCallWithUser}
-                    variant="contained"
-                >{joinedCall ? "X" : "JOIN"}</EllipseButton>
-            </Stack>
+
+
+            {/*TODO: Add camera on or of button*/}
+            <EllipseButton
+                sx={{position: "absolute", bottom: 15, right: 15, padding: "1rem"}}
+                id="hangupButton"
+                bgcolor={joinedCall ? "#FF0000" : "#00FF00"}
+                hovercolor={joinedCall ? "#930000" : "#009900"}
+                onClick={joinedCall ? hangupCall : startCallWithUser}
+                variant="contained"
+            >{joinedCall ? "X" : "JOIN"}</EllipseButton>
+
         </Box>
     );
 }
