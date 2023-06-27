@@ -7,3 +7,4 @@
 /dataSources/
 /dataSources.local.xml
 server/configuration_file.ini
+/__pyarch__/

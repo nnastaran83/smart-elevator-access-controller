@@ -1,3 +1,5 @@
+import os
+
 from flask import Flask, request, jsonify
 from flask_cors import CORS
 import numpy as np
@@ -8,10 +10,6 @@ from postgres_module.postgres_actions import PostgresModel
 
 app = Flask(__name__)
 CORS(app, resources={r"/*": {"origins": ["http://localhost:5173"]}})
-
-known_face_encodings = []
-known_face_names = ["Joe", "Nastaran"]
-
 
 # -------------------------------------------------------------------------------------
 ## Create a table in the database
@@ -26,10 +24,10 @@ known_face_names = ["Joe", "Nastaran"]
 # for image_path in images:
 #    # Now you can load and process each image
 #    # Get the base name (i.e., the file name with its extension)
-#    base_name = os.path.basename(image_path)
-#    # Split the base name into the file name and the extension
-#    file_name, extension = os.path.splitext(base_name)
-#    PostgresModel.store_face_encoding(name=file_name, image_path=image_path)
+base_name = os.path.basename("people_images/nas.jpg")
+# Split the base name into the file name and the extension
+file_name, extension = os.path.splitext(base_name)
+PostgresModel.store_face_encoding(name=file_name, image_path="people_images/nas.jpg")
 
 
 @app.route('/get_registered_users', methods=['GET'])
