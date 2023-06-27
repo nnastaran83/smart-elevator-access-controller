@@ -16,6 +16,7 @@ import {QUESTION_STEPS} from "../../util/constants.js";
  * @returns {JSX.Element}
  * @constructor
  */
+// eslint-disable-next-line react/prop-types
 const Siri = ({utterance}) => {
     const [currentQuestionStep, setCurrentQuestionStep] = useState(QUESTION_STEPS.INITIAL);
     const {
@@ -65,7 +66,7 @@ const Siri = ({utterance}) => {
                 </Box>
                 <IconButton sx={{
                     background: listening ? "rgba(106,245,82,0.18)" : "rgba(255,17,17,0.18)",
-                    color: listening ? "#1aa600" : "#ff0c0c"
+                    color: listening ? "#1aa600" : "#ff0c0c", width: "50px", height: "50px"
                 }}>
                     {listening ? <MicIcon/> : <MicOffIcon/>}
                 </IconButton>

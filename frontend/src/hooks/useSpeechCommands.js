@@ -1,5 +1,4 @@
-import React from 'react';
-import {useState, useEffect} from 'react';
+import {useState, useEffect, useCallback} from 'react';
 import SpeechRecognition, {useSpeechRecognition} from "react-speech-recognition";
 import {useDispatch} from "react-redux";
 import {FLOOR_MAP, QUESTION_STEPS, USER_STATES} from "../util/constants.js";
@@ -138,6 +137,25 @@ export const useSpeechCommands = (utterance, userType, currentQuestionStep, setC
         browserSupportsSpeechRecognition
     } = useSpeechRecognition({commands});
 
+    /**
+     * Ask user a question
+     * @type {(function(*): Promise<void>)|*}
+     */
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    const askUser = useCallback(async (text) => {
+            setSpeechSynthesisEnded(false);
+            utterance.voice = speechSynthesis.getVoices()[5];
+            utterance.lang = "en-US";
+            utterance.text = text;
+            setSiriMessage(utterance.text);
+            utterance.onend = () => {
+                setSpeechSynthesisEnded(true);
+                SpeechRecognition.startListening();
+            };
+            speechSynthesis.speak(utterance);
+        }, [utterance]);
+
+
     useEffect(() => {
         if (!browserSupportsSpeechRecognition) {
             console.log("Attention! Browser doesn't support speech recognition");
@@ -151,7 +169,7 @@ export const useSpeechCommands = (utterance, userType, currentQuestionStep, setC
             setCurrentQuestionStep(QUESTION_STEPS.FLOOR_QUESTION);
             askUser("Welcome! Which floor would you like to go to?");
         }
-    }, []);
+    }, [askUser]);
 
 
     useEffect(() => {
@@ -159,28 +177,12 @@ export const useSpeechCommands = (utterance, userType, currentQuestionStep, setC
             // Speech recognition has ended and speech synthesis had finished, dispatch your action here
             dispatch(startFaceRecognition());
             setSpeechSynthesisEnded(false);
-        } else if (!listening && transcript.length > 0 && !VALID_COMMANDS.includes(transcript.toLowerCase())) {
+        }
+        if (!listening && transcript.length > 0 && !VALID_COMMANDS.includes(transcript.toLowerCase())) {
             resetTranscript();
             askUser("Sorry! I didn't quite get that! Please repeat your answer!");
         }
-    }, [listening, isSpeechSynthesisEnded]);
-
-    /**
-     * Talking to user
-     * @returns {Promise<void>}
-     */
-    const askUser = async (text) => {
-        setSpeechSynthesisEnded(false);
-        utterance.voice = speechSynthesis.getVoices()[5];
-        utterance.lang = "en-US";
-        utterance.text = text;
-        setSiriMessage(utterance.text);
-        utterance.onend = () => {
-            setSpeechSynthesisEnded(true);
-            SpeechRecognition.startListening();
-        };
-        speechSynthesis.speak(utterance);
-    };
+    }, [listening, askUser]);
 
 
     return {

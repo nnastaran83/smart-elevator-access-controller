@@ -1,4 +1,4 @@
-import React, {useState} from 'react';
+import {useState} from 'react';
 import '../../styles/PopupFrameOverlay.css';
 import VideoCallPage from "./VideoCallPage.jsx";
 import {Box} from "@mui/material";
@@ -6,9 +6,11 @@ import ContactList from "./ContactList.jsx";
 
 /**
  * VideoCallPopup component is used to display a frame for video call.
+ * @param floorNumber
  * @returns {JSX.Element}
- * @component
+ * @constructor
  */
+// eslint-disable-next-line react/prop-types
 const VideoCallPopup = ({floorNumber}) => {
     const [videoCall, setVideoCall] = useState(null);
 

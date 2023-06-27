@@ -11,7 +11,7 @@ const contactListSlice = createSlice({
     reducers: {},
 
     extraReducers(builder) {
-        builder.addCase(loadRegisteredUsers.pending, (state, action) => {
+        builder.addCase(loadRegisteredUsers.pending, (state) => {
             state.loading = true;
         });
 

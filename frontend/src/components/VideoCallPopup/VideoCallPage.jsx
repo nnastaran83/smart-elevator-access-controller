@@ -1,5 +1,4 @@
-import React from "react";
-import {Box, Grid, IconButton, Stack} from "@mui/material";
+import {Box, Grid} from "@mui/material";
 import {useEffect, useRef, useState} from "react";
 import {db} from "../../firebase_module";
 import VideoContainer from "./VideoContainer.jsx";
@@ -41,6 +40,7 @@ const iceConfig = {
  * @returns {JSX.Element}
  * @constructor
  */
+// eslint-disable-next-line react/prop-types
 function VideoCallPage({uid, token, email, floorNumber}) {
     const localWebcamVideo = useRef(null);
     const remoteVideo = useRef(null);

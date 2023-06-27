@@ -1,11 +1,11 @@
-import React, {useState} from 'react';
+import {useState} from 'react';
 
 /**
  *useSpeech hook is used to speak the given text.
  * @returns {{sayText: (function(*=): void)}}
  */
 const useSpeech = () => {
-    const [utterance, setUtterance] = useState(new SpeechSynthesisUtterance());
+    const [utterance] = useState(new SpeechSynthesisUtterance());
 
     const sayText = (text) => {
         utterance.voice = speechSynthesis.getVoices()[5];

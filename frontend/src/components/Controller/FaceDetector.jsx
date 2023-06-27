@@ -1,5 +1,5 @@
 import React, {useEffect, useRef} from 'react';
-import {useDispatch, useSelector} from "react-redux";
+import {useDispatch} from "react-redux";
 import axios from "axios";
 import PitchContainer from "../containers/PitchContainer.jsx";
 import {setDetectedUserInfo, startSiri} from "../../store/index.js";
