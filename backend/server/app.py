@@ -12,10 +12,11 @@ app = Flask(__name__)
 CORS(app, resources={r"/*": {"origins": ["http://localhost:5173"]}})
 
 # -------------------------------------------------------------------------------------
-## Create a table in the database
+# # Create a table in the database
 # PostgresModel.create_registered_table()
-#
-## Define the directory where your images are located
+PostgresModel.create_approved_table()
+
+# # Define the directory where your images are located
 # image_dir = "people_images"
 #
 ## Use glob to match jpg and png image file types
@@ -24,10 +25,13 @@ CORS(app, resources={r"/*": {"origins": ["http://localhost:5173"]}})
 # for image_path in images:
 #    # Now you can load and process each image
 #    # Get the base name (i.e., the file name with its extension)
-base_name = os.path.basename("people_images/nas.jpg")
+# base_name = os.path.basename("people_images/nas.jpg")
 # Split the base name into the file name and the extension
-file_name, extension = os.path.splitext(base_name)
-PostgresModel.store_face_encoding(name=file_name, image_path="people_images/nas.jpg")
+# file_name, extension = os.path.splitext(base_name)
+# PostgresModel.store_face_encoding(name=file_name, image_path="people_images/nas.jpg")
+
+PostgresModel.memorize_approval(image_path="people_images/Joe Biden.jpg", floor_number=3)
+PostgresModel.memorize_approval(image_path="people_images/nas.jpg", floor_number=2)
 
 
 @app.route('/get_registered_users', methods=['GET'])

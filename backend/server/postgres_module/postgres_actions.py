@@ -43,7 +43,8 @@ class PostgresModel:
     @classmethod
     def create_registered_table(cls):
         """
-        Creates the table if it doesn't exist
+        Creates the table registered if it doesn't exist.
+        registered table stores the name, face encoding, floor number, uid, messaging token and email of the registered user
         :return:
         """
 
@@ -55,7 +56,26 @@ class PostgresModel:
                 face_encoding FLOAT[],
                 floor_number INTEGER,
                 uid TEXT,
-                messaging_token TEXT
+                messaging_token TEXT,
+                email TEXT
+                )
+             """)
+
+    @classmethod
+    def create_approved_table(cls):
+        """
+        Creates the approved table if it doesn't exist.
+        approved table stores the face encoding and floor number of the approved user.
+        :return:
+        """
+
+        # Execute a command: this creates a new table
+        with cls.get_cursor() as cursor:
+            cursor.execute("""
+            CREATE TABLE IF NOT EXISTS approved (
+                face_encoding FLOAT[] UNIQUE NOT NULL,
+                floor_number INTEGER,
+                access_date TIMESTAMP NOT NULL DEFAULT NOW()
                 )
              """)
 
@@ -80,6 +100,32 @@ class PostgresModel:
                     INSERT INTO registered (name, face_encoding)
                     VALUES (%s, %s)
                     """, (name, list(face_encodings[0])))
+
+        return True
+
+    @classmethod
+    def memorize_approval(cls, image_path, floor_number):
+        """
+        Stores the face encoding of the image in the database
+        :param floor_number:
+        :param image_path:
+        :return:
+        """
+        # Load the image file
+        picture = face_recognition.load_image_file(image_path)
+
+        # Get the face encodings for the picture
+        face_encodings = face_recognition.face_encodings(picture)
+
+        if len(face_encodings) > 0:
+            with cls.get_connection().cursor() as cursor:
+                # Insert the name and face_encoding into the people table
+                cursor.execute("""
+                    INSERT INTO approved (face_encoding, floor_number)
+                    VALUES (%s, %s)
+                    ON CONFLICT (face_encoding) 
+                    DO UPDATE SET floor_number = EXCLUDED.floor_number, access_date = NOW()
+                    """, (list(face_encodings[0]), floor_number))
 
         return True
 
@@ -129,6 +175,23 @@ class PostgresModel:
                         if min_distance < 0.6:
                             break
 
+                # If no match was found in the registered table, check if the person is approved in the past
+                if best_match_uid is None:
+                    print("checking approved table")
+                    # Get all the face encodings from the people table
+                    cursor.execute("""
+                           SELECT face_encoding, floor_number
+                           FROM approved
+                           ORDER BY access_date DESC
+                       """)
+
+                    # Iterate over each stored face encoding
+                    for face_encoding, floor_number in cursor:
+                        results = face_recognition.compare_faces([face_encoding], new_face_encoding, tolerance=0.6)
+                        if results[0]:
+                            best_floor_number = floor_number
+                            break
+
         return {"name": best_match_name, "floor_number": best_floor_number, "uid": best_match_uid}
 
     @classmethod
@@ -147,12 +210,16 @@ class PostgresModel:
             new_face_encoding = new_face_encodings[0]
 
             with cls.get_cursor() as cursor:
-                # Get all the face encodings from the people table
+                # Get all the face encodings from the registered and approved table for this specific floor
                 cursor.execute("""
-                    SELECT face_encoding, floor_number
-                    FROM registered
-                    WHERE floor_number = %s
-                """, (floor_number,))
+                    (SELECT face_encoding, floor_number
+                     FROM registered
+                     WHERE floor_number = %s)
+                    UNION
+                    (SELECT face_encoding, floor_number
+                     FROM approved
+                     WHERE floor_number = %s)
+                """, (floor_number, floor_number,))
 
                 # Iterate over each stored face encoding from floor_number
                 for face_encoding, floor_number in cursor:
