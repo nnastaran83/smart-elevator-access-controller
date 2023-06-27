@@ -5,12 +5,6 @@ import PitchContainer from "../containers/PitchContainer.jsx";
 import {setDetectedUserInfo, startSiri} from "../../store/index.js";
 import '../../styles/FaceDetector.css';
 
-//TODO : to stop the camera use this in the code : before it save the stream as state
-
-//                      let tracks = stream.getTracks();
-//                     tracks.forEach(function (track) {
-//                         track.stop();
-//                     });
 /**
  * FaceDetector component is used to detect faces in the video stream and send the video frame data to the Flask backend.
  * @returns {JSX.Element}
