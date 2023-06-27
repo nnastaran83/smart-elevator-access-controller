@@ -1,7 +1,7 @@
 import React from "react";
 import '../../styles/Rainbow.css';
 
-const Rainbow = () => {
+const RainbowContainer = () => {
     return (
         <div className="rainbow-container">
             <div className="green"></div>
@@ -11,4 +11,4 @@ const Rainbow = () => {
     );
 };
 
-export default Rainbow;
+export default RainbowContainer;

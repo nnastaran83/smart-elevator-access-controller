@@ -5,7 +5,7 @@ import MicIcon from "@mui/icons-material/Mic";
 import MicOffIcon from "@mui/icons-material/MicOff";
 import AnimationContainer from "../containers/AnimationContainer.jsx";
 import VideoCallPopup from "../VideoCallPopup/index.jsx";
-import Rainbow from "../containers/Rainbow.jsx";
+import RainbowContainer from "../containers/RainbowContainer.jsx";
 import {useSpeechCommands} from '../../hooks/useSpeechCommands.js';
 import {useSiriData} from '../../hooks/useSiriData.js';
 import {QUESTION_STEPS} from "../../util/constants.js";
@@ -51,7 +51,7 @@ const Siri = ({utterance}) => {
                     justifyContent: "center",
                     alignItems: "center"
                 }}>
-                    <Rainbow/>
+                    <RainbowContainer/>
                 </Box>
             </AnimationContainer>
 
