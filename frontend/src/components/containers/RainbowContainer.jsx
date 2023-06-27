@@ -1,6 +1,11 @@
 import React from "react";
 import '../../styles/Rainbow.css';
 
+/**
+ * RainbowContainer contains the rainbow animation for siri.
+ * @returns {JSX.Element}
+ * @constructor
+ */
 const RainbowContainer = () => {
     return (
         <div className="rainbow-container">

@@ -1,6 +1,9 @@
 import React from 'react';
 import {Box, styled} from "@mui/material";
 
+/**
+ * AnimationContainer is used to create a circular container for the animation.
+ */
 const AnimationContainer = styled(Box)(({theme}) => ({
         '--content-size': "calc(100% - var(--padding))",
         width: `clamp(200px, 80vmin, 800px)`,

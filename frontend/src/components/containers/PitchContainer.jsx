@@ -25,7 +25,11 @@ const Pitch = ({index, pitchNumber}) => {
     );
 };
 
-
+/**
+ * PitchContainer contains the circular lines that animate around the center of the screen.
+ * @returns {JSX.Element}
+ * @constructor
+ */
 const PitchContainer = () => {
     const pitchNumber = 20; // Number of pitches
     const pitches = Array.from({length: pitchNumber}, (_, i) => (

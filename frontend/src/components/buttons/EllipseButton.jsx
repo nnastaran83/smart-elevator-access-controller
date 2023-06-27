@@ -1,7 +1,11 @@
-import React, {useState} from 'react';
+import React from 'react';
 import Button from "@mui/material/Button";
 import {styled} from "@mui/material";
 
+/**
+ * @param bgcolor
+ * @param hovercolor
+ */
 const EllipseButton = styled(Button)(({theme, bgcolor, hovercolor}) => ({
     backgroundColor: bgcolor,
     width: "50px",
