@@ -104,18 +104,16 @@ class PostgresModel:
         return True
 
     @classmethod
-    def memorize_approval(cls, image_path, floor_number):
+    def memorize_approval(cls, image_array, floor_number):
         """
         Stores the face encoding of the image in the database
         :param floor_number:
         :param image_path:
         :return:
         """
-        # Load the image file
-        picture = face_recognition.load_image_file(image_path)
 
         # Get the face encodings for the picture
-        face_encodings = face_recognition.face_encodings(picture)
+        face_encodings = face_recognition.face_encodings(img_array)
 
         if len(face_encodings) > 0:
             with cls.get_connection().cursor() as cursor:

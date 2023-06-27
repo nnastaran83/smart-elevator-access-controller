@@ -1,5 +1,4 @@
 import os
-
 from flask import Flask, request, jsonify
 from flask_cors import CORS
 import numpy as np
@@ -16,6 +15,7 @@ CORS(app, resources={r"/*": {"origins": ["http://localhost:5173"]}})
 # PostgresModel.create_registered_table()
 PostgresModel.create_approved_table()
 
+
 # # Define the directory where your images are located
 # image_dir = "people_images"
 #
@@ -29,9 +29,6 @@ PostgresModel.create_approved_table()
 # Split the base name into the file name and the extension
 # file_name, extension = os.path.splitext(base_name)
 # PostgresModel.store_face_encoding(name=file_name, image_path="people_images/nas.jpg")
-
-PostgresModel.memorize_approval(image_path="people_images/Joe Biden.jpg", floor_number=3)
-PostgresModel.memorize_approval(image_path="people_images/nas.jpg", floor_number=2)
 
 
 @app.route('/get_registered_users', methods=['GET'])
@@ -69,6 +66,20 @@ def check_access_permission():
     info = PostgresModel.check_access_permission(img_array, floor_number)
 
     return jsonify(info)
+
+
+@app.route('/memorize_approval', methods=['POST'])
+def memorize_approval():
+    # Get JSON data from an HTTP request.
+    data = request.get_json()
+    frame_data = data['frame_data']
+    floor_number = data['floor_number']
+
+    # Decode the base64-encoded image
+    img_data = base64.b64decode(frame_data.split(',')[1])
+    img = Image.open(BytesIO(img_data))
+    img_array = np.array(img)
+    PostgresModel.memorize_approval(image_array=img_array, floor_number=floor_number)
 
 
 if __name__ == '__main__':
