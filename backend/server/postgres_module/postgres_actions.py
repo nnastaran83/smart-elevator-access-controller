@@ -104,11 +104,11 @@ class PostgresModel:
         return True
 
     @classmethod
-    def memorize_approval(cls, image_array, floor_number):
+    def memorize_approval(cls, img_array, floor_number):
         """
         Stores the face encoding of the image in the database
+        :param img_array:
         :param floor_number:
-        :param image_path:
         :return:
         """
 

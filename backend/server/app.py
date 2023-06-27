@@ -79,7 +79,8 @@ def memorize_approval():
     img_data = base64.b64decode(frame_data.split(',')[1])
     img = Image.open(BytesIO(img_data))
     img_array = np.array(img)
-    PostgresModel.memorize_approval(image_array=img_array, floor_number=floor_number)
+    response = PostgresModel.memorize_approval(img_array=img_array, floor_number=floor_number)
+    return jsonify(response)
 
 
 if __name__ == '__main__':

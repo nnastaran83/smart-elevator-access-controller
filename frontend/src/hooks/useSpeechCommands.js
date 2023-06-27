@@ -82,35 +82,47 @@ export const useSpeechCommands = (utterance, userType, currentQuestionStep, setC
             callback: async ({command}) => {
                 console.log("command", command);
                 if (currentQuestionStep === QUESTION_STEPS.FLOOR_QUESTION) {
+                    console.log(`user type : ${userType}`)
                     const floorNumber = FLOOR_MAP[command.toLowerCase()];
                     if (floorNumber) {
                         dispatch(setRequestedFloorNumber(floorNumber));
                         utterance.voice = speechSynthesis.getVoices()[5];
                         utterance.lang = "en-US";
-                        utterance.text = "Checking for access permission! Please wait...";
-                        setSiriMessage(utterance.text);
-                        utterance.onend = async () => {
-                            axios.post('http://localhost:5000/check_access_permission',
-                                {frame_data: detectedUserInfo.imageFrameData, floor_number: floorNumber}
-                            ).then(response => {
-                                if (response.data.access_permission) {
-                                    utterance.text = "Access granted! Have a nice day!";
-                                    setSiriMessage(utterance.text);
-                                    utterance.onend = () => {
-                                        setSpeechSynthesisEnded(true);
-                                        dispatch(startFaceRecognition());
-                                    };
-                                    speechSynthesis.speak(utterance);
-                                } else {
-                                    dispatch(changeUserType(USER_STATES.UNREGISTERED_USER));
-                                    setCurrentQuestionStep(QUESTION_STEPS.VIDEO_CALL_QUESTION);
-                                    askUser("Access denied! Would you like to make a video call for approval?");
-                                }
-                            }).catch(error => {
-                                    console.log("error", error);
-                                }
-                            );
-                        };
+                        if (userType === USER_STATES.UNREGISTERED_USER) {
+                            utterance.text = "Here is the list of people you can contact with to get access permission.";
+                            setSiriMessage(utterance.text);
+                            utterance.onend = () => {
+                                setSpeechSynthesisEnded(true);
+                                dispatch(setIsVideoCallActive(true));
+                            };
+
+                        } else {
+                            utterance.text = "Checking for access permission! Please wait...";
+                            setSiriMessage(utterance.text);
+                            utterance.onend = async () => {
+                                axios.post('http://localhost:5000/check_access_permission',
+                                    {frame_data: detectedUserInfo.imageFrameData, floor_number: floorNumber}
+                                ).then(response => {
+                                    if (response.data.access_permission) {
+                                        utterance.text = "Access granted! Have a nice day!";
+                                        setSiriMessage(utterance.text);
+                                        utterance.onend = () => {
+                                            setSpeechSynthesisEnded(true);
+                                            dispatch(startFaceRecognition());
+                                        };
+                                        speechSynthesis.speak(utterance);
+                                    } else {
+                                        dispatch(changeUserType(USER_STATES.UNREGISTERED_USER));
+                                        setCurrentQuestionStep(QUESTION_STEPS.VIDEO_CALL_QUESTION);
+                                        askUser("Access denied! Would you like to make a video call for approval?");
+                                    }
+                                }).catch(error => {
+                                        console.log("error", error);
+                                    }
+                                );
+                            };
+
+                        }
                         speechSynthesis.speak(utterance);
                     }
                 }
@@ -136,8 +148,8 @@ export const useSpeechCommands = (utterance, userType, currentQuestionStep, setC
         } else if (userType === USER_STATES.RETURNING_USER) {
             askUser(`Welcome! Would you like to go to floor ${detectedUserInfo.floor_number} like the last time?`);
         } else {
-            setCurrentQuestionStep(QUESTION_STEPS.VIDEO_CALL_QUESTION);
-            askUser("Sorry! Can't recognize you! Would you like to make a video call for approval?");
+            setCurrentQuestionStep(QUESTION_STEPS.FLOOR_QUESTION);
+            askUser("Welcome! Which floor would you like to go to?");
         }
     }, []);
 

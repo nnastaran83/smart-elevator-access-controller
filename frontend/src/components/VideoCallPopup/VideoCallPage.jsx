@@ -16,9 +16,7 @@ import {sendVideoCallRequestMessageToUser} from "../../firebase_module";
 import EllipseButton from "../buttons/EllipseButton.jsx";
 import useSpeech from "../../hooks/useSpeech.js";
 import axios from "axios";
-import {setDetectedUserInfo, startSiri} from "../../store/index.js";
 import {useSelector} from "react-redux";
-import {currentDetectedUserReducer} from "../../store/slices/currentDetectedUser.js";
 
 const message = {
     title: "Smart",
@@ -55,7 +53,7 @@ function VideoCallPage({uid, token, email, floorNumber}) {
     const {sayText} = useSpeech();
 
     useEffect(() => {
-        console.log(imageFrameData);
+        console.log(floorNumber);
         startWebCam();
     }, []);
 
@@ -133,8 +131,7 @@ function VideoCallPage({uid, token, email, floorNumber}) {
             if (event.data === "Access approved!") {
                 try {
                     await axios.post('http://localhost:5000/memorize_approval',
-                        {frame_data: imageFrameData, floor_numer: floorNumber},
-                        {headers: {'Content-Type': 'application/json'}}
+                        {frame_data: imageFrameData, floor_number: floorNumber},
                     );
 
                 } catch (error) {
