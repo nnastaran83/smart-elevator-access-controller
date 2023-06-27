@@ -14,16 +14,14 @@ const FaceDetector = () => {
     const dispatch = useDispatch();
     const videoRef = useRef(null);
     const canvasRef = useRef(null);
-    const {registeredUsers} = useSelector(state => state.contactList.registeredUsers);
 
     useEffect(() => {
         startWebCamForFaceDetection();
-
     }, []);
 
 
     /**
-     * Starts webcam video stream
+     * Starts webcam for face detection
      * @returns {Promise<void>}
      */
     const startWebCamForFaceDetection = async () => {
@@ -48,12 +46,14 @@ const FaceDetector = () => {
             return;
         }
 
+        // Draw the video frame to canvas.
         const video = videoRef.current;
         const canvas = document.createElement('canvas');
         canvas.width = video.videoWidth;
         canvas.height = video.videoHeight;
         const ctx = canvas.getContext('2d');
         ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
+
 
         // Convert the content of the canvas to a Base64-encoded JPEG image.
         const frameData = canvas.toDataURL('image/jpeg', 1);
@@ -68,8 +68,8 @@ const FaceDetector = () => {
 
 
             if (response.data) {
-                await dispatch(setDetectedUserInfo({...response.data, imageFrameData: frameData}));
-                await dispatch(startSiri());
+                dispatch(setDetectedUserInfo({...response.data, imageFrameData: frameData}));
+                dispatch(startSiri());
 
             } else {
                 setTimeout(() => detectFace(), 5000);
@@ -95,9 +95,7 @@ const FaceDetector = () => {
             <PitchContainer/>
         </React.Fragment>
 
-
     );
 };
-
 
 export default FaceDetector;
