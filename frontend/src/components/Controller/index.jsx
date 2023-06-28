@@ -36,7 +36,7 @@ const Controller = () => {
         };
         run();
 
-    }, []);
+    }, [utterance]);
 
 
     return (

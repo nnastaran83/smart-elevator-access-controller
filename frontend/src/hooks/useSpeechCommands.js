@@ -32,6 +32,7 @@ export const useSpeechCommands = (utterance, userType, currentQuestionStep, setC
         {
             command: 'yes',
             callback: () => {
+                SpeechRecognition.stopListening();
                 if (currentQuestionStep === QUESTION_STEPS.INITIAL) {
                     utterance.voice = speechSynthesis.getVoices()[5];
                     utterance.lang = "en-US";
@@ -39,7 +40,7 @@ export const useSpeechCommands = (utterance, userType, currentQuestionStep, setC
                         utterance.text = "No problem! Have a nice day!";
                         setSiriMessage(utterance.text);
                         utterance.onend = () => {
-                            setSpeechSynthesisEnded(true);
+                            //setSpeechSynthesisEnded(true);
                             dispatch(startFaceRecognition());
                         };
                         speechSynthesis.speak(utterance);
@@ -49,7 +50,7 @@ export const useSpeechCommands = (utterance, userType, currentQuestionStep, setC
                     utterance.text = "No problem! Here is the list of people you can contact with.";
                     setSiriMessage(utterance.text);
                     utterance.onend = () => {
-                        setSpeechSynthesisEnded(true);
+                        //setSpeechSynthesisEnded(true);
                         dispatch(setIsVideoCallActive(true));
                     };
                     speechSynthesis.speak(utterance);
@@ -60,7 +61,7 @@ export const useSpeechCommands = (utterance, userType, currentQuestionStep, setC
         {
             command: 'no',
             callback: () => {
-
+                SpeechRecognition.stopListening();
                 if ((userType === USER_STATES.REGISTERED_USER || userType === USER_STATES.RETURNING_USER) && currentQuestionStep === QUESTION_STEPS.INITIAL) {
                     setCurrentQuestionStep(QUESTION_STEPS.FLOOR_QUESTION);
                     askUser("Which floor would you like to go to?");
@@ -69,7 +70,7 @@ export const useSpeechCommands = (utterance, userType, currentQuestionStep, setC
                     utterance.text = "Goodbye!";
                     setSiriMessage(utterance.text);
                     utterance.onend = () => {
-                        setSpeechSynthesisEnded(true);
+                        // setSpeechSynthesisEnded(true);
                         dispatch(startFaceRecognition());
                     };
                     speechSynthesis.speak(utterance);
@@ -79,6 +80,7 @@ export const useSpeechCommands = (utterance, userType, currentQuestionStep, setC
         {
             command: VALID_FLOOR_NUMBERS,
             callback: async ({command}) => {
+                SpeechRecognition.stopListening();
                 console.log("command", command);
                 if (currentQuestionStep === QUESTION_STEPS.FLOOR_QUESTION) {
                     console.log(`user type : ${userType}`)
@@ -91,7 +93,7 @@ export const useSpeechCommands = (utterance, userType, currentQuestionStep, setC
                             utterance.text = "Here is the list of people you can contact with to get access permission.";
                             setSiriMessage(utterance.text);
                             utterance.onend = () => {
-                                setSpeechSynthesisEnded(true);
+                                // setSpeechSynthesisEnded(true);
                                 dispatch(setIsVideoCallActive(true));
                             };
 
@@ -106,7 +108,7 @@ export const useSpeechCommands = (utterance, userType, currentQuestionStep, setC
                                         utterance.text = "Access granted! Have a nice day!";
                                         setSiriMessage(utterance.text);
                                         utterance.onend = () => {
-                                            setSpeechSynthesisEnded(true);
+                                            // setSpeechSynthesisEnded(true);
                                             dispatch(startFaceRecognition());
                                         };
                                         speechSynthesis.speak(utterance);
@@ -143,6 +145,7 @@ export const useSpeechCommands = (utterance, userType, currentQuestionStep, setC
      */
         // eslint-disable-next-line react-hooks/exhaustive-deps
     const askUser = useCallback(async (text) => {
+            resetTranscript();
             setSpeechSynthesisEnded(false);
             utterance.voice = speechSynthesis.getVoices()[5];
             utterance.lang = "en-US";
@@ -151,6 +154,8 @@ export const useSpeechCommands = (utterance, userType, currentQuestionStep, setC
             utterance.onend = () => {
                 setSpeechSynthesisEnded(true);
                 SpeechRecognition.startListening();
+
+
             };
             speechSynthesis.speak(utterance);
         }, [utterance]);
@@ -169,20 +174,21 @@ export const useSpeechCommands = (utterance, userType, currentQuestionStep, setC
             setCurrentQuestionStep(QUESTION_STEPS.FLOOR_QUESTION);
             askUser("Welcome! Which floor would you like to go to?");
         }
-    }, [askUser]);
+        console.log(SpeechRecognition)
+    }, []);
 
 
     useEffect(() => {
         if (!listening && isSpeechSynthesisEnded && transcript.length === 0) {
             // Speech recognition has ended and speech synthesis had finished, dispatch your action here
             dispatch(startFaceRecognition());
-            setSpeechSynthesisEnded(false);
+            //  setSpeechSynthesisEnded(false);
         }
         if (!listening && transcript.length > 0 && !VALID_COMMANDS.includes(transcript.toLowerCase())) {
             resetTranscript();
             askUser("Sorry! I didn't quite get that! Please repeat your answer!");
         }
-    }, [listening, askUser]);
+    }, [listening, isSpeechSynthesisEnded]);
 
 
     return {

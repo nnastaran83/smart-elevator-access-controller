@@ -12,7 +12,7 @@ import {
     setRequestedFloorNumber
 } from "./slices/currentDetectedUser.js";
 import {videoCallReducer, setIsVideoCallActive} from "./slices/videoCallSlice.js";
-import {siriReducer} from "./slices/siriSlice.js";
+import {siriReducer, setTextToSpeech} from "./slices/siriSlice.js";
 
 
 const store = configureStore({
@@ -33,7 +33,8 @@ export {
     setDetectedUserInfo,
     setIsVideoCallActive,
     changeUserType,
-    setRequestedFloorNumber
+    setRequestedFloorNumber,
+    setTextToSpeech
 
 
 };
