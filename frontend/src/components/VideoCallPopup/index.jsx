@@ -23,11 +23,9 @@ const VideoCallPopup = ({floorNumber}) => {
     const handleContactButtonClick = (event) => {
         // Access custom attributes
         const uid = event.currentTarget.getAttribute('data-uid');
-        const token = event.currentTarget.getAttribute('data-token');
         const email = event.currentTarget.getAttribute('data-email');
-        // Do something with the custom attributes
-        console.log(`Clicked on user with UID: ${uid} and token: ${token} and email: ${email}`);
-        setVideoCall(<VideoCallPage uid={uid} token={token} email={email} floorNumber={floorNumber}/>)
+
+        setVideoCall(<VideoCallPage uid={uid} email={email} floorNumber={floorNumber}/>)
 
 
     };

@@ -9,7 +9,6 @@ import {
     setDoc,
     onSnapshot,
     addDoc,
-    deleteDoc,
 } from "firebase/firestore";
 import {sendVideoCallRequestMessageToUser} from "../../firebase_module";
 import EllipseButton from "../buttons/EllipseButton.jsx";
@@ -41,27 +40,28 @@ const iceConfig = {
  * @constructor
  */
 // eslint-disable-next-line react/prop-types
-function VideoCallPage({uid, token, email, floorNumber}) {
+function VideoCallPage({uid, email, floorNumber}) {
     const localWebcamVideo = useRef(null);
     const remoteVideo = useRef(null);
     // Creating peer connection
     const pc = useRef(new RTCPeerConnection(iceConfig));
-    const sendSignalChannel = useRef(null);
+    const rtcMessagingChannel = useRef(null);
     const [joinedCall, setJoinedCall] = useState(false);
     const imageFrameData = useSelector((state) => state.currentDetectedUser.detectedUserInfo.imageFrameData);
-
     const {sayText} = useSpeech();
 
     useEffect(() => {
-        console.log(floorNumber);
-        startWebCam();
-    }, []);
+
+        initialize().then(() => {
+            console.log("Initialized video call page successfully");
+        });
+    }, [pc]);
 
     /**
      * Handles the click event of the webcam button
      * @returns {Promise<void>}
      */
-    const startWebCam = async () => {
+    const initialize = async () => {
         // setting local stream to the video from our camera
         localStream = await navigator.mediaDevices.getUserMedia({
             video: true,
@@ -93,11 +93,6 @@ function VideoCallPage({uid, token, email, floorNumber}) {
                 pc.current.iceConnectionState
             );
             if (
-                pc.current.iceConnectionState === "connected" ||
-                pc.current.iceConnectionState === "completed"
-            ) {
-                setJoinedCall(true);
-            } else if (
                 pc.current.iceConnectionState === "disconnected" ||
                 pc.current.iceConnectionState === "failed" ||
                 pc.current.iceConnectionState === "closed"
@@ -107,25 +102,10 @@ function VideoCallPage({uid, token, email, floorNumber}) {
                 setJoinedCall(false);
             }
         };
-    };
 
-    /**
-     * Handles the click event of the call button
-     * @returns {Promise<void>}
-     */
-    const startCallWithUser = async () => {
-        //TODO: Delete the call document after call ends
-        setJoinedCall(true);
-        await deleteDoc(doc(db, "calls", uid));
-        await sendVideoCallRequestMessageToUser(email, message);
-
-        //TODO: change the uid to the uid of the user to call
-        const callDoc = doc(db, "calls", uid); // Main collection in firestore
-        const offerCandidates = collection(callDoc, "offerCandidates"); //Sub collection of callDoc
-        const answerCandidiates = collection(callDoc, "answerCandidates"); //Sub collection of callDoc
-
-        sendSignalChannel.current = pc.current.createDataChannel("sendSignalChannel");
-        sendSignalChannel.current.onmessage = async (event) => {
+        // Creating a data channel to get messages from the other peer
+        rtcMessagingChannel.current = pc.current.createDataChannel("sendSignalChannel");
+        rtcMessagingChannel.current.onmessage = async (event) => {
             console.log("Got message from sendSignalChannel", event.data);
             sayText(event.data);
             if (event.data === "Access approved!") {
@@ -139,10 +119,25 @@ function VideoCallPage({uid, token, email, floorNumber}) {
                 }
             }
         };
+    };
+
+    /**
+     * Handles the click event of the call button
+     * @returns {Promise<void>}
+     */
+    const startCallWithUser = async () => {
+
+        setJoinedCall(true);
+        await sendVideoCallRequestMessageToUser(email, message);
+
+        const callDoc = doc(db, "calls", uid); // Main collection in firestore
+        const offerCandidates = collection(callDoc, "offerCandidates"); //Sub collection of callDoc
+        const answerCandidiates = collection(callDoc, "answerCandidates"); //Sub collection of callDoc
+        
+
         //Before the caller and callee can connect to each other, they need to exchange ICE candidates that tell WebRTC how to connect to the remote peer.
         //Get candidates for caller and save to db
         pc.current.onicecandidate = (event) => {
-            console.log("Got Ice Candidate", event.candidate);
             event.candidate && addDoc(offerCandidates, event.candidate.toJSON());
         };
 

@@ -21,7 +21,6 @@ const ContactList = ({handleContactButtonClick, floorNumber}) => {
             )
             : state.contactList.registeredUsers
     );
-    console.log(registeredUsers);
 
     // Group users by floor number
     let floorMapping = registeredUsers.reduce((acc, user) => {
