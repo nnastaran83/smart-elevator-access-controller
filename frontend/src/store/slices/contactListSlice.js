@@ -24,7 +24,7 @@ const contactListSlice = createSlice({
 
         builder.addCase(loadRegisteredUsers.rejected, (state, action) => {
             state.loading = false;
-            state.error = action.payload;
+            state.error = action.error;
 
         });
     },

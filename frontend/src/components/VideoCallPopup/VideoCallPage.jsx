@@ -9,30 +9,20 @@ import {
     setDoc,
     onSnapshot,
     addDoc,
+    deleteDoc,
 } from "firebase/firestore";
 import {sendVideoCallRequestMessageToUser} from "../../firebase_module";
 import EllipseButton from "../buttons/EllipseButton.jsx";
 import useSpeech from "../../hooks/useSpeech.js";
 import axios from "axios";
 import {useSelector} from "react-redux";
+import {usePeerConnection} from "../../hooks/usePeerConnection.js";
 
 const message = {
     title: "Smart",
     message: "New Incoming Video Call",
 };
 
-let localStream = null;
-let remoteStream = null;
-
-// ice servers configuration
-const iceConfig = {
-    iceServers: [
-        {
-            urls: ["stun:stun1.l.google.com:19302", "stun:stun2.l.google.com:19302"], // free stun server
-        },
-    ],
-    iceCandidatePoolSize: 10,
-};
 
 /**
  * Video Calling Page using WebRTC
@@ -41,43 +31,85 @@ const iceConfig = {
  */
 // eslint-disable-next-line react/prop-types
 function VideoCallPage({uid, email, floorNumber}) {
-    const localWebcamVideo = useRef(null);
+    const localStreamRef = useRef(null);
+    const [localStream, setLocalStream] = useState(null);
     const remoteVideo = useRef(null);
-    // Creating peer connection
-    const pc = useRef(new RTCPeerConnection(iceConfig));
-    const rtcMessagingChannel = useRef(null);
+    const {pc} = usePeerConnection();
+    const sendSignalChannel = useRef(null);
     const [joinedCall, setJoinedCall] = useState(false);
     const imageFrameData = useSelector((state) => state.currentDetectedUser.detectedUserInfo.imageFrameData);
+
     const {sayText} = useSpeech();
 
     useEffect(() => {
+        console.log(floorNumber);
+        startLocalStream();
+    }, []);
 
-        initialize().then(() => {
-            console.log("Initialized video call page successfully");
-        });
-    }, [pc]);
 
     /**
-     * Handles the click event of the webcam button
+     * Open the webcam
+     * @param constraints
+     * @returns {Promise<MediaStream>}
+     */
+    const openMediaDevices = async (constraints) => {
+        return await navigator.mediaDevices.getUserMedia(constraints);
+    };
+
+
+    /**
+     * Start the local video stream
      * @returns {Promise<void>}
      */
-    const initialize = async () => {
-        // setting local stream to the video from our camera
-        localStream = await navigator.mediaDevices.getUserMedia({
-            video: true,
-            audio: true,
-        });
+    const startLocalStream = async () => {
+        // stop the previous stream before starting a new one
+        stopStreamedVideo(localStreamRef.current);
 
-        // Pushing tracks from local stream to peerConnection
-        localStream.getTracks().forEach((track) => {
-            pc.current.addTrack(track, localStream);
-        });
+        // start the new stream
+        try {
+            localStreamRef.current.srcObject = await openMediaDevices({
+                'video': true,
+                'audio': {echoCancellation: true} || true
+            });
+            console.log('Got MediaStream:', localStreamRef.current.srcObject);
+            // Pushing tracks from local stream to peerConnection
+            localStreamRef.current.srcObject.getTracks().forEach((track) => {
+                pc.current.addTrack(track, localStreamRef.current.srcObject);
+            });
 
-        // displaying the video data from the stream to the webpage
-        localWebcamVideo.current.srcObject = localStream;
 
+        } catch (error) {
+            console.error('Error accessing media devices.', error);
+        }
+
+        setLocalStream(localStreamRef.current.srcObject);
+    };
+
+
+    /**
+     * Stop video stream
+     * @param videoElem
+     */
+    const stopStreamedVideo = (videoElem) => {
+        if (videoElem.srcObject) {
+            console.log(videoElem.srcObject)
+            const stream = videoElem.srcObject;
+            const tracks = stream.getTracks();
+
+            tracks.forEach((track) => {
+                track.stop();
+            });
+
+            videoElem.srcObject = null;
+        }
+        setLocalStream(null);
+
+    };
+
+    const addRemoteStream = async () => {
         // initializing the remote server to the media stream
-        remoteStream = new MediaStream();
+        const remoteStream = new MediaStream();
+
         remoteVideo.current.srcObject = remoteStream;
 
         pc.current.ontrack = (event) => {
@@ -88,24 +120,34 @@ function VideoCallPage({uid, email, floorNumber}) {
             remoteVideo.current.srcObject = remoteStream;
         };
         pc.current.oniceconnectionstatechange = (e) => {
-            console.log(
-                "ICE connection state change: ",
-                pc.current.iceConnectionState
-            );
-            if (
-                pc.current.iceConnectionState === "disconnected" ||
-                pc.current.iceConnectionState === "failed" ||
-                pc.current.iceConnectionState === "closed"
-            ) {
-                // Connection has been closed/failed
-                // You can reset your state variable here
+            console.log("ICE connection state change: ", pc.current.iceConnectionState);
+            if (pc.current.iceConnectionState === "connected" || pc.current.iceConnectionState === "completed") {
+                setJoinedCall(true);
+            } else if (pc.current.iceConnectionState === "disconnected" || pc.current.iceConnectionState === "failed" || pc.current.iceConnectionState === "closed") {
                 setJoinedCall(false);
             }
         };
+    }
 
-        // Creating a data channel to get messages from the other peer
-        rtcMessagingChannel.current = pc.current.createDataChannel("sendSignalChannel");
-        rtcMessagingChannel.current.onmessage = async (event) => {
+
+    /**
+     * Handles the click event of the call button
+     * @returns {Promise<void>}
+     */
+    const startCallWithUser = async () => {
+        //TODO: Delete the call document after call ends
+        await addRemoteStream();
+        setJoinedCall(true);
+        await deleteDoc(doc(db, "calls", uid));
+        await sendVideoCallRequestMessageToUser(email, message);
+
+        //TODO: change the uid to the uid of the user to call
+        const callDoc = doc(db, "calls", uid); // Main collection in firestore
+        const offerCandidates = collection(callDoc, "offerCandidates"); //Sub collection of callDoc
+        const answerCandidiates = collection(callDoc, "answerCandidates"); //Sub collection of callDoc
+
+        sendSignalChannel.current = pc.current.createDataChannel("sendSignalChannel");
+        sendSignalChannel.current.onmessage = async (event) => {
             console.log("Got message from sendSignalChannel", event.data);
             sayText(event.data);
             if (event.data === "Access approved!") {
@@ -119,25 +161,10 @@ function VideoCallPage({uid, email, floorNumber}) {
                 }
             }
         };
-    };
-
-    /**
-     * Handles the click event of the call button
-     * @returns {Promise<void>}
-     */
-    const startCallWithUser = async () => {
-
-        setJoinedCall(true);
-        await sendVideoCallRequestMessageToUser(email, message);
-
-        const callDoc = doc(db, "calls", uid); // Main collection in firestore
-        const offerCandidates = collection(callDoc, "offerCandidates"); //Sub collection of callDoc
-        const answerCandidiates = collection(callDoc, "answerCandidates"); //Sub collection of callDoc
-        
-
         //Before the caller and callee can connect to each other, they need to exchange ICE candidates that tell WebRTC how to connect to the remote peer.
         //Get candidates for caller and save to db
         pc.current.onicecandidate = (event) => {
+            console.log("Got Ice Candidate", event.candidate);
             event.candidate && addDoc(offerCandidates, event.candidate.toJSON());
         };
 
@@ -201,7 +228,7 @@ function VideoCallPage({uid, email, floorNumber}) {
                             id="webcamVideo"
                             autoPlay
                             playsInline
-                            ref={localWebcamVideo}
+                            ref={localStreamRef}
                         ></VideoItem>
                     </VideoContainer>
                 </Grid>
