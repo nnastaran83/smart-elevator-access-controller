@@ -67,7 +67,7 @@ const ContactList = ({handleContactButtonClick, floorNumber}) => {
                                         sx={{
                                             marginRight: "10px",
                                             bgcolor: () =>
-                                                "#" + Math.random().toString(16).substr(-6),
+                                                "#" + Math.random().toString(16).slice(-6),
                                         }}
                                     >{`${user.name.charAt(0)}`}</Avatar>
                                     <ListItemText primary={`${user.name}`}/>
