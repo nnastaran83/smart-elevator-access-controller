@@ -1,4 +1,3 @@
-import React from 'react';
 import {Box} from '@mui/material';
 import {styled} from '@mui/material';
 import '../../styles/PitchContainer.css';
@@ -9,6 +8,7 @@ const AnimatorBox = styled(Box)(({theme}) => ({
     animation: 'swing linear infinite calc(var(--speed) + var(--index) * 150ms)',
 }));
 
+// eslint-disable-next-line react/prop-types
 const Pitch = ({index, pitchNumber}) => {
     return (
         <AnimatorBox
