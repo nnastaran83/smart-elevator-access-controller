@@ -39,3 +39,4 @@ export {
 
 };
 export * from "./thunks/loadRegisteredUsers.js";
+export * from "./thunks/fetchDetectedUsersInfo.js";

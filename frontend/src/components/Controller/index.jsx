@@ -5,7 +5,6 @@ import '../../styles/FaceDetector.css';
 import Siri from "./Siri.jsx";
 import FaceDetector from "./FaceDetector.jsx";
 
-
 /**
  * FaceDetector component is used to detect faces in the video stream and send the video frame data to the Flask backend.
  * @returns {JSX.Element}

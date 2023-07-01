@@ -51,7 +51,7 @@ const App = () => {
             <Box>
                 <Controller/>
             </Box>
-            <VideoCallPopup/>
+          
         </Container>
     );
 };

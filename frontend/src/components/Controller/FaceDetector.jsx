@@ -1,9 +1,10 @@
 import React, {useEffect, useRef} from 'react';
 import {useDispatch} from "react-redux";
-import axios from "axios";
 import PitchContainer from "../containers/PitchContainer.jsx";
-import {setDetectedUserInfo, startSiri} from "../../store/index.js";
+import {fetchDetectedUsersInfo} from "../../store/index.js";
 import '../../styles/FaceDetector.css';
+import * as faceapi from 'face-api.js';
+
 
 /**
  * FaceDetector component is used to detect faces in the video stream and send the video frame data to the Flask backend.
@@ -15,9 +16,20 @@ const FaceDetector = () => {
     const videoRef = useRef(null);
     const canvasRef = useRef(null);
 
+
     useEffect(() => {
-        startWebCamForFaceDetection();
+        loadModels().then(startWebCamForFaceDetection);
     }, []);
+
+
+    /**
+     * Loads the face detection models
+     * @returns {Promise<void>}
+     */
+    const loadModels = async () => {
+        const MODEL_URL = '/models';
+        await faceapi.loadSsdMobilenetv1Model(MODEL_URL)
+    }
 
 
     /**
@@ -32,7 +44,6 @@ const FaceDetector = () => {
             .catch((err) => {
                 console.error(err);
             });
-
     };
 
 
@@ -48,35 +59,23 @@ const FaceDetector = () => {
 
         // Draw the video frame to canvas.
         const video = videoRef.current;
+        //Detect the face with the highest confidence score in an image
+
         const canvas = document.createElement('canvas');
         canvas.width = video.videoWidth;
         canvas.height = video.videoHeight;
         const ctx = canvas.getContext('2d');
         ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
 
+        //Detect the face with the highest confidence score
+        const detection = await faceapi.detectSingleFace(canvas);
+        if (detection) {
+            // Convert the content of the canvas to a Base64-encoded JPEG image.
+            const frameData = canvas.toDataURL('image/jpeg', 1);
+            dispatch(fetchDetectedUsersInfo(frameData));
 
-        // Convert the content of the canvas to a Base64-encoded JPEG image.
-        const frameData = canvas.toDataURL('image/jpeg', 1);
-
-
-        // Send the video frame data to backend server and wait for response.
-        try {
-            const response = await axios.post('http://localhost:5000/recognize_face',
-                {frame_data: frameData},
-                {headers: {'Content-Type': 'application/json'}}
-            );
-
-
-            if (response.data) {
-                dispatch(setDetectedUserInfo({...response.data, imageFrameData: frameData}));
-                dispatch(startSiri());
-
-            } else {
-                setTimeout(() => detectFace(), 5000);
-            }
-
-        } catch (error) {
-            console.log(error);
+        } else {
+            setTimeout(() => detectFace(), 5000);
         }
 
     };
@@ -89,12 +88,10 @@ const FaceDetector = () => {
                 autoPlay
                 onPlay={detectFace}
                 style={{display: "block"}}
-
             />
             <canvas ref={canvasRef}/>
             <PitchContainer/>
         </React.Fragment>
-
     );
 };
 

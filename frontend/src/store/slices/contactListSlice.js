@@ -27,6 +27,7 @@ const contactListSlice = createSlice({
             state.error = action.error;
 
         });
+
     },
 });
 

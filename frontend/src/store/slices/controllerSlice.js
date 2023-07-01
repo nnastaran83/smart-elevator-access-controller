@@ -1,4 +1,5 @@
 import {createSlice} from "@reduxjs/toolkit";
+import {fetchDetectedUsersInfo} from "../thunks/fetchDetectedUsersInfo.js";
 
 
 const cotrollerSlice = createSlice({
@@ -17,6 +18,15 @@ const cotrollerSlice = createSlice({
             state.isFaceRecognitionActive = false;
             state.isSiriActive = true;
         }
+    },
+    extraReducers(builder) {
+
+        builder.addCase(fetchDetectedUsersInfo.fulfilled, (state, action) => {
+            state.isFaceRecognitionActive = false;
+            state.isSiriActive = true;
+        });
+
+
     }
 
 
