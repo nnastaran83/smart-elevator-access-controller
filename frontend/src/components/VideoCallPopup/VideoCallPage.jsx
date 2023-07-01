@@ -42,7 +42,6 @@ function VideoCallPage({uid, email, floorNumber}) {
     const {sayText} = useSpeech();
 
     useEffect(() => {
-        console.log(floorNumber);
         startLocalStream();
     }, []);
 
@@ -69,7 +68,7 @@ function VideoCallPage({uid, email, floorNumber}) {
         try {
             localStreamRef.current.srcObject = await openMediaDevices({
                 'video': true,
-                'audio': {echoCancellation: true} || true
+                'audio': true
             });
             console.log('Got MediaStream:', localStreamRef.current.srcObject);
             // Pushing tracks from local stream to peerConnection
