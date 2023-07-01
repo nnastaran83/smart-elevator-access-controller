@@ -1,6 +1,5 @@
 import {useEffect, useState} from 'react';
 import {useSelector} from "react-redux";
-import {Box} from "@mui/material";
 import '../../styles/FaceDetector.css';
 import Siri from "./Siri.jsx";
 import FaceDetector from "./FaceDetector.jsx";
@@ -39,14 +38,13 @@ const Controller = () => {
 
 
     return (
-        <Box>
-            <div className="circle">
+        <div className="circle">
                 <span className="circle__btn">
                    {isFaceRecognitionActive && <FaceDetector/>}
                     {isSiriActive && <Siri utterance={utterance}/>}
                 </span>
-            </div>
-        </Box>
+        </div>
+
     );
 };
 

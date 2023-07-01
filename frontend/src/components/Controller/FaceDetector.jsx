@@ -1,6 +1,6 @@
 import React, {useEffect, useRef} from 'react';
 import {useDispatch} from "react-redux";
-import PitchContainer from "../containers/PitchContainer.jsx";
+import PitchContainer from "../containers/PitchContainer/PitchContainer.jsx";
 import {fetchDetectedUsersInfo} from "../../store/index.js";
 import '../../styles/FaceDetector.css';
 import * as faceapi from 'face-api.js';

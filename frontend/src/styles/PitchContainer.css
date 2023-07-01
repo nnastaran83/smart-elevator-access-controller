@@ -9,6 +9,8 @@
     --pitch-line-color: #bbb;
     --pitch-line-color-2: #bbb;
     --padding: 0vmin;
+    --content-size: "calc(100% - var(--padding))",
+
 
 }
 

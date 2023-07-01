@@ -61,7 +61,6 @@ export const useSpeechCommands = (utterance, userType, currentQuestionStep, setC
         {
             command: 'no',
             callback: () => {
-                SpeechRecognition.stopListening();
                 if ((userType === USER_STATES.REGISTERED_USER || userType === USER_STATES.RETURNING_USER) && currentQuestionStep === QUESTION_STEPS.INITIAL) {
                     setCurrentQuestionStep(QUESTION_STEPS.FLOOR_QUESTION);
                     askUser("Which floor would you like to go to?");
@@ -81,7 +80,6 @@ export const useSpeechCommands = (utterance, userType, currentQuestionStep, setC
             command: VALID_FLOOR_NUMBERS,
             callback: async ({command}) => {
                 SpeechRecognition.stopListening();
-                console.log("command", command);
                 if (currentQuestionStep === QUESTION_STEPS.FLOOR_QUESTION) {
                     console.log(`user type : ${userType}`)
                     const floorNumber = FLOOR_MAP[command.toLowerCase()];
@@ -174,7 +172,7 @@ export const useSpeechCommands = (utterance, userType, currentQuestionStep, setC
             setCurrentQuestionStep(QUESTION_STEPS.FLOOR_QUESTION);
             askUser("Welcome! Which floor would you like to go to?");
         }
-        console.log(SpeechRecognition)
+
     }, []);
 
 
@@ -185,7 +183,6 @@ export const useSpeechCommands = (utterance, userType, currentQuestionStep, setC
             //  setSpeechSynthesisEnded(false);
         }
         if (!listening && transcript.length > 0 && !VALID_COMMANDS.includes(transcript.toLowerCase())) {
-            resetTranscript();
             askUser("Sorry! I didn't quite get that! Please repeat your answer!");
         }
     }, [listening, isSpeechSynthesisEnded]);
