@@ -2,7 +2,7 @@ import {useState} from 'react';
 
 /**
  * This hook is used to handle the speech synthesis.
- * @returns {{sayText: (function(*): Promise<unknown>)}}
+ * @returns {(function(*): Promise<unknown>)[]}
  */
 const useSpeech = () => {
     const [utterance] = useState(new SpeechSynthesisUtterance());
@@ -24,7 +24,7 @@ const useSpeech = () => {
 
     };
 
-    return {sayText: sayText};
+    return [sayText];
 
 }
 

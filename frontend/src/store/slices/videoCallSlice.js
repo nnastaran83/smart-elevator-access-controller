@@ -4,7 +4,6 @@ const videoCallSlice = createSlice({
     name: 'videoCall',
     initialState: {
         isVideoCallActive: false,
-
     },
     reducers: {
         setIsVideoCallActive: (state, action) => {

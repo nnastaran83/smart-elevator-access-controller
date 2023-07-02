@@ -1,6 +1,6 @@
 import {useState, useEffect, useCallback} from 'react';
 import SpeechRecognition, {useSpeechRecognition} from "react-speech-recognition";
-import {useDispatch} from "react-redux";
+import {useDispatch, useSelector} from "react-redux";
 import {FLOOR_MAP, QUESTION_STEPS, USER_STATES} from "../util/constants.js";
 import axios from "axios";
 import {
@@ -12,21 +12,40 @@ import {
 import useSpeech from "./useSpeech.js";
 
 /**
- * This hook is used to handle the speech recognition commands and responses.
+ * This hook is used to handle the speech commands.
  * @param utterance
- * @param userType
- * @param currentQuestionStep
- * @param setCurrentQuestionStep
- * @param detectedUserInfo
- * @param VALID_COMMANDS
- * @param VALID_FLOOR_NUMBERS
- * @returns {{listening, askUser: ((function(*): Promise<void>)|*), transcript, isSpeechSynthesisEnded: boolean, resetTranscript, siriMessage: string, browserSupportsSpeechRecognition}}
+ * @returns {{listening, askUser: ((function(*): void)|*), transcript, isSpeechSynthesisEnded: boolean, resetTranscript, isVideoCallActive: *, requestedFloorNumber: *, siriMessage: string, browserSupportsSpeechRecognition}}
  */
-export const useSpeechCommands = (utterance, userType, currentQuestionStep, setCurrentQuestionStep, detectedUserInfo, VALID_COMMANDS, VALID_FLOOR_NUMBERS) => {
+export const useSpeechCommands = (utterance) => {
+    const {
+        detectedUserInfo,
+        userType,
+        VALID_COMMANDS,
+        VALID_FLOOR_NUMBERS
+
+    } = useSelector(({
+                         currentDetectedUser: {detectedUserInfo, userType},
+                         contactList: {registeredUsers}
+                     }) => {
+        // Create a set of floor numbers from your array of objects
+        const floorNumberSet = new Set(registeredUsers.map(obj => obj.floor_number));
+        // Filter VALID_FLOOR_NUMBERS to only include numbers in the set
+        const VALID_FLOOR_NUMBERS = Object.keys(FLOOR_MAP).filter(floor =>
+            floorNumberSet.has(FLOOR_MAP[floor])
+        );
+        const VALID_COMMANDS = ['yes', 'no', ...VALID_FLOOR_NUMBERS];
+        return {
+            detectedUserInfo,
+            userType,
+            VALID_COMMANDS,
+            VALID_FLOOR_NUMBERS
+        }
+    });
+    const [currentQuestionStep, setCurrentQuestionStep] = useState(QUESTION_STEPS.INITIAL);
     const dispatch = useDispatch();
     const [siriMessage, setSiriMessage] = useState("Welcome");
     const [isSpeechSynthesisEnded, setSpeechSynthesisEnded] = useState(false);
-    const {sayText} = useSpeech();
+    const [sayText] = useSpeech();
 
     // Speech recognition commands and responses
     const commands = [
@@ -210,6 +229,7 @@ export const useSpeechCommands = (utterance, userType, currentQuestionStep, setC
         browserSupportsSpeechRecognition,
         askUser,
         siriMessage,
-        isSpeechSynthesisEnded
+        isSpeechSynthesisEnded,
+
     };
 };

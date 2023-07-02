@@ -1,13 +1,11 @@
 import React from 'react';
-import {useState} from 'react';
 import {Chip, Typography} from "@mui/material";
 import AnimationContainer from "../containers/AnimationContainer.jsx";
 import VideoCallPopup from "../VideoCallPopup/index.jsx";
 import RainbowContainer from "../containers/RainbowContainer.jsx";
 import {useSpeechCommands} from '../../hooks/useSpeechCommands.js';
-import {useSiriData} from '../../hooks/useSiriData.js';
-import {QUESTION_STEPS} from "../../util/constants.js";
 import MicIconButton from "../buttons/MicIconButton.jsx";
+import {useSelector} from "react-redux";
 
 /**
  * Siri component is used to display the Siri UI and handle the speech commands.
@@ -17,27 +15,24 @@ import MicIconButton from "../buttons/MicIconButton.jsx";
  */
 // eslint-disable-next-line react/prop-types
 const Siri = ({utterance}) => {
-    const [currentQuestionStep, setCurrentQuestionStep] = useState(QUESTION_STEPS.INITIAL);
-    const {
-        detectedUserInfo,
-        userType,
-        isVideoCallActive,
-        requestedFloorNumber,
-        VALID_COMMANDS,
-        VALID_FLOOR_NUMBERS
-    } = useSiriData();
-
     const {
         listening,
         transcript,
-        siriMessage,
-    } = useSpeechCommands(utterance,
-        userType,
-        currentQuestionStep,
-        setCurrentQuestionStep,
-        detectedUserInfo,
-        VALID_COMMANDS,
-        VALID_FLOOR_NUMBERS);
+        siriMessage
+    } = useSpeechCommands(utterance);
+    const {
+        requestedFloorNumber,
+        isVideoCallActive
+    } = useSelector((
+        {
+            currentDetectedUser: {requestedFloorNumber},
+            videoCall: {isVideoCallActive}
+        }) => {
+        return {
+            isVideoCallActive,
+            requestedFloorNumber
+        }
+    });
 
 
     return (

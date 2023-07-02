@@ -39,7 +39,7 @@ function VideoCallPage({uid, email, floorNumber}) {
     const [joinedCall, setJoinedCall] = useState(false);
     const imageFrameData = useSelector((state) => state.currentDetectedUser.detectedUserInfo.imageFrameData);
 
-    const {sayText} = useSpeech();
+    const [sayText] = useSpeech();
 
     useEffect(() => {
         startLocalStream();
