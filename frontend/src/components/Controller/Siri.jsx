@@ -1,14 +1,13 @@
 import React from 'react';
 import {useState} from 'react';
-import {Box, Chip, IconButton, Stack, Typography} from "@mui/material";
-import MicIcon from "@mui/icons-material/Mic";
-import MicOffIcon from "@mui/icons-material/MicOff";
+import {Chip, Typography} from "@mui/material";
 import AnimationContainer from "../containers/AnimationContainer.jsx";
 import VideoCallPopup from "../VideoCallPopup/index.jsx";
 import RainbowContainer from "../containers/RainbowContainer.jsx";
 import {useSpeechCommands} from '../../hooks/useSpeechCommands.js';
 import {useSiriData} from '../../hooks/useSiriData.js';
 import {QUESTION_STEPS} from "../../util/constants.js";
+import MicIconButton from "../buttons/MicIconButton.jsx";
 
 /**
  * Siri component is used to display the Siri UI and handle the speech commands.
@@ -44,7 +43,7 @@ const Siri = ({utterance}) => {
     return (
         <React.Fragment>
             <AnimationContainer>
-                <Box sx={{
+                <div style={{
                     width: "100%",
                     height: "100%",
                     fontSize: "70vmin",
@@ -53,24 +52,20 @@ const Siri = ({utterance}) => {
                     alignItems: "center"
                 }}>
                     <RainbowContainer/>
-                </Box>
+                </div>
             </AnimationContainer>
 
             <Typography variant="h5" gutterBottom sx={{textAlign: "center", zIndex: 1, padding: "40px"}}>
                 {siriMessage}
             </Typography>
 
-            <Stack spacing={2} sx={{zIndex: 1, position: "absolute", bottom: 40, textAlign: "center"}}>
-                <Box>
-                    {transcript ? <Chip label={`${transcript}`} variant="outlined"/> : null}
-                </Box>
-                <IconButton sx={{
-                    background: listening ? "rgba(106,245,82,0.18)" : "rgba(255,17,17,0.18)",
-                    color: listening ? "#1aa600" : "#ff0c0c", width: "50px", height: "50px"
-                }}>
-                    {listening ? <MicIcon/> : <MicOffIcon/>}
-                </IconButton>
-            </Stack>
+            <div style={{zIndex: 1, position: "absolute", bottom: 50, textAlign: "center"}}>
+                {transcript ? <Chip label={`${transcript}`} sx={{marginBottom: "20px"}} variant="outlined"
+                /> : null}
+                <br/>
+                <MicIconButton listening={listening}/>
+
+            </div>
 
             {isVideoCallActive ? <VideoCallPopup floorNumber={requestedFloorNumber}/> : null}
         </React.Fragment>

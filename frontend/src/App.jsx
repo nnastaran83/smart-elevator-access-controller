@@ -1,14 +1,13 @@
 import "./styles/App.scss";
 import {useEffect} from "react";
 import Controller from "./components/Controller/index.jsx";
-import {Box, Container} from "@mui/material";
+import {Container} from "@mui/material";
 import {
     loadRegisteredUsers,
     setIsVideoCallActive,
     startFaceRecognition,
 } from "./store/index.js";
 import {useDispatch} from "react-redux";
-import VideoCallPopup from "./components/VideoCallPopup/index.jsx";
 
 
 /**
@@ -49,7 +48,7 @@ const App = () => {
     return (
         <Container className="App" onClick={startFaceDetector}>
             <Controller/>
-            <VideoCallPopup/>
+
         </Container>
     );
 };

@@ -45,6 +45,7 @@ const currentDetectedUser = createSlice({
 
         builder.addCase(fetchDetectedUsersInfo.fulfilled, (state, action) => {
             state.loading = false;
+            state.requestedFloorNumber = null;
             state.detectedUserInfo = action.payload;
             if (action.payload.uid) {
                 state.userType = USER_STATES.REGISTERED_USER;

@@ -71,7 +71,7 @@ const FaceDetector = () => {
         const detection = await faceapi.detectSingleFace(canvas);
         if (detection) {
             // Convert the content of the canvas to a Base64-encoded JPEG image.
-            const frameData = canvas.toDataURL('image/jpeg', 1);
+            const frameData = canvas.toDataURL('image/jpeg');
             dispatch(fetchDetectedUsersInfo(frameData));
 
         } else {
