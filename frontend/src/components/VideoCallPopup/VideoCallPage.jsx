@@ -9,7 +9,7 @@ import {
     setDoc,
     onSnapshot,
     addDoc,
-    deleteDoc,
+
 } from "firebase/firestore";
 import {sendVideoCallRequestMessageToUser} from "../../firebase_module";
 import EllipseButton from "../buttons/EllipseButton.jsx";
@@ -34,7 +34,8 @@ function VideoCallPage({uid, email, floorNumber}) {
     const localStreamRef = useRef(null);
     const [localStream, setLocalStream] = useState(null);
     const remoteVideo = useRef(null);
-    const {pc} = usePeerConnection();
+    const [remoteStream, setRemoteStream] = useState(null);
+    const [pc] = usePeerConnection();
     const sendSignalChannel = useRef(null);
     const [joinedCall, setJoinedCall] = useState(false);
     const imageFrameData = useSelector((state) => state.currentDetectedUser.detectedUserInfo.imageFrameData);
@@ -43,6 +44,8 @@ function VideoCallPage({uid, email, floorNumber}) {
 
     useEffect(() => {
         startLocalStream();
+        addRemoteStream();
+
     }, []);
 
 
@@ -109,8 +112,6 @@ function VideoCallPage({uid, email, floorNumber}) {
         // initializing the remote server to the media stream
         const remoteStream = new MediaStream();
 
-        remoteVideo.current.srcObject = remoteStream;
-
         pc.current.ontrack = (event) => {
             event.streams[0].getTracks().forEach((track) => {
                 console.log("Adding track to remoteStream", track);
@@ -126,7 +127,8 @@ function VideoCallPage({uid, email, floorNumber}) {
                 setJoinedCall(false);
             }
         };
-    }
+        setRemoteStream(remoteStream);
+    };
 
 
     /**
@@ -134,10 +136,7 @@ function VideoCallPage({uid, email, floorNumber}) {
      * @returns {Promise<void>}
      */
     const startCallWithUser = async () => {
-        //TODO: Delete the call document after call ends
-        await addRemoteStream();
         setJoinedCall(true);
-        await deleteDoc(doc(db, "calls", uid));
         await sendVideoCallRequestMessageToUser(email, message);
 
         //TODO: change the uid to the uid of the user to call
@@ -163,8 +162,11 @@ function VideoCallPage({uid, email, floorNumber}) {
         //Before the caller and callee can connect to each other, they need to exchange ICE candidates that tell WebRTC how to connect to the remote peer.
         //Get candidates for caller and save to db
         pc.current.onicecandidate = (event) => {
-            console.log("Got Ice Candidate", event.candidate);
-            event.candidate && addDoc(offerCandidates, event.candidate.toJSON());
+            if (event.candidate) {
+                console.log("Got Ice Candidate", event.candidate);
+                const json = event.candidate.toJSON();
+                addDoc(offerCandidates, json);
+            }
         };
 
         // Create a RTCSessionDescription that will represent the offer from the caller, then set it as the local description,
@@ -186,8 +188,9 @@ function VideoCallPage({uid, email, floorNumber}) {
             if (data) {
                 if (!pc.current.currentRemoteDescription && data.answer) {
                     //TODO: change the answerDescription name to answer
-                    const answerDescription = new RTCSessionDescription(data.answer);
-                    await pc.current.setRemoteDescription(answerDescription);
+                    const answer = data.answer;
+                    // const answerDescription = new RTCSessionDescription(data.answer);
+                    await pc.current.setRemoteDescription(answer);
                 }
             }
         });
@@ -196,8 +199,11 @@ function VideoCallPage({uid, email, floorNumber}) {
         onSnapshot(answerCandidiates, (snapshot) => {
             snapshot.docChanges().forEach((change) => {
                 if (change.type === "added") {
+
                     const candidate = new RTCIceCandidate(change.doc.data());
                     pc.current.addIceCandidate(candidate);
+                    //let data = change.doc.data();
+                    // pc.current.addIceCandidate(new RTCIceCandidate(data));
                 }
             });
         });
@@ -209,6 +215,7 @@ function VideoCallPage({uid, email, floorNumber}) {
     const hangupCall = () => {
         //TODO: compelete this function
         setJoinedCall(false);
+        pc.current.close()
     };
 
     return (

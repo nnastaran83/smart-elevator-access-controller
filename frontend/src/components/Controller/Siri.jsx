@@ -19,7 +19,7 @@ const Siri = ({utterance}) => {
         listening,
         transcript,
         siriMessage
-    } = useSpeechCommands(utterance);
+    } = useSpeechCommands();
     const {
         requestedFloorNumber,
         isVideoCallActive

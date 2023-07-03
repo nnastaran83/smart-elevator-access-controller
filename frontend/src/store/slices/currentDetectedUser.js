@@ -7,6 +7,10 @@ const USER_STATES = {
     UNREGISTERED_USER: 'unregistered'
 };
 
+/**
+ * @description Slice to handle current detected user
+ * @type {Slice<{detectedUserInfo: {uid: null, name: null, floor_number: null, imageFrameData: null}, userType: null, requestedFloorNumber: null, loading: boolean, error: null}, {setDetectedUserInfo: reducers.setDetectedUserInfo, setRequestedFloorNumber: reducers.setRequestedFloorNumber, changeUserType: reducers.changeUserType}, string>}
+ */
 const currentDetectedUser = createSlice({
     name: 'currentDetectedUser',
     initialState: {

@@ -7,7 +7,8 @@ import {
     setIsVideoCallActive,
     startFaceRecognition,
 } from "./store/index.js";
-import {useDispatch} from "react-redux";
+import {useDispatch, useSelector} from "react-redux";
+import VideoCallPopup from "./components/VideoCallPopup/index.jsx";
 
 
 /**
@@ -19,9 +20,15 @@ import {useDispatch} from "react-redux";
  */
 const App = () => {
     const dispatch = useDispatch();
+    const {isVideoCallActive} = useSelector((state) => {
+        return {
+            isVideoCallActive: state.videoCall.isVideoCallActive
+        };
+    });
 
     useEffect(() => {
         dispatch(loadRegisteredUsers());
+        dispatch(setIsVideoCallActive(true));
     }, []);
 
     /**
@@ -47,6 +54,7 @@ const App = () => {
 
     return (
         <Container className="App" onClick={startFaceDetector}>
+            {isVideoCallActive && <VideoCallPopup/>}
             <Controller/>
 
         </Container>

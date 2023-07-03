@@ -11,8 +11,9 @@ import {
     changeUserType,
     setRequestedFloorNumber
 } from "./slices/currentDetectedUser.js";
-import {videoCallReducer, setIsVideoCallActive} from "./slices/videoCallSlice.js";
+import {videoCallReducer} from "./slices/videoCallSlice.js";
 import {siriReducer, setTextToSpeech} from "./slices/siriSlice.js";
+import {setIsVideoCallActive} from "./actions.js";
 
 
 const store = configureStore({
@@ -35,7 +36,6 @@ export {
     changeUserType,
     setRequestedFloorNumber,
     setTextToSpeech
-
 
 };
 export * from "./thunks/loadRegisteredUsers.js";

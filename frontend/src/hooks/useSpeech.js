@@ -1,13 +1,13 @@
-import {useState} from 'react';
+import {useCallback, useState} from 'react';
 
 /**
- * This hook is used to handle the speech synthesis.
- * @returns {(function(*): Promise<unknown>)[]}
+ * @description Hook to use speech synthesis
+ * @returns {[(function(*): Promise<unknown>)]}
  */
 const useSpeech = () => {
     const [utterance] = useState(new SpeechSynthesisUtterance());
 
-    const sayText = (text) => {
+    const sayText = useCallback((text) => {
 
         utterance.voice = speechSynthesis.getVoices()[5];
         utterance.lang = "en-US";
@@ -22,7 +22,7 @@ const useSpeech = () => {
             };
         });
 
-    };
+    }, [utterance]);
 
     return [sayText];
 

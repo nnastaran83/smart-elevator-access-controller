@@ -1,6 +1,10 @@
 import {createSlice} from "@reduxjs/toolkit";
 import {loadRegisteredUsers} from "../thunks/loadRegisteredUsers.js";
 
+/**
+ * @description Slice to handle contact list
+ * @type {Slice<{registeredUsers: *[], loading: boolean, error: null}, {}, string>}
+ */
 const contactListSlice = createSlice({
     name: "contactList",
     initialState: {

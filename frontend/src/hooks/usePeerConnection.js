@@ -1,5 +1,9 @@
 import {useRef} from 'react';
 
+/**
+ * @description Hook to use peer connection
+ * @returns {[React.MutableRefObject<RTCPeerConnection>]}
+ */
 const usePeerConnection = () => {
     // server config
     const servers = {
@@ -13,7 +17,8 @@ const usePeerConnection = () => {
         ],
         iceCandidatePoolSize: 10,
     };
-    return {pc: useRef(new RTCPeerConnection(servers))};
+    const pc = useRef(new RTCPeerConnection(servers))
+    return [pc];
 };
 
 export {usePeerConnection};

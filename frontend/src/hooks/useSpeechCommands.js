@@ -12,11 +12,10 @@ import {
 import useSpeech from "./useSpeech.js";
 
 /**
- * This hook is used to handle the speech commands.
- * @param utterance
- * @returns {{listening, askUser: ((function(*): void)|*), transcript, isSpeechSynthesisEnded: boolean, resetTranscript, isVideoCallActive: *, requestedFloorNumber: *, siriMessage: string, browserSupportsSpeechRecognition}}
+ * @description Hook to use speech recognition
+ * @returns {{listening, askUser: ((function(*): void)|*), transcript, isSpeechSynthesisEnded: boolean, resetTranscript, siriMessage: string, browserSupportsSpeechRecognition}}
  */
-export const useSpeechCommands = (utterance) => {
+export const useSpeechCommands = () => {
     const {
         detectedUserInfo,
         userType,
@@ -125,7 +124,6 @@ export const useSpeechCommands = (utterance) => {
         resetTranscript,
         transcript,
         browserSupportsSpeechRecognition,
-        utterance,
         userType,
         currentQuestionStep,
         setCurrentQuestionStep,
