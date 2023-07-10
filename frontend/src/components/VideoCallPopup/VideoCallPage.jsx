@@ -139,7 +139,6 @@ function VideoCallPage({uid, email, floorNumber}) {
         setJoinedCall(true);
         await sendVideoCallRequestMessageToUser(email, message);
 
-        //TODO: change the uid to the uid of the user to call
         const callDoc = doc(db, "calls", uid); // Main collection in firestore
         const offerCandidates = collection(callDoc, "offerCandidates"); //Sub collection of callDoc
         const answerCandidiates = collection(callDoc, "answerCandidates"); //Sub collection of callDoc
