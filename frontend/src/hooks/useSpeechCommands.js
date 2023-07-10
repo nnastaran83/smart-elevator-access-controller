@@ -117,21 +117,6 @@ export const useSpeechCommands = () => {
         browserSupportsSpeechRecognition
     } = useSpeechRecognition({commands});
 
-    console.log({
-        listening,
-        isSpeechSynthesisEnded,
-        siriMessage,
-        resetTranscript,
-        transcript,
-        browserSupportsSpeechRecognition,
-        userType,
-        currentQuestionStep,
-        setCurrentQuestionStep,
-        detectedUserInfo,
-        VALID_COMMANDS,
-        VALID_FLOOR_NUMBERS
-    })
-
 
     useEffect(() => {
         if (!browserSupportsSpeechRecognition) {

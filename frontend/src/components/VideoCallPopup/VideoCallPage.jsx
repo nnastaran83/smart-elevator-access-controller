@@ -32,9 +32,9 @@ const message = {
 // eslint-disable-next-line react/prop-types
 function VideoCallPage({uid, email, floorNumber}) {
     const localStreamRef = useRef(null);
-    const [localStream, setLocalStream] = useState(null);
+    //const [localStream, setLocalStream] = useState(null);
     const remoteVideo = useRef(null);
-    const [remoteStream, setRemoteStream] = useState(null);
+    //   const [remoteStream, setRemoteStream] = useState(null);
     const [pc] = usePeerConnection();
     const sendSignalChannel = useRef(null);
     const [joinedCall, setJoinedCall] = useState(false);
@@ -45,6 +45,7 @@ function VideoCallPage({uid, email, floorNumber}) {
     useEffect(() => {
         startLocalStream();
         addRemoteStream();
+        startCallWithUser();
 
     }, []);
 
@@ -84,7 +85,7 @@ function VideoCallPage({uid, email, floorNumber}) {
             console.error('Error accessing media devices.', error);
         }
 
-        setLocalStream(localStreamRef.current.srcObject);
+        // setLocalStream(localStreamRef.current.srcObject);
     };
 
 
@@ -104,7 +105,7 @@ function VideoCallPage({uid, email, floorNumber}) {
 
             videoElem.srcObject = null;
         }
-        setLocalStream(null);
+        //   setLocalStream(null);
 
     };
 
@@ -127,7 +128,7 @@ function VideoCallPage({uid, email, floorNumber}) {
                 setJoinedCall(false);
             }
         };
-        setRemoteStream(remoteStream);
+        //     setRemoteStream(remoteStream);
     };
 
 

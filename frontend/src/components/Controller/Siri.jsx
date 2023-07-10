@@ -1,11 +1,9 @@
 import React from 'react';
 import {Chip, Typography} from "@mui/material";
 import AnimationContainer from "../containers/AnimationContainer.jsx";
-import VideoCallPopup from "../VideoCallPopup/index.jsx";
 import RainbowContainer from "../containers/RainbowContainer.jsx";
 import {useSpeechCommands} from '../../hooks/useSpeechCommands.js';
 import MicIconButton from "../buttons/MicIconButton.jsx";
-import {useSelector} from "react-redux";
 
 /**
  * Siri component is used to display the Siri UI and handle the speech commands.
@@ -20,19 +18,6 @@ const Siri = ({utterance}) => {
         transcript,
         siriMessage
     } = useSpeechCommands();
-    const {
-        requestedFloorNumber,
-        isVideoCallActive
-    } = useSelector((
-        {
-            currentDetectedUser: {requestedFloorNumber},
-            videoCall: {isVideoCallActive}
-        }) => {
-        return {
-            isVideoCallActive,
-            requestedFloorNumber
-        }
-    });
 
 
     return (
@@ -62,7 +47,6 @@ const Siri = ({utterance}) => {
 
             </div>
 
-            {isVideoCallActive ? <VideoCallPopup floorNumber={requestedFloorNumber}/> : null}
         </React.Fragment>
     );
 };
