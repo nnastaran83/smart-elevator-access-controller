@@ -187,7 +187,6 @@ function VideoCallPage({uid, email, floorNumber}) {
             const data = snapshot.data();
             if (data) {
                 if (!pc.current.currentRemoteDescription && data.answer) {
-                    //TODO: change the answerDescription name to answer
                     const answer = data.answer;
                     // const answerDescription = new RTCSessionDescription(data.answer);
                     await pc.current.setRemoteDescription(answer);
@@ -202,8 +201,7 @@ function VideoCallPage({uid, email, floorNumber}) {
 
                     const candidate = new RTCIceCandidate(change.doc.data());
                     pc.current.addIceCandidate(candidate);
-                    //let data = change.doc.data();
-                    // pc.current.addIceCandidate(new RTCIceCandidate(data));
+
                 }
             });
         });
@@ -251,7 +249,6 @@ function VideoCallPage({uid, email, floorNumber}) {
                 </Grid>
             </Grid>
 
-            {/*TODO: Add camera on or of button*/}
             <EllipseButton
                 sx={{position: "absolute", bottom: 15, right: 15, padding: "1rem"}}
                 id="hangupButton"

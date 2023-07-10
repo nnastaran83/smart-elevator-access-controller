@@ -11,7 +11,7 @@ import {useSelector} from "react-redux";
  * Siri component is used to display the Siri UI and handle the speech commands.
  * @param utterance
  * @returns {JSX.Element}
- * @constructor
+ * @component
  */
 // eslint-disable-next-line react/prop-types
 const Siri = ({utterance}) => {

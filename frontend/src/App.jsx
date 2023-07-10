@@ -28,7 +28,7 @@ const App = () => {
 
     useEffect(() => {
         dispatch(loadRegisteredUsers());
-        dispatch(setIsVideoCallActive(true));
+        //  dispatch(setIsVideoCallActive(true));
     }, []);
 
     /**
@@ -54,7 +54,7 @@ const App = () => {
 
     return (
         <Container className="App" onClick={startFaceDetector}>
-            {isVideoCallActive && <VideoCallPopup/>}
+          
             <Controller/>
 
         </Container>

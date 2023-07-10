@@ -26,6 +26,6 @@ const useSpeech = () => {
 
     return [sayText];
 
-}
+};
 
 export default useSpeech;
