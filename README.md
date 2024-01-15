@@ -1,4 +1,4 @@
-# Smart Access Control: _Face Recognition-based Elevator Access Control with Digital Assistant and Video Calls_
+# Smart Access Control: <span style="font-weight: normal;">Face Recognition-based Elevator Access Control with Digital Assistant and Video Calls</span>
 This project explores the development of a secure and convenient access control system for apartments using face-recognition. It features a digital assistant for voice-activated commands, video calls for enhanced communication, and user recognition for seamless access.
 
 ## Features
