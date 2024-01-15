@@ -1,6 +1,5 @@
 # Elevator Access Control System with Face Recognition and Digital Assistant
 
-## Description
 This project is a comprehensive elevator access control system designed to enhance security in apartment buildings. It uses face-recognition to authenticate authorized users, remember verified users, and grant access. 
 In addition, the system features a built-in digital assistant and video call option for added convenience and functionality.
 
